@@ -1,4 +1,4 @@
-# OpenEDOS: The open source event driven operating system.
+# OpenEDOS: The open source event driven operating system
 Welcome to the OpenEDOS repository!
 
 OpenEDOS is an embedded OS for microcontrollers written in C++.
