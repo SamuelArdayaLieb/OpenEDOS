@@ -1,2 +1,4 @@
 # OpenEDOS
-This is the OpenEDOS repository.
+Welcome to the OpenEDOS repository.
+
+# Check out the dev branch for more information!
