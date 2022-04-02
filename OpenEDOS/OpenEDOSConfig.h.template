@@ -5,12 +5,12 @@
 
 /**
  * Chose the port you want to use for your application.
- * The portlist.h file defines all available ports.
+ * The portlist.h file contains all available ports.
  * If the port you need is not listed there, you can write your
  * own port header using the port.h.template file in the port folder, 
  * add a macro in portlist.h and use it to define the port here.
  */
-#define PORT 
+#define 
 
 /**
  * This macro should be defined according to the total amount of modules

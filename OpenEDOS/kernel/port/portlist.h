@@ -32,6 +32,7 @@
 
 /**
  * In this file all the available ports are listed.
+ * Define one of the following expressions in the OpenEDOSConfig header.
  */
 
 enum Ports_e {

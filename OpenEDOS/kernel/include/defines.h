@@ -51,10 +51,6 @@
 #include <stdint.h>
 
 /* Check if definitions are correct */
-#ifndef PORT
-    #error Missing definition: PORT. Please define the port you want to use in your application in the OpenEDOSConfig header.   
-#endif
-
 #ifndef NUMBER_OF_MODULES   
     #error Missing definition: NUMBER_OF_MODULES. Please define the number of modules you want to use in your application in the OpenEDOSConfig header.
 #endif
@@ -87,7 +83,7 @@
  * Include the correct port header according to the port defined in the OpenEDOSConfig
  * file. If you provide your own port header just include it here.
  */
-#if PORT == PORT_MSP430
+#ifdef PORT_MSP430
     #include "../port/MSP430/port.h"
 #endif
 
