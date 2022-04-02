@@ -59,7 +59,7 @@ public:
      */
     void connect(Kernel_c *Kernel);
 
-private:
+protected:
     /**
      * @brief Send a message to the kernel.
      * 
@@ -78,7 +78,7 @@ private:
      *      Source,
      *      NO_MODULE,
      *      MT_WRITE,
-     *      (sizeof(Port) + sizeof(Pin) + sizeof(Level))
+     *      0,
      *      };
      * 
      *      void *Data[] = {
