@@ -73,8 +73,9 @@ Error_t Message_c::setMessageHeader(MessageHeader_t *MessageHeader)
         return ERROR_SERVICE_ID_INVALID;
     }
 
-    /* Check if the source ID is valid */
-    if(MessageHeader->SourceID >= NUMBER_OF_MODULES)
+    /* Check if the source ID is valid. NO_MODULE is valid here */
+    if((MessageHeader->SourceID >= NUMBER_OF_MODULES) &&
+       (MessageHeader->SourceID != NO_MODULE))
     {
         return ERROR_MODULE_ID_INVALID;
     }
