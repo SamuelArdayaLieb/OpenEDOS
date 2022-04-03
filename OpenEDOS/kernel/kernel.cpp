@@ -68,7 +68,7 @@ void Kernel_c::init(void)
 
 Error_t Kernel_c::connectModule(Module_c *Module)
 {
-    return Module->connect();
+    return Module->connect(this);
 }
 
 Error_t Kernel_c::loadModule(Module_c *Module, ModuleRegistration_t *ModuleRegistration)

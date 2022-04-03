@@ -85,7 +85,7 @@ protected:
      * - loading the module registration results in an error.
      * Otherwise ERROR_NONE is returned.
      */
-    virtual Error_t connect(void) = 0;
+    virtual Error_t connect(Kernel_c *Kernel) = 0;
 
     /**
      * @brief Initialize the module.
@@ -139,6 +139,9 @@ protected:
     
     /* The ID that the module will have during operation. It is set by the kernel. */
     ModuleID_t ModuleID;
+
+    /* Connection to the kernel. This is necessary for the registration of the module */
+    Kernel_c *Kernel;
 };
 
 #endif
