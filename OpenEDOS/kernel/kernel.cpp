@@ -129,7 +129,7 @@ Error_t Kernel_c::initModules(void)
 {
     Error_t Error;
     
-    for(ModuleID_t ModuleID = 0; ModuleID < NUMBER_OF_MODULES; ModuleID++)
+    for(ModuleID_t ModuleID = 0; ModuleID < this->ModuleCount; ModuleID++)
     {
         Error = this->Modules[ModuleID]->init();
 
