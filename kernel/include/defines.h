@@ -87,6 +87,10 @@
     #include "../port/MSP430/port.h"
 #endif
 
+#ifdef PORT_STM32
+	#include "../port/STM32/port.h"
+#endif
+
 /**
  * The data types used for ID variables depend on the total number of unique IDs.
  * The highest possible values that those variables can hold are used as "None" types. 
@@ -214,7 +218,7 @@ typedef struct Message_t {
 } Message_t;
 
 /* Events can come with parameters. */
-typedef uint16_t EventParameter_t;
+typedef BaseType_t EventParameter_t;
 
 /**
  * Events are stored in a struct consisting of the event ID 
