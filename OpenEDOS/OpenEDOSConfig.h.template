@@ -1,0 +1,42 @@
+#ifndef OPEN_EDOS_CONFIG_H
+#define OPEN_EDOS_CONFIG_H
+
+#include "kernel/port/portlist.h"
+
+/**
+ * Chose the port you want to use for your application.
+ * The portlist.h file contains all available ports.
+ * If the port you need is not listed there, you can write your
+ * own port header using the port.h.template file in the port folder, 
+ * add a macro in portlist.h and use it to define the port here.
+ */
+#define 
+
+/**
+ * This macro should be defined according to the total amount of modules
+ * that are part of your application.
+ */
+#define NUMBER_OF_MODULES    
+
+/**
+ * This macro defines how many messages the message queue can store.
+ */
+#define MESSAGE_QUEUE_LENGTH 
+
+/**
+ * The message data size defines the size of the message data field in bytes.
+ */
+#define MESSAGE_DATA_SIZE   
+
+/**
+ * This macro defines how many events can be stored in the event queue.
+ */
+#define EVENT_QUEUE_LENGTH   
+
+/**
+ * This macro defines how many messages of the same type (same ID) can be
+ * stored in the event queue at a time.
+ */
+#define MAX_EVENT_COUNT      
+
+#endif
