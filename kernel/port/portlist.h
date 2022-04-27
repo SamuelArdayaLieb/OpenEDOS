@@ -37,6 +37,7 @@
 
 enum Ports_e {
     PORT_MSP430,
+    PORT_STM32,
 };
 
 #endif
