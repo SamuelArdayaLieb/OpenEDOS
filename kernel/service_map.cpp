@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -32,22 +32,36 @@
 
 void ServiceMap_c::init(void)
 {
-    /* Initialize the whole service map memory */
-    memset(this->ServiceMap, NO_MODULE, NUMBER_OF_SERVICES * sizeof(ModuleID_t));
+    ModuleAddress_t NoProvider = {
+        NO_KERNEL,
+        NO_MODULE
+    };
+    
+    for(ServiceID_t ServiceID = 0; ServiceID < NUMBER_OF_SERVICES; ServiceID++)
+    {
+        this->ServiceMap[ServiceID] = NoProvider;
+    }
 }
 
-Error_t ServiceMap_c::registerModule(ServiceID_t *ServiceIDs, size_t ServiceIDCount, 
-                                     ModuleID_t ModuleID)
+Error_t ServiceMap_c::registerServiceProvider(
+    ServiceID_t *ServiceIDs, 
+    size_t ServiceIDCount,
+    ModuleAddress_t *ProviderAddress)
 {
-    /* Check if the module ID is valid */
-    if(ModuleID >= NUMBER_OF_MODULES)
+    size_t Count;
+    ServiceID_t ServiceID;
+    
+    /* Check if the provider address is valid */
+    if(ProviderAddress->KernelID >= NUMBER_OF_KERNELS)
+    {
+        return ERROR_KERNEL_ID_INVALID;
+    }
+
+    if(ProviderAddress->ModuleID >= NUMBER_OF_MODULES)
     {
         return ERROR_MODULE_ID_INVALID;
     }
     
-    size_t Count;
-    ServiceID_t ServiceID;
-
     /** 
      * Check if the given service IDs are all valid before executing the registration.
      * Also check if any of the given service IDs is already registered by another 
@@ -64,24 +78,83 @@ Error_t ServiceMap_c::registerModule(ServiceID_t *ServiceIDs, size_t ServiceIDCo
         }
 
         /* Is the service already registered? */
-        if(this->ServiceMap[ServiceID] != NO_MODULE)
+        if(this->ServiceMap[ServiceID].ModuleID != NO_MODULE)
         {
             return ERROR_SERVICE_ALREADY_REGISTERED;
         }
     }
 
-    /* It seems like everything is all right. Register the services. */
+    /* It seems like everything is all right. Let's register the services. */
     for(Count = 0; Count < ServiceIDCount; Count++)
     {
         ServiceID = ServiceIDs[Count];
 
-        this->ServiceMap[ServiceID] = ModuleID;
+        this->ServiceMap[ServiceID] = *ProviderAddress;
     }
 
     return ERROR_NONE;    
 }
 
-Error_t ServiceMap_c::getModuleID(ServiceID_t ServiceID, ModuleID_t *ModuleID)
+Error_t ServiceMap_c::unregisterServiceProvider(
+    ServiceID_t *ServiceIDs, 
+    size_t ServiceIDCount,
+    ModuleAddress_t *ProviderAddress)
+{
+    size_t Count;
+    ServiceID_t ServiceID;
+    ModuleAddress_t NoProvider = {
+        NO_KERNEL,
+        NO_MODULE
+    };
+    
+    /* Check if the provider address is valid */
+    if(ProviderAddress->KernelID >= NUMBER_OF_KERNELS)
+    {
+        return ERROR_KERNEL_ID_INVALID;
+    }
+
+    if(ProviderAddress->ModuleID >= NUMBER_OF_MODULES)
+    {
+        return ERROR_MODULE_ID_INVALID;
+    }
+
+    /** 
+     * Check if the given service IDs are all valid before executing the unregistration.
+     * Also check if any of the given service IDs is registered by another provider.
+     */
+    for(Count = 0; Count < ServiceIDCount; Count++)
+    {
+        ServiceID = ServiceIDs[Count];
+        
+        /* Is the service ID valid? */
+        if(ServiceID >= NUMBER_OF_SERVICES)
+        {
+            return ERROR_SERVICE_ID_INVALID;
+        }
+
+        /* Is the service registered by another module? */
+        if((this->ServiceMap[ServiceID].KernelID != ProviderAddress->KernelID)
+         ||(this->ServiceMap[ServiceID].ModuleID != ProviderAddress->ModuleID))
+        {
+            return ERROR_ILLEGAL_ACTION;
+        }
+    }
+
+    /* It seems like everything is all right. Unregister the services. */
+    for(Count = 0; Count < ServiceIDCount; Count++)
+    {
+        ServiceID = ServiceIDs[Count];
+
+        this->ServiceMap[ServiceID] = NoProvider;
+    }
+
+    return ERROR_NONE;    
+}
+
+
+Error_t ServiceMap_c::getServiceProvider(
+    ServiceID_t ServiceID, 
+    ModuleAddress_t *ServiceProvider)
 {
     /* Check if the service ID is valid */
     if(ServiceID >= NUMBER_OF_SERVICES)
@@ -90,7 +163,7 @@ Error_t ServiceMap_c::getModuleID(ServiceID_t ServiceID, ModuleID_t *ModuleID)
     }
     
     /* Give them what they want */
-    *ModuleID = this->ServiceMap[ServiceID];
+    *ServiceProvider = this->ServiceMap[ServiceID];
     
     return ERROR_NONE;
 }

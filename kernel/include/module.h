@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -42,23 +42,20 @@
  * according to their responsibility. In order to fulfill their responsibility and
  * get their job done, modules listen to events. They also might need the services of 
  * other modules. In this case the needed services are requested via messages. Messages
- * are sent to and received from the kernel. The kernel is responsible for forwarding 
- * those messages to the right modules. This means that the only relationship a module
- * has is the one to the kernel. This way the principle of loose coupling is pushed to 
- * extremes, leading to a high degree of changeability.        
+ * are sent to and received from the kernel switch. The kernel switch is responsible for
+ * queueing and forwarding those messages to the right kernels. The kernels are then 
+ * forwarding the messages to connected modules. This means that the only relationship 
+ * a module has is the one to the kernel.        
  */
 
 /* Needed for various defines and type definitions */
 #include "defines.h"
 
-/* Objects of the message class are used during updating the module */
-#include "message.h"
-
 /* Make the kernel class known to the compiler */
 class Kernel_c;
 
 /** 
- * Note that this class is mostly virtual. The concrete modules needed in the 
+ * Note that this class is mostly virtual. The concrete modules used in the 
  * application will inherit from this class.
  */
 class Module_c
@@ -74,18 +71,15 @@ protected:
     /**
      * @brief Connect a module to the kernel.
      * 
-     * This function is part of the process of registrating a module at the kernel.
-     * This process is started by calling the kernel's connectModule() function.
-     * The kernel will then call this function. In this function the module is 
-     * supposed to create its module registration and pass it to the kernel by
-     * calling loadModule(). This function is a pure virtual function as the module
-     * registration has to be created by each concrete module individually.
+     * In this function the module is supposed to subscribe to events and offer services
+     * according to its responsibility. 
      * 
      * @return Error_t An error is returned if
-     * - loading the module registration results in an error.
+     * - a function call inside this function returns an error. 
      * Otherwise ERROR_NONE is returned.
      */
-    virtual Error_t connect(Kernel_c *Kernel) = 0;
+    virtual Error_t connect(
+        Kernel_c *Kernel) = 0;
 
     /**
      * @brief Initialize the module.
@@ -102,46 +96,83 @@ protected:
     virtual Error_t init(void) = 0;
 
     /**
-     * @brief Inform the module about a new event.
+     * @brief Start the operation of the module.
      * 
-     * If a module has been registered for ("is listening to") a specific event,
-     * the kernel will call this function everytime this event occures. The 
-     * reaction to the event by the concrete module should be implemented in this 
-     * function. This can include sending new messages or generating other events.
+     * Sometimes certain actions have to be taken by modules at the very beginning
+     * of operation. This can be done inside this method. It is called by the kernel 
+     * right before it enters its main routine.
      * 
-     * @param Event Pointer to an event struct that holds the event ID and one or
-     * more parameters of a recently occured event. 
+     * This method defaults to NOP() if not needed/not inherited.
      */
-    virtual void update(Event_t *Event) = 0;
+    virtual void start(void);
 
     /**
-     * @brief Inform the module about a new message.
+     * While processing a message, the kernel takes a look at the message type.
+     * There are three types: event, request and response. When forwarding the
+     * message to a module, the associated interface method is chosen by the kernel.
      * 
-     * If a module has been registered for ("is offering") a specific service,
-     * the kernel will forward all messages containing the ID of that service to
-     * this module. This is done by callig this function. The fulfillment of the
-     * service should be done in this function. This can include sending new 
-     * messages or generating events.
-     * 
-     * @param Message Pointer to a message class that holds the message information.
+     * If not inherited, the three handling methods default to NOP().
      */
-    virtual void update(Message_c *Message) = 0;
 
     /**
-     * @brief Set the ID of a module.
+     * @brief Let the module handle a new event.
      * 
-     * This function is part of the module registration. When a module connects to
-     * the kernel, the kernel will provide and set a unique ID for the module.
+     * If a module has subscribed to a specific event, the kernel will call this 
+     * method everytime the said event occures. The reaction to the event by the 
+     * concrete module should be implemented in this method.
      * 
-     * @param ModuleID The ID that this module will have during operation.
+     * @param Message The pointer to the message that transports the event. 
      */
-    void setID(ModuleID_t ModuleID);
+    virtual void handleEvent(
+        Message_t *Message);
+
+    /**
+     * @brief Let the module handle a new service request.
+     * 
+     * If a module offers a specific service, the kernel will call this 
+     * method everytime said service is requested. The reaction to the request by the 
+     * concrete module should be implemented in this method.
+     * 
+     * @param Message The pointer to the message that transports the request. 
+     */
+    virtual void handleRequest(
+        Message_t *Message);
+
+    /**
+     * @brief Let the module handle a new service response.
+     * 
+     * If a module has requested a service which includes a response, the kernel will 
+     * call this method if that response is sent. The reaction to the response by the 
+     * concrete module should be implemented in this method.
+     * 
+     * @param Message The pointer to the message that transports the response. 
+     */
+    virtual void handleResponse(
+        Message_t *Message);
+
+    /**
+     * @brief Set the address of a module.
+     * 
+     * When a module connects to a kernel, the kernel will provide and set a unique address
+     * for the module.
+     * 
+     * @param ModuleAddress The address that this module will have during operation.
+     */
+    void setAddress(
+        ModuleAddress_t *ModuleAddress);
+
+    /**
+     * @brief Get the address of a module.
+     * 
+     * @return ModuleAddress_t A pointer to the address of the module.
+     */
+    ModuleAddress_t* getAddress(void);
     
-    /* The ID that the module will have during operation. It is set by the kernel. */
-    ModuleID_t ModuleID;
+    /* The address that the module will have during operation. It is set by the kernel. */
+    ModuleAddress_t ModuleAddress;
 
-    /* Connection to the kernel. This is necessary for the registration of the module */
+    /* Connection to the kernel */
     Kernel_c *Kernel;
 };
 
-#endif
+#endif//MODULE_H

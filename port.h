@@ -27,27 +27,43 @@
 * 
 */
 
-#ifndef EVENTS_H
-#define EVENTS_H
-
 /**
- * This file is used to create a unique ID for each event that is occuring in the system. 
- * To create the ID, simply list the event in the following enum. All events have to be
- * listed here. Interrupts are usually also declared and handled as events.
+ * In this template file the hardware/RTOS dependent macros are located. 
+ * To port the kernel to a hardware platform or RTOS simply provide suitable functions 
+ * below. 
  */
 
-enum EventIDs_e {
-    /**
-     * List your events here by giving them a meaningful name.
-     * For example:
-     * EID_MyImportantEvent,
-     */
+#ifndef PORT_H
+#define PORT_H
 
-    /**
-     * The LAST element in this enum MUST be "NUMBER_OF_EVENTS", as it stores the total
-     * number of events.
-     */
-    NUMBER_OF_EVENTS
-};
+/* Include necessary headers here */ 
+
+/* No operation */
+#define NOP() 
+
+/** 
+ * Idle, e.g. some sort of low power mode. This operating mode
+ * MUST be interruptable by ISRs. If such an option is not available, define
+ * it as NOP().
+ * 
+ * @param KernelID The ID of the kernel that calls this macro. Usually only
+ * needed when there are more than one kernels.
+ */
+#define IDLE(KernelID) 
+
+/**
+ * The kernel uses this macro to return from idle state.
+ * The given function should match the IDLE() macro.
+ * 
+ * @param KernelID The ID of the kernel that will leave the idle state after.
+ * Usually only needed when there are more than one kernels.
+ */
+#define RESUME(KernelID)
+
+/* Enter a part of the programm that must not be interrupted by ISRs. */
+#define ENTER_CRITICAL() 
+
+/* Exit a part of the programm that must not be interrupted by ISRs. */
+#define EXIT_CRITICAL() 
 
 #endif

@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -30,204 +30,190 @@
 #include "include/event_map.h"
 #include <string.h>
 
-void EventMap_c::init(void)
+void EventMap_c::init(
+    Identifier_t *MapMemory,
+    MapNode_t *MapNodes, 
+    size_t NumberOfColumns)
 {
-     /**
-     * Set the event map memory to initial values.
-     * Let the event map nodes point to the acutal event map memory.
-     * Each map node represents one line of the map. 
-     */
-    for(size_t Line = 0; Line < NUMBER_OF_EVENTS; Line++)
-    {
-        memset(this->EventMapMemory[Line], NO_MODULE, NUMBER_OF_MODULES * sizeof(ModuleID_t));
+    this->MapMemory = MapMemory;
+    this->MapNodes = MapNodes;
+    this->NumberOfColumns = NumberOfColumns;
 
-        this->EventMap[Line].ModuleIDs = this->EventMapMemory[Line];
-        
-        this->EventMap[Line].ModuleCount = 0;
-    }    
-}
-
-Error_t EventMap_c::registerModule(EventID_t *EventIDs, size_t EventIDCount, 
-                                   ModuleID_t ModuleID)
-{
-    /* Check if the module ID is valid */
-    if(ModuleID >= NUMBER_OF_MODULES)
+    for(size_t Count = 0; Count < NumberOfColumns*NUMBER_OF_EVENTS; Count++)
     {
-        return ERROR_MODULE_ID_INVALID;
+        this->MapMemory[Count] = NO_ID;
     }
 
+    /**
+     * Let the map nodes point to the map memory.
+     * Each map node represents one row of the map. 
+     */
+    for(size_t Row = 0; Row < NUMBER_OF_EVENTS; Row++)
+    {
+        this->MapNodes[Row].IDs = &this->MapMemory[Row*NumberOfColumns];
+
+        this->MapNodes[Row].IDCount = 0;
+    } 
+}
+
+Error_t EventMap_c::registerID(
+    EventID_t *Indices, 
+    size_t NumberOfIndices, 
+    Identifier_t IDToBeRegistered)
+{
+    Error_t Error;
     size_t Count;
 
-    /** 
-     * Check if the given event IDs are all valid 
-     * before executing the registration.
+    /**
+     * This method assumes that the passed ID to be registered is valid!
      */
-    for(Count = 0; Count < EventIDCount; Count++)
+    for(Count = 0; Count < NumberOfIndices; Count++)
     {
-        if(EventIDs[Count] >= NUMBER_OF_EVENTS)
+        if(Indices[Count] >= NUMBER_OF_EVENTS)
         {
             return ERROR_EVENT_ID_INVALID;
         }
     }
 
-    /* So far so good... Let's see if we need this */
-    Error_t Error;
-
-    /**
-     * Now place every module ID in the map lines associated
-     * with the given event IDs.
-     */
-    for(Count = 0; Count < EventIDCount; Count++)
+    for(Count = 0; Count < NumberOfIndices; Count++)
     {
-        Error = this->placeModuleID(EventIDs[Count], ModuleID);
+        Error = this->placeID(
+            Indices[Count], 
+            IDToBeRegistered);
 
-        /* Did placing the module ID go wrong? */
+        /* Did placing the ID go wrong? */
         if(Error != ERROR_NONE)
         {
             /** 
-             * Placing the module ID failed. Roll back the entire registration.
+             * Placing the ID failed. Roll back the entire registration.
              * This is done by removing the IDs that have been placed so far.
              */
             for(size_t CleanUpCount = 0; CleanUpCount < Count; CleanUpCount++)
             {
-                this->removeModuleID(EventIDs[CleanUpCount], ModuleID);
+                this->removeID(
+                    Indices[CleanUpCount], 
+                    IDToBeRegistered);
             }
             
             /* Return the error that occured */
             return Error;
         }
-    }    
+    }
 
-    /* Phew... All went good */
     return ERROR_NONE;
 }
 
-Error_t EventMap_c::unregisterModule(EventID_t *EventIDs, size_t EventIDCount, 
-                                     ModuleID_t ModuleID)
+Error_t EventMap_c::unregisterID(
+    EventID_t *Indices, 
+    size_t NumberOfIndices, 
+    Identifier_t IDToBeUnregistered)
 {
-    /** 
-     * Checking if the module ID is invalid is not necessary here
-     * as it wouldn't have any consequences. 
-     */
-
     size_t Count;
     
     /** 
-     * Check if the given event IDs are all valid 
+     * Check if the given key IDs are all valid 
      * before executing the unregistration.
      */
-    for(Count = 0; Count < EventIDCount; Count++)
+    for(Count = 0; Count < NumberOfIndices; Count++)
     {
-        if(EventIDs[Count] >= NUMBER_OF_EVENTS)
+        if(Indices[Count] >= NUMBER_OF_EVENTS)
         {
             return ERROR_EVENT_ID_INVALID;
         }
     }
 
     /* Remove the module ID from the event map */
-    for(Count = 0; Count < EventIDCount; Count++)
+    for(Count = 0; Count < NumberOfIndices; Count++)
     {
-        this->removeModuleID(EventIDs[Count], ModuleID);
+        this->removeID(
+            Indices[Count], 
+            IDToBeUnregistered);
     }
 
     /* Another happy return */
     return ERROR_NONE;
 }
 
-Error_t EventMap_c::getModuleList(EventID_t EventID, EventMapNode_t **EventMapNode)
+Error_t EventMap_c::getIDs(
+    EventID_t Index,
+    MapNode_t **MapNode)
 {
-    /* Check if the event ID is valid */
-    if(EventID >= NUMBER_OF_EVENTS)
+    /* Check if the key ID is valid */
+    if(Index >= NUMBER_OF_EVENTS)
     {
         return ERROR_EVENT_ID_INVALID;
     }
     
-    /* Give the caller access to the event map memory */
-    *EventMapNode = &this->EventMap[EventID];
+    /* Give the caller access to the map memory */
+    *MapNode = &this->MapNodes[Index];
     
     /* That was easy */
-    return ERROR_NONE;   
+    return ERROR_NONE;
 }
 
-Error_t EventMap_c::placeModuleID(EventID_t EventID, ModuleID_t ModuleID)
+Error_t EventMap_c::placeID(
+    EventID_t Index,  
+    Identifier_t IDToBePlaced)
 {
-    /* Check if the event ID is valid */
-    if(EventID >= NUMBER_OF_EVENTS)
-    {
-        return ERROR_EVENT_ID_INVALID;
-    }
+    MapNode_t *Node = &this->MapNodes[Index];
 
-    /* Check if the module ID is valid */
-    if(ModuleID >= NUMBER_OF_MODULES)
-    {
-        return ERROR_MODULE_ID_INVALID;
-    }
-    
-    /* This just makes accessing the memory a little bit easier */
-    EventMapNode_t *Node = &this->EventMap[EventID];
-
-    /* Can the event map store another ID? */
-    if(Node->ModuleCount >= NUMBER_OF_MODULES)
+    /* Can the map store another ID? */
+    if(Node->IDCount >= this->NumberOfColumns)
     {
         /* There's no more space in the map */
         return ERROR_NO_MAP_SPACE_AVAILABLE;
     }
 
-    /* Check if the module ID is already placed */
-    for(ModuleCount_t Count = 0; Count < Node->ModuleCount; Count++)
+    /* Check if the ID is already placed */
+    for(size_t Count = 0; Count < Node->IDCount; Count++)
     {
-        if(Node->ModuleIDs[Count] == ModuleID)
+        if(Node->IDs[Count] == IDToBePlaced)
         {
-            /* The module is already registered for the event */
-            return ERROR_MODULE_ALREADY_REGISTERED;
+            /* The ID is already registered. */
+            return ERROR_NONE;
         }
     }
 
     /* Append the module ID to the event map node */
-    Node->ModuleIDs[Node->ModuleCount] = ModuleID;
+    Node->IDs[Node->IDCount] = IDToBePlaced;
 
     /* Increase the module count */
-    Node->ModuleCount++;
+    Node->IDCount++;
 
-    return ERROR_NONE;    
+    return ERROR_NONE;
 }
 
-Error_t EventMap_c::removeModuleID(EventID_t EventID, ModuleID_t ModuleID)
+void EventMap_c::removeID(
+    EventID_t Index,  
+    Identifier_t IDToBeRemoved)
 {
-    /** 
-     * Checking if the module ID is invalid is not necessary here
-     * as it wouldn't have any consequences. 
+    /**
+     * This method assumes that the passed IDs are valid!
      */
-    
-    /* Check if the event ID is valid */
-    if(EventID >= NUMBER_OF_EVENTS)
-    {
-        return ERROR_EVENT_ID_INVALID;
-    }
-    
+        
     /* This just makes accessing the memory a little bit easier */
-    EventMapNode_t *Node = &this->EventMap[EventID];
+    MapNode_t *Node = &this->MapNodes[Index];
 
-    /* Search for the module ID in the event map */
-    for(ModuleCount_t Count = 0; Count < Node->ModuleCount; Count++)
+    /* Search for the ID to be removed in the map */
+    for(size_t Count = 0; Count < Node->IDCount; Count++)
     {
-        /* Did we find the module ID? */
-        if(Node->ModuleIDs[Count] == ModuleID)
+        /* Did we find the ID? */
+        if(Node->IDs[Count] == IDToBeRemoved)
         {
             /** 
-             * To remove the module ID from the array, we simply move down the rest of 
-             * the array by one element so that the module ID gets overwritten. 
+             * To remove the ID from the map node array, we simply move down the rest of 
+             * the array by one element so that the ID gets overwritten. 
              * This way the array will not get fragmented. To make this more clear it
              * is illustrated below:
              *                                                      
              *   ____0__________1__________2__________3__________4_____________
-             *  | some     | some     | some     | some     |           |
-             *  | ModuleID | ModuleID | ModuleID | ModuleID | NO_MODULE | ...
+             *  |          |          |          |          |           |
+             *  | some ID  | some ID  | some ID  | some ID  |   NO_ID   | ...
              *  |__________|__________|__________|__________|___________|______
              *              ´|`        ´|`     
-             *           we want to     |
-             *           delete this    |
-             *           module ID      |
+             *         we want to       |
+             *         delete this ID   |
+             *                          |
              *                          |-------------------|
              *                          just move the rest 
              *              /|\         of the array          
@@ -236,19 +222,18 @@ Error_t EventMap_c::removeModuleID(EventID_t EventID, ModuleID_t ModuleID)
              *              overwriting the ID 
              *              we want to delete
              */ 
-            memmove(&Node->ModuleIDs[Count], &Node->ModuleIDs[Count+1], 
-                    Node->ModuleCount - Count - 1);
+            memmove(
+                &Node->IDs[Count], 
+                &Node->IDs[Count+1], 
+                Node->IDCount - Count - 1);
 
-            /* The last ID in the list is reset */
-            Node->ModuleIDs[Node->ModuleCount] = NO_MODULE;
+            /* The last ID in the array is reset */
+            Node->IDs[Node->IDCount] = NO_ID;
 
             /* Decrease the module count */
-            Node->ModuleCount--;
+            Node->IDCount--;
 
             break;
         }
     }
-
-    /* That's it */
-    return ERROR_NONE;   
 }

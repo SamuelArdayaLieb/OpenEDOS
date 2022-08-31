@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -31,37 +31,26 @@
 #define KERNEL_H
 
 /**
- * This file is the class header of the kernel class. The kernel is the core class
- * of the operating system. Its job is to register modules and distribute events
- * and messages to those modules. The kernel is in command of two queues, the event
- * queue and the message queue. In its main routine, the kernel distributes new 
- * events to the system and then forwards all messages following the occured event
- * to the corresponding modules. After the event queue is emptied the kernel goes to 
- * sleep and only wakes up when a new event occures.
- */
-
-/**
- * Needed for various defines and type definitions.
- * The OpenEDOSConfig, event enum, service enum and port are also included by this. 
- */
-#include "defines.h"
-
-/**
+ * This file is the class header of the kernel class. (An event kernel might also 
+ * be referred to as a kernel.) The event kernel is the core class of the operating system.
  * The actual functionality of the application is implemented inside modules.
  * The kernel however manages these modules and their communication.
+ *  
+ * A kernel's job is to register modules and distribute messages to those modules. Messages 
+ * are used to transport events, service requests and service responses. One kernel is in 
+ * command of one message queue (which is a FIFO). In its main routine, a kernel takes the next 
+ * message from the message queue and forwards it to the corresponding modules. When the 
+ * message queue is empty the kernel goes to sleep and only wakes up when a new event occures.
  */
-#include "module.h"
 
-/* The kernel registers modules via one event map and one service map */
+#include "defines.h"
 #include "event_map.h"
 #include "service_map.h"
-
-/* Messages are needed by the kernel for providing an interface for modules */
-#include "message.h"
-
-/* The kernel controls two queues: the event queue and the message queue */
 #include "queue.h"
+#include "module.h"
 
+/* Make the kernel switch class known to the compiler */
+class KernelSwitch_c;
 
 class Kernel_c
 {
@@ -70,51 +59,36 @@ public:
      * @brief Initialize the kernel.
      * 
      * This function initializes the event register, the event map and service map
-     * and the event queue and message queue. It also sets several variables to
-     * initial values. 
+     * and the message queue. It also sets several variables to initial values. 
      */
     void init(void);
 
     /**
+     * @brief Connect a kernel to the kernel switch.
+     * 
+     * This function simply sets the pointer to the kernel switch.
+     * 
+     * @param KernelSwitch The pointer to the kernel switch.
+     */
+    void connect(
+        KernelSwitch_c *KernelSwitch);
+
+    /**
      * @brief Connect a module to the kernel.
      * 
-     * The process of registrating a module at the kernel starts with this function.
-     * It is merely a wrapper for the connect() function of the module. It's necessary 
-     * though because all module functions are private and, as a friend, only the 
-     * kernel has access to that function. This function has to be called in order
-     * to make a specific module part of the OpenEDOS application.
+     * The process of registering a module at the kernel starts with this function.
+     * This function has to be called in order to make a specific module part of 
+     * the OpenEDOS application.
      * 
-     * @param Module Pointer to the module that will be registered at the kernel.
+     * @param Module Pointer to the module to be registered at the kernel.
      * 
      * @return Error_t An error is returned if
+     * - there is no module space available.
      * - the function call inside this function returns an error.
      * Otherwise ERROR_NONE is returned. 
      */
-    Error_t connectModule(Module_c *Module);
-
-    /**
-     * @brief Load the module registration of a module into the kernel.
-     * 
-     * This function is part of registrating a module. It is called by a module inside
-     * its connect() function. The module is supposed to provide a pointer to itself 
-     * and a module  registration. The module registration contains the IDs of the events 
-     * that the module wants to listen to and the IDs of the services that the module 
-     * wants to offer. The kernel saves this information using the event map and service 
-     * map. This function also sets the ID of the connected module.
-     * 
-     * @param Module Pointer to the module that wants to load its information. Usually
-     * it's the this pointer of the module calling this function.
-     * 
-     * @param ModuleRegistration Pointer to a module registration provided by the module
-     * calling this function.
-     * 
-     * @return Error_t An error is returned if
-     * - the module count is at its maximum.
-     * - registering the module in the event map fails.
-     * - registering the module in the service map fails.
-     * Otherwise ERROR_NONE is returned.
-     */
-    Error_t loadModule(Module_c *Module, ModuleRegistration_t *ModuleRegistration);
+    Error_t connectModule(
+        Module_c *Module);
 
     /**
      * @brief Initialize all connected modules.
@@ -129,201 +103,201 @@ public:
     Error_t initModules(void);
 
     /**
-     * @brief Create a new message in the message queue of the kernel. 
+     * @brief Start the operation of the application.
      * 
-     * This function is the interface modules can use to communicate with the system.
-     * When called, the function allocates space in the message queue and creates an
-     * object of the message class. This object is set to point to the allocated
-     * memory and is returned by the function. The caller can then use the received 
-     * object to store information inside the message. Note that after calling this 
-     * function the corresponding message struct is already queued. If the message
-     * queue is full, a message object is returned nevertheless. But in that case the
-     * message memory that the object points to is a nullptr. Hence this should always
-     * be checked before trying to add data to the message.
+     * Sometimes, specific actions have to be taken by a module at the very beginning 
+     * of operation in an application, e.g. certain services have to be requested. 
+     * This can be done inside the start() function of that module.
      * 
-     * @return Message_c Object of the message class containing a pointer to the 
-     * message memory of the queueu. This pointer is a nullptr if the queue is full.
+     * This function simply calls the start() method of all connected modules.
      */
-    Message_c newMessage(void);
+    void start(void);
 
     /**
-     * @brief Push an event to the event queue of the kernel.
+     * @brief Subscribe to a list of events.
      * 
-     * Events can be generated by ISRs or modules. If that happens, the event has
-     * to be pushed to the kernel in order to be processed. Pushing an event 
-     * involves two different mechanisms:
+     * This method is used by modules to subscribe to one or more events.
+     * This can be done at any time during operation. Once an event is subscribed,
+     * the kernel will update the module whenever that event occures. If an error
+     * occures during this method, the module won't be subscribed to any of the
+     * given event IDs.
+     *      
+     * @param EventIDs The pointer to an array of event IDs, provided by the
+     * module that wants to subscribe to those events.
      * 
-     * 1. An entry has to be set in the event register. This is done to keep track
-     * of how many events of each type are waiting to be processed at a time. There
-     * is a maximum amount of events that can be entered in the event register. This 
-     * is done in order to protect the application from a flooding of events from
-     * any external source. While the event count for a specific event ID has reached 
-     * its maximum in the event register, new events of that type are ignored.
+     * @param EventIDCount The number of event IDs in the array.
      * 
-     * 2. If the event register accepts the new event, the event (consisting of the
-     * event ID and optional event parameters) is placed in the event queue. Events
-     * placed in the queue will be processed in fifo order.
-     * 
-     * Accessing the event register and event queue is not interrupt safe. Hence 
-     * interrupts have to be disabled if the context in which the function is called
-     * is interruptable. This is usually true. A case where this is false is for example
-     * an ISR with nested interrupts disabled.  
-     * 
-     * @param Event Pointer to the event struct that the caller wants to push to
-     * the event queue.
-     * 
-     * @param InterruptableContext A flag that tells the kernel wether to disable
-     * interrupts or not. If the current context of the caller is interruptable 
-     * (which is usually the case) this MUST be set to true. Only if the context is
-     * not interruptable this can be set to false. Note that setting this to true
-     * in a context that is not or should not be interruptable can cause problems.
+     * @param SubscriberID The module ID of the module that wants to subscribe.
      * 
      * @return Error_t An error is returned if
-     * - the event register is full
-     * - the event queue is full
+     * - the module ID is invalid.
+     * - one of the event IDs is invalid.
+     * - there is no space left in the event map for one of the event IDs.
      * Otherwise ERROR_NONE is returned.
      */
-    Error_t pushEvent(Event_t *Event, bool InterruptableContext);
+    Error_t subscribeEvents(
+        EventID_t *EventIDs, 
+        size_t EventIDCount,
+        ModuleID_t SubscriberID);
+
+    /**
+     * @brief Unsubscribe to a list of events.
+     * 
+     * This method is the counterpart to the subscribeEvents() method. 
+     * It is used by a module to unsubscribe to one or more events. 
+     * This can be done at any time during operation. Once an event is unsubscribed,
+     * the kernel will no longer update the module when that event occures. If an error
+     * occures during this method, the module won't be unsubscribed to any of the
+     * given event IDs.
+     * 
+     * @param EventIDs The pointer to an array of event IDs, provided by the 
+     * module that will no longer be subscribed to these events.
+     * 
+     * @param EventIDCount The number of event IDs in the array.
+     * 
+     * @param SubscriberID The module ID of the module that wants to unsubscribe.
+     * 
+     * @return Error_t An error is returned if
+     * - the module ID is invalid.
+     * - one of the event IDs is invalid.
+     * Otherwise ERROR_NONE is returned.
+     */
+    Error_t unsubscribeEvents(
+        EventID_t *EventIDs, 
+        size_t EventIDCount,
+        ModuleID_t SubscriberID);
+
+    /**
+     * @brief Offer a list of services.
+     * 
+     * This method is used by modules to offer a list of services.
+     * This can be done at any time during operation. Once a service is offered,
+     * the kernel will update the module whenever that service is requested. Note 
+     * that according to the single responsibility principle, only one module can 
+     * offer a specific service at a time. If an error occures during this method, 
+     * the module won't offer any of the given services.
+     * 
+     * @param ServiceIDs The pointer to an array of service IDs, provided by
+     * the module that wants to offer those services.
+     * 
+     * @param ServiceIDCount The number of service IDs in the array.
+     * 
+     * @param ProviderAddress The pointer to the address of the module that 
+     * wants to offer the services.
+     * 
+     * @return Error_t An error is returned if
+     * - the module address is invalid.
+     * - one of the service IDs is invalid.
+     * - another module is already registered for one of the service IDs.
+     * Otherwise ERROR_NONE is returned.
+     */
+    Error_t offerServices(
+        ServiceID_t *ServiceIDs, 
+        size_t ServiceIDCount,
+        ModuleAddress_t *ProviderAddress);
+
+    /**
+     * @brief Withdraw a list of services.
+     * 
+     * This method is used by modules if they no longer want to offer one
+     * or more services. This can be done at any time during operation. Once 
+     * a service is withdrawn, the kernel will no longer update the module if
+     * that service is requested. If an error occures during this method, the 
+     * module won't withdraw any of the given services.
+     * 
+     * @param ServiceIDs The pointer to an array of service IDs, provided by
+     * the module that wants to withdraw those services.
+     * 
+     * @param ServiceIDCount The number of service IDs in the array.
+     * 
+     * @param ProviderAddress The pointer to the address of the module that 
+     * wants to withdraw the services.
+     * 
+     * @return Error_t An error is returned if
+     * - the module address is invalid.
+     * - one of the service IDs is invalid.
+     * - another module is registered for one of the service IDs.
+     * Otherwise ERROR_NONE is returned.
+     */
+    Error_t withdrawServices(
+        ServiceID_t *ServiceIDs, 
+        size_t ServiceIDCount,
+        ModuleAddress_t *ProviderAddress);
 
     /**
      * @brief The main routine of the kernel.
      * 
      * In this function the kernel starts working. The function is an endless loop
      * consisting of three parts:
-     * 1. The kernel tries to pop a new event from the event queue.
-     * 2. If the event queue was not empty, the kernel processes the event.
-     * 3. If the event queue was empty, the kernel goes to sleep.
+     * 1. The kernel tries to get a new message from the kernel switch.
+     * 2. If there is a new message, the kernel processes the message.
+     * 3. If there is no new message, the kernel goes into IDLE().
      * 
-     * New events are pushed to the event queue by ISRs or modules. ISRs also have 
-     * to wake up the kernel. This way the kernel will sleep until a new event is 
-     * generated by an ISR.
+     * New messages are sent to the kernel switch by ISRs or modules. 
      */
     void run(void);
 
+    /**
+     * @brief Run a single cycle of the kernel main routine.
+     * 
+     * The run() function is an endless loop consisting of three parts:
+     * 1. The kernel tries to get a new message from the kernel switch.
+     * 2. If there is a new message, the kernel processes the message.
+     * 3. If there is no new message, the kernel goes into IDLE().
+     * 
+     * runOnce() does basically the same thing but not in an endless loop.
+     * Instead it only runs one cycle. This means that one message gets popped and
+     * processed and then the function returns.
+     * 
+     * This method can be used in software tests where a message is placed in the 
+     * message queue. The behaviour of the system can then be observed step by step
+     * using this method. 
+     */
+    void runOnce(void);
+
+    /**
+     * @brief Set the ID of a kernel.
+     * 
+     * @param KernelID The ID that this kernel will have during operation.
+     */
+    void setID(
+        KernelID_t KernelID);
+
+    /**
+     * @brief Get the ID of a kernel.
+     * 
+     * @return KernelID_t The ID of the kernel.
+     */
+    KernelID_t getID(void);
+
 private:
     /**
-     * @brief Set an entry in the event register.
+     * @brief Handle a new message.
      * 
-     * When a new event occures it has to be registered in the event register before
-     * it can be queued. This is done by increasing the current event count for the
-     * given event ID. Further processing of an event only takes place if the event
-     * register is not full.
+     * This method is called after a new message was received from the kernel switch.
+     * According to the message type the message is forwarded as either an event, a 
+     * request or a response. 
      * 
-     * @param EventID The ID of the new event that has to be registered.
-     * 
-     * @return Error_t An error is returned if
-     * - the event ID is invalid.
-     * - the event register is full.
-     * Otherwise ERROR_NONE is returned.
+     * @param Message Pointer to the received message.
      */
-    Error_t setEventEntry(EventID_t EventID);
-
-    /**
-     * @brief Clear an entry in the event register.
-     * 
-     * This function is basically the opposite of setEventEntry(). It is called when
-     * the processing of an event is finished.
-     * 
-     * @param EventID ID of the event that has been completely processed.
-     * 
-     * @return Error_t An error is returned if
-     * - the event ID is invalid.
-     * - the event register is empty.
-     * Otherwise ERROR_NONE is returned.
-     */
-    Error_t clearEventEntry(EventID_t EventID);
-
-    /**
-     * @brief Pop an event from the event queue.
-     * 
-     * Events are queued by ISRs and modules. The kernel receives those events in
-     * its main routine by popping them from the event queue. This is done using this 
-     * function.
-     * 
-     * @param Event Pointer to store the popped event.
-     *  
-     * @return true Returned if a new event was popped from the queue. 
-     * @return false Returned if a new event was not popped from the queue.
-     */
-    bool popEvent(Event_t *Event);
-
-    /**
-     * @brief Forward an event to listening modules.
-     * 
-     * In order to forward an event the kernel gets the list of module IDs from 
-     * the event map. Then all listed modules are updated.
-     * 
-     * @param Event Pointer to the occured event.
-     * 
-     * @return Error_t An error is returned if
-     * - getting the module list from the event map results in an error.
-     * Otherwise ERROR_NONE is returned.
-     */
-    Error_t forwardEvent(Event_t *Event);
-
-    /**
-     * @brief Forward a message to the corresponding module.
-     * 
-     * The destination of a message is determined by the kernel using the service ID
-     * given in the message. The kernel gets the destination ID from the service map.
-     * In case the message is a RETURN message the destination ID is already set.
-     * In both cases the kernel will update the destination module. Note that the
-     * message popped from the message queue is merely a struct containing the message
-     * information. Updating a module however is done py providing an object of the
-     * message class. That object is created in this function. 
-     * 
-     * @param Message Pointer to the message memory.
-     * 
-     * @return Error_t An error is returned if
-     * - getting the module ID from the service map results in an error.
-     * Otherwise ERROR_NONE is returned. 
-     */
-    Error_t forwardMessage(Message_t *Message);    
-
-    /**
-     * @brief Process a new event.
-     * 
-     * This function is part of the kernel main routine. Processing an event is done
-     * in two different steps:
-     * 
-     * 1. The event is forwarded to all modules listening to this event. This may cause
-     * modules to generate new events or send messages to the kernel.
-     * 
-     * 2. Messages are forwarded to the corresponding modules until the message queue is
-     * empty.
-     * 
-     * @param Event Pointer to the event that will be processed.
-     * 
-     * @return Error_t An error is returned if
-     * - forwarding the event returns an error.
-     * - forwarding a message returns in an error.
-     * Otherwise ERROR_NONE is returned. 
-     */
-    Error_t processEvent(Event_t *Event);
-
-    /**
-     * The event register serves to keep track of how many events are queued at a time.
-     * There is one register entry for each event ID.
-     * 
-     * The event queue stores events if the event register accepts the event.
-     * Memory for the event queue has to be provided.
-     */
-    EventRegisterEntry_t EventRegister[NUMBER_OF_EVENTS];
-    Event_t EventQueueMemory[EVENT_QUEUE_LENGTH];
-    Queue_c EventQueue;
-
-    /* A queue to store messages. Memory has to be provided */
-    Message_t MessageQueueMemory[MESSAGE_QUEUE_LENGTH];
-    Queue_c MessageQueue;    
+    void handleMessage(
+        Message_t *Message);
     
+    /* The ID that this kernel has during operation. It is set by the kernel switch. */
+    KernelID_t KernelID;
+
+    /* Connection to the kernel switch. */
+    KernelSwitch_c *KernelSwitch;
+        
     /* Pointers to all connected modules are stored in an array */
     Module_c *Modules[NUMBER_OF_MODULES];
     /* Keep track of how many modules are connected */
     ModuleCount_t ModuleCount;
     
     /* The service map and event map are used to save module information */
+    Identifier_t EventMapMemory[NUMBER_OF_EVENTS*NUMBER_OF_MODULES];
+    MapNode_t EventMapNodes[NUMBER_OF_EVENTS];
     EventMap_c EventMap;
-    ServiceMap_c ServiceMap;
 };
 
-#endif
+#endif//EVENT_KERNEL_H

@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -28,44 +28,45 @@
 */
 
 #include "include/interface.h"
-#include "include/message.h"
+#include <string.h>
 
-void Interface_c::connect(Kernel_c *Kernel)
+void Interface_c::connect(
+    KernelSwitch_c *KernelSwitch)
 {
-    this->Kernel = Kernel;
+    this->KernelSwitch = KernelSwitch;
 }
 
-Error_t Interface_c::sendMessage(MessageHeader_t *MessageHeader, void *Data[], 
-                                 uint8_t DataSizes[], uint8_t DataCount)
+Error_t Interface_c::sendMessage(
+    MessageHeader_t *MessageHeader, 
+    void *Data[], 
+    uint8_t DataSizes[], 
+    uint8_t DataCount)
 {
     /* Create a new message */
-    Message_c Message = this->Kernel->newMessage();
-
-    Error_t Error = Message.setMessageHeader(MessageHeader); 
-
-    /**
-     * Check if setting the message header returned an error.
-     * This is the case if the message queue is full or the header contains invalid data.
-     */
-    if(Error != ERROR_NONE)
-    {
-        return Error;
-    }
+    Message_t Message;
+    size_t CurrentDataSize = 0;
     
     /* Add all the data to the message */
     for(uint8_t Count = 0; Count < DataCount; Count++)
     {
-        Error = Message.addData(Data[Count], DataSizes[Count]);
-
-        /* Could the data be added? */
-        if(Error != ERROR_NONE)
+        /* Check if there is enough space in the data field to store the new data */
+        if(DataSizes[Count] > MESSAGE_DATA_SIZE - CurrentDataSize)
         {
-            Message.reset();
-            
-            return Error;
+            return ERROR_MESSAGE_DATA_FIELD_FULL;
         }
+
+        /* Stack the new data on top of the existing data in the data field */
+        memcpy(
+            &Message.Data[CurrentDataSize], 
+            Data[Count], 
+            DataSizes[Count]);
+
+        CurrentDataSize += DataSizes[Count];
     }
 
-    return ERROR_NONE;
-}
+    /* Copy the message header to the new message */
+    Message.MessageHeader = *MessageHeader;
 
+    return this->KernelSwitch->sendMessage(
+        &Message);
+}

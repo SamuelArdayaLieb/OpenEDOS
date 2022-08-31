@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -32,11 +32,11 @@
 
 /**
  * This file is the class header of the service map class. The service map is used by 
- * the kernel to save which module is responsible for which service. When a message
- * needs to be forwarded the kernel gets the ID of the one module that the message
- * has to be directed to according to the service ID which the message header 
- * contains. Following the single responsibility principle, there has to be exactly
- * one specific module registered for one specific service.   
+ * the kernel switch to save which module is responsible for which service. When a message
+ * needs to be forwarded the kernel switch gets the address of the one module that the message
+ * has to be directed to according to the service ID. Following the single responsibility 
+ * principle, there has to be exactly one specific module registered for one specific 
+ * service.   
  */
 
 /* Needed for various defines and type definitions */
@@ -62,57 +62,82 @@ public:
     /**
      * @brief Register a module for a given list of service IDs.
      * 
-     * This function is part of the module registration at the kernel. The module
-     * tells the kernel which services it wants to offer by passing a list of 
-     * service IDs. The ID of the module is then placed in the service map using the
-     * service ID as a map index. The service map memory can store exactly one 
-     * module ID for each service ID. If another module is already registered for 
-     * the given service, the service map will return an error. If this happens,
-     * the whole registration of the module will be rolled back. 
+     * A module tells the kernel which services it wants to offer by passing a list of 
+     * service IDs. The kernel forwards this offer to the kernel switch. The address of 
+     * the module is then placed in the service map using the service ID as a map index. 
+     * The service map memory can store exactly one module address for each service ID. 
+     * If another module is already registered for the given service, the service map will 
+     * return an error. If this happens, the whole registration of the module is rolled back. 
      * 
-     * @param ServiceIDs This is the pointer to an array of service IDs, provided by
+     * @param ServiceIDs The pointer to an array of service IDs, provided by
      * the module that wants to offer those services.
      * 
-     * @param ServiceIDCount This holds the number of service IDs in the array 
-     * (i. e. the size of the array).
+     * @param ServiceIDCount The number of service IDs in the array.
      * 
-     * @param ModuleID 
+     * @param ProviderAddress A pointer to the address of the module that offers services.
+     * 
      * @return Error_t An error is returned if
-     * - the module ID is invalid.
+     * - the module address is invalid.
      * - one of the service IDs is invalid.
      * - another module is already registered for one of the service IDs.
      * Otherwise ERROR_NONE is returned.
      */
-    Error_t registerModule(ServiceID_t *ServiceIDs, size_t ServiceIDCount, 
-                           ModuleID_t ModuleID);
+    Error_t registerServiceProvider(
+        ServiceID_t *ServiceIDs, 
+        size_t ServiceIDCount,
+        ModuleAddress_t *ProviderAddress);
 
     /**
-     * @brief Get the module ID which is registered for a given service ID.
+     * @brief Unregister a module for a given list of service IDs.
      * 
-     * This function is used by the kernel to get the ID of the module that a
-     * message has to be forwarded to. The ID of the service is passed alongside a 
-     * pointer to a module ID. The event map can simply assign the needed module ID 
-     * to the dereferenced pointer. This way the kernel gets the ID.
+     * This function is used to delete the link between a module and a service ID.
+     * The module address will be removed from the service map for every service ID passed
+     * in the list. Once this is done, the kernel switch will no longer forward associated
+     * service requests to the module. If an error occures during the unregistration,
+     * the whole process is canceled and the service map is left unchanged. 
+     * 
+     * @param ServiceIDs This is the pointer to an array of service IDs, provided by
+     * the module that wants to unregister those services.
+     *  
+     * @param ServiceIDCount This holds the number of service IDs in the array.
+     * 
+     * @param ProviderAddress The address of the module that unregisters services.
+     * 
+     * @return Error_t An error is returned if
+     * - the module address is invalid.
+     * - one of the service IDs is invalid.
+     * Otherwise ERROR_NONE is returned.
+     */
+    Error_t unregisterServiceProvider(
+        ServiceID_t *ServiceIDs, 
+        size_t ServiceIDCount,
+        ModuleAddress_t *ProviderAddress);
+
+    /**
+     * @brief Get the module adress which is registered for a given service ID.
+     * 
+     * This function is used by the kernel switch to get the address of the module 
+     * that a message has to be forwarded to. 
      * 
      * @param ServiceID The service ID for which the responsible module is seeked.
      * 
-     * @param ModuleID This pointer to a module ID is used to pass the seeked ID
-     * to the caller of the function.
+     * @param ProviderAddress The pointer to a module address used to pass the seeked
+     * address to the caller of the function.
      *  
      * @return Error_t An error is returned if
      * - the service ID is invalid.
      * Otherwise ERROR_NONE is returned.
      */
-    Error_t getModuleID(ServiceID_t ServiceID, ModuleID_t *ModuleID);
+    Error_t getServiceProvider(
+        ServiceID_t ServiceID, 
+        ModuleAddress_t *ProviderAddress);
 
 private:
     /**
-     * The service map memory is a one dimensional array of type ModuleID_t.
-     * Each element of the array represents one specifig service. This way
-     * a service ID can be used as the index to directly access the needed
-     * module ID.
+     * The service map memory is a one dimensional array of type ModuleAddress_t.
+     * There is one module address for each service.
      */
-    ModuleID_t ServiceMap[NUMBER_OF_SERVICES];
+    ModuleAddress_t ServiceMap[NUMBER_OF_SERVICES];
 };
 
-#endif
+#endif//SERVICE_MAP_H

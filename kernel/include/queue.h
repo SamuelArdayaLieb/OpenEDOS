@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -35,11 +35,10 @@
  * fifo behaviour. A queue doesn't actually allocate memory itself. Instead memory has
  * to be provided and passed to the queue object during initialization. This means 
  * that the queue class basically turns an array into a fifo queue. These fifos are
- * implemented as circular buffers. The kernel uses two different queues: the event
- * queue and the message queue. Queues can of course also be used by the application. 
+ * implemented as circular buffers. A kernel switch uses one queue, the message queue,
+ * for each kernel. Queues can of course also be used by the application.
  */
 
-/* Needed for size_t */
 #include <stddef.h>
 
 class Queue_c
@@ -63,7 +62,11 @@ public:
      * 
      * @param ItemSize This is the size of the items that this queue will store. 
      */
-    void init(void* FirstAddress, void* LastAddress, size_t QueueLength, size_t ItemSize);
+    void init(
+        void* FirstAddress, 
+        void* LastAddress,
+        size_t QueueLength, 
+        size_t ItemSize);
 
     /**
      * @brief Allocate memory inside the queue.
@@ -151,7 +154,8 @@ public:
      * 
      * @return false Returned if the queue is full.
      */
-    bool pushItem(const void *Item);
+    bool pushItem(
+        const void *Item);
 
     /**
      * @brief Copy an item out of the queue.
@@ -180,7 +184,8 @@ public:
      * 
      * @return false Returned if the queue is empty.
      */
-    bool popItem(void *Item);
+    bool popItem(
+        void *Item);
     
 private:
     /* The size of the items stored in the queue in bytes */
@@ -205,4 +210,4 @@ private:
     void* Tail;   
 };
 
-#endif
+#endif//QUEUE_H

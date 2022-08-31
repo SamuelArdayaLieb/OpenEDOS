@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -28,11 +28,15 @@
 */
 
 #include "include/queue.h"
+#include "include/defines.h"
 #include <stdint.h>
 #include <string.h>
 
-void Queue_c::init(void* FirstAddress, void* LastAddress, 
-                   size_t QueueLength, size_t ItemSize)
+void Queue_c::init(
+    void* FirstAddress, 
+    void* LastAddress, 
+    size_t QueueLength, 
+    size_t ItemSize)
 {
     /* The size of a single item in bytes */
     this->ItemSize = ItemSize;
@@ -50,18 +54,21 @@ void Queue_c::init(void* FirstAddress, void* LastAddress,
     this->Tail = FirstAddress;
     
     /* Set the queue memory to 0 */
-    memset(this->Head, 0, QueueLength * ItemSize);  
+    memset(
+        this->Head, 
+        0, 
+        QueueLength * ItemSize);  
 }
 
 void* Queue_c::allocateItem(void)
-{
+{    
     /* Is there space left in the queue? */
     if(this->ItemCount >= this->QueueLength)
-    {
+    {        
         return nullptr;
     }
 
-    /* The head points to the next queue item */
+    /* The head points to the next free queue item */
     void *Item = this->Head;
 
     /* Update the head */
@@ -85,7 +92,7 @@ void* Queue_c::allocateItem(void)
 
 bool Queue_c::pushItem(const void *Item)
 {
-    /* Allocate space fot the new item */
+    /* Allocate space for the new item */
     void *NewItem = this->allocateItem();
 
     /* Did the allocation go wrong? */
@@ -95,7 +102,10 @@ bool Queue_c::pushItem(const void *Item)
     } 
 
     /* Copy the item into the queue */
-    memcpy(NewItem, Item, this->ItemSize);
+    memcpy(
+        NewItem, 
+        Item, 
+        this->ItemSize);
 
     return true;  
 }
@@ -104,12 +114,15 @@ bool Queue_c::popItem(void *Item)
 {
     /* Are there items in the queue? */
     if(this->ItemCount == 0)
-    {
+    {        
         return false;
     }
 
     /* The tail points to the oldest item */
-    memcpy(Item, this->Tail, this->ItemSize);
+    memcpy(
+        Item, 
+        this->Tail, 
+        this->ItemSize);
 
     /* Update the tail */
     if(this->Tail == this->LastAddress)

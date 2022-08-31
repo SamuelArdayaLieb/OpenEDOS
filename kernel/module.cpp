@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -30,7 +30,36 @@
 #include "include/module.h"
 
 /* Most of this class is virtual */
-void Module_c::setID(ModuleID_t ModuleID)
+void Module_c::setAddress(
+    ModuleAddress_t *ModuleAddress)
 {
-    this->ModuleID = ModuleID;
+    this->ModuleAddress = *ModuleAddress;
+}
+
+ModuleAddress_t* Module_c::getAddress(void)
+{
+    return &this->ModuleAddress;
+}
+
+void Module_c::start(void)
+{
+    NOP();
+}
+
+void Module_c::handleEvent(
+    Message_t *Message)
+{
+    NOP();
+}
+
+void Module_c::handleRequest(
+    Message_t *Message)
+{
+    NOP();
+}
+
+void Module_c::handleResponse(
+    Message_t *Message)
+{
+    NOP();
 }

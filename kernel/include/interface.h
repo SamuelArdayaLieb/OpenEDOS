@@ -1,5 +1,5 @@
 /**
-* OpenEDOS Kernel v1.0.0
+* OpenEDOS Kernel v1.2.0
 * 
 * Copyright (c) 2022 Samuel Ardaya-Lieb
 * 
@@ -32,54 +32,54 @@
 
 /**
  * This file is the class header of the interface class. Interfaces offer methods 
- * for requesting services. There can be one interface per module, but several modules 
- * can also be grouped in one interface. The methods an interface offers are expressing 
- * via their function parameters which parameters a service expects. The same appplies 
- * to event interface methods. The interface has a private function that squashes any 
+ * for requesting services or sending events. There might be one interface per module, 
+ * but several modules may also be grouped in one interface. The methods an interface 
+ * offers are expressing via their function parameters which parameters a request, 
+ * response or event expects. The interface has a private function that squashes any 
  * combination of parameters into one message data field as long as the total data size 
  * doesn't exceed its maximum. Interface methods should be offered for both writing and 
- * reading messages. The interface has a connection to the kernel that is used to send 
- * messages to the message queue. 
+ * reading messages. The interface has a connection to a kernel switch that is used to 
+ * send messages to one or more kernels. 
  */
 
 /* Needed for various defines and type definitions */
 #include "defines.h"
 
-/* Interfaces are related to the kernel */
-#include "kernel.h"
+/* Interfaces are related to a kernel switch */
+#include "kernel_switch.h"
 
 
 class Interface_c
 {
 public:
     /**
-     * @brief Connect the interface to the kernel
+     * @brief Connect the interface to a kernel switch
      * 
-     * @param Kernel Pointer to the kernel object
+     * @param EventKernel Pointer to the kernel switch object
      */
-    void connect(Kernel_c *Kernel);
+    void connect(
+        KernelSwitch_c *KernelSwitch);
 
 protected:
     /**
-     * @brief Send a message to the kernel.
+     * @brief Send a message to the kernel switch.
      * 
      * This function takes a message header and any amount of data of any data type 
      * and uses this to create and queue a new message.
      * Example usage is shown below:
      * 
-     *  //This is a random service interface method
-     *  bool intf_PinController::Service_setPinOutput(MessageID_t MID, ModuleID_t Source, 
-     *                                                uint8_t Port, uint8_t Pin, 
-     *                                                uint8_t Level)
+     *  //This is a random example for a service interface method
+     *  bool PinController_intf::sendRequest_setPinOutput(
+     *      MessageID_t MID, 
+     *      uint8_t Port, 
+     *      uint8_t Pin, 
+     *      uint8_t Level)
      *  {
-     *      MessageHeader_t MessageHeader = {
-     *      SID_setPinOutput,
-     *      MID,
-     *      Source,
-     *      NO_MODULE,
-     *      MT_WRITE,
-     *      0,
-     *      };
+     *      MessageHeader_t MessageHeader;
+     * 
+     *      MessageHeader.MessageInformation = MESSAGE_TYPE_REQUEST;
+     *      MessageHeader.MessageID = MID;
+     *      MessageHeader.ContentID = SID_setPinOutout;
      * 
      *      void *Data[] = {
      *          &Port,
@@ -98,24 +98,28 @@ protected:
      *      this->sendMessage(&MessageHeader, Data, DataSizes, DataCount);
      *  }
      * 
-     * @param MessageHeader Pointer to the message header.
+     * @param MessageHeader The pointer to the message header.
      * 
-     * @param Data Pointer to an array of void pointers, containing the pointers to
+     * @param Data The pointer to an array of void pointers, containing the pointers to
      * the parameters.
      * 
-     * @param DataSizes Pointer to an array of data sizes, containing the sizes of
+     * @param DataSizes The pointer to an array of data sizes, containing the sizes of
      * each parameter.
      * 
-     * @param DataCount Number of parameters.
+     * @param DataCount The number of parameters.
      * 
      * @return Error_t An error is returned if 
      * - sending the message was not successful.
      * Otherwise ERROR_NONE is returned.
      */
-    Error_t sendMessage(MessageHeader_t *MessageHeader, void *Data[], 
-                        uint8_t DataSizes[], uint8_t DataCount);
-    
-    Kernel_c *Kernel;
+    Error_t sendMessage(
+        MessageHeader_t *MessageHeader, 
+        void *Data[], 
+        uint8_t DataSizes[], 
+        uint8_t DataCount);
+
+    /* The connection to the kernel switch. */
+    KernelSwitch_c *KernelSwitch;
 };
 
-#endif
+#endif//INTERFACE_H
