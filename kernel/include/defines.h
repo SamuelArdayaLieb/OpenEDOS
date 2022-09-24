@@ -195,11 +195,11 @@ typedef uint8_t MessageInformation_t;
  * The message type is stored in the first 2 bits of the message information byte in 
  * the message header.
  */
-#define MESSAGE_TYPE_EVENT     0x00
-#define MESSAGE_TYPE_REQUEST   0x01
-#define MESSAGE_TYPE_RESPONSE  0x10
-#define MESSAGE_TYPE_NONE      0x11
-#define MESSAGE_TYPE_MASK      0x11
+#define MESSAGE_TYPE_EVENT     0b00
+#define MESSAGE_TYPE_REQUEST   0b01
+#define MESSAGE_TYPE_RESPONSE  0b10
+#define MESSAGE_TYPE_NONE      0b11
+#define MESSAGE_TYPE_MASK      0b11
 
 /**
  * The message header is used to store the basic message information. The kernel switch
