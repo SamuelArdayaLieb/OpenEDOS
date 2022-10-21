@@ -8,6 +8,6 @@ or more kernels to manage the communication between those modules.
 # Coming soon:
 - a detailed Readme
 - an OpenEDOS design guide
-- an examples folder
+- more examples
 - more functionality
 - updates and bugfixes
