@@ -133,7 +133,7 @@ Error_t Kernel_c::subscribeEvents(
     {
         if(this->EventMapNodes[EventIDs[Count]].IDCount == 1)
         {
-            NewSubscriptions[Count] = EventIDs[Count];
+            NewSubscriptions[NewSubscriptionsCount] = EventIDs[Count];
             NewSubscriptionsCount++;
         }
     }
@@ -185,7 +185,7 @@ Error_t Kernel_c::unsubscribeEvents(
     {
         if(this->EventMapNodes[EventIDs[Count]].IDCount == 0)
         {
-            NewUnsubscriptions[Count] = EventIDs[Count];
+            NewUnsubscriptions[UnsubscriptionCount] = EventIDs[Count];
             UnsubscriptionCount++;
         }
     }
