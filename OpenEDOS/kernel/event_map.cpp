@@ -227,11 +227,11 @@ void EventMap_c::removeID(
                 &Node->IDs[Count+1], 
                 Node->IDCount - Count - 1);
 
-            /* The last ID in the array is reset */
-            Node->IDs[Node->IDCount] = NO_ID;
-
             /* Decrease the module count */
             Node->IDCount--;
+
+            /* The last ID in the array is reset */
+            Node->IDs[Node->IDCount] = NO_ID;
 
             break;
         }
