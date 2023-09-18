@@ -58,7 +58,8 @@ Error_t Kernel_c::connectModule(
     Module_c *Module)
 {
     ModuleAddress_t NewModuleAddress;
-    
+    Error_t Error;
+
     /* Check if another module can connect */
     if(this->ModuleCount >= NUMBER_OF_MODULES)
     {
@@ -71,12 +72,19 @@ Error_t Kernel_c::connectModule(
     Module->setAddress(
         &NewModuleAddress);
 
+    Error = Module->connect(
+        this);
+
+    if(Error != ERROR_NONE)
+    {
+        return Error;
+    }
+
     this->Modules[this->ModuleCount] = Module;
 
     this->ModuleCount++;
 
-    return Module->connect(
-        this);
+    return ERROR_NONE;
 }
 
 Error_t Kernel_c::initModules(void)
@@ -119,6 +127,7 @@ Error_t Kernel_c::subscribeEvents(
         return ERROR_MODULE_ID_INVALID;
     }
 
+    /* First, we register the module in the kernel's event map. */
     Error = this->EventMap.registerID(
         EventIDs, 
         EventIDCount, 
@@ -129,15 +138,20 @@ Error_t Kernel_c::subscribeEvents(
         return Error;
     }
     
+    /* Then we check if the kernel has to subscribe to an event at the kernel switch. */
     for(size_t Count = 0; Count < EventIDCount; Count++)
     {
+        /**
+         * If the ID Count is exactly one, the module we just registered was the first 
+         * module in the event map. In this case, the kernel needs to subscribe to the event at the kernel switch. 
+         */
         if(this->EventMapNodes[EventIDs[Count]].IDCount == 1)
         {
             NewSubscriptions[NewSubscriptionsCount] = EventIDs[Count];
             NewSubscriptionsCount++;
         }
     }
-
+    
     Error = this->KernelSwitch->subscribeEvents(
         NewSubscriptions,
         NewSubscriptionsCount,
