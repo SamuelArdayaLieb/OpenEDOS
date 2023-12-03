@@ -86,7 +86,7 @@
  * The data types used for ID variables depend on the total number of unique IDs.
  * The highest possible values that those variables can hold are used as "None" types. 
  */
-#if NUMBER_OF_SERIVES >= 0xFF
+#if NUMBER_OF_SERVICES >= 0xFF
     typedef uint16_t ServiceID_t;
     #define NO_SERVICE 0xFFFF
 #else
@@ -106,7 +106,7 @@
  * The content ID is used in the message header. It stores either an event ID or 
  * a service ID depending on the message type.
  */
-#if NUMBER_OF_SERIVES >= 0xFF || NUMBER_OF_EVENTS >= 0xFF
+#if NUMBER_OF_SERVICES >= 0xFF || NUMBER_OF_EVENTS >= 0xFF
     typedef uint16_t ContentID_t;
     #define NO_CONTENT 0xFFFF
 #else
