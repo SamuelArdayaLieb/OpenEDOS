@@ -27,43 +27,25 @@
  *
  */
 
-/**
- * In this template file the hardware/RTOS dependent macros are located.
- * In order to port the kernel to a hardware platform or RTOS, suitable functions
- * must be provided here.
- */
-
-#ifndef PORT_H
-#define PORT_H
-
-/* Include necessary headers. */
-
-/* No operation. May be omitted/optimizable. */
-#define NOP()
+#ifndef REQUESTS_H
+#define REQUESTS_H
 
 /**
- * Idle, e.g. some sort of low power mode. This operating mode
- * MUST be interruptable by ISRs. If such an option is not available, define
- * it as NOP().
- *
- * @param KernelID The ID of the kernel that calls this macro.
- * Only needed when there are more than one kernels.
+ * This file is used to create a unique ID for each request that exists in the
+ * system. To create the ID, simply list the request in the following enum. All
+ * requests have to be listed here.
  */
-#define IDLE(KernelID) 
 
-/**
- * The kernel uses this macro to return from idle state.
- * The given function should match the IDLE() macro.
- *
- * @param KernelID The ID of the kernel that will leave the idle state.
- * Only needed when there are more than one kernels.
- */
-#define RESUME(KernelID) 
+typedef enum RequestID_e
+{
+    /**
+     * List your requests here by giving them a meaningful name.
+     * For example:
+     * RID_MyCoolRequest,
+     */
 
-/* Enter a section of the programm that must not be interrupted. */
-#define ENTER_CRITICAL() 
+    /* The LAST element in this enum MUST be "NUMBER_OF_REQESTS"! */
+    NUMBER_OF_REQUESTS
+} RequestID_t;
 
-/* Exit a section of the programm that must not be interrupted. */
-#define EXIT_CRITICAL() 
-
-#endif // PORT_H
+#endif // REQUESTS_H

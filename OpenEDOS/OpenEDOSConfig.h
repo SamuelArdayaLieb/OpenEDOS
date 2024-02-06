@@ -2,31 +2,38 @@
 #define OPEN_EDOS_CONFIG_H
 
 /**
- * The macro defines the total amount of kernels in the application.
+ * This macro defines the total amount of kernels in the application.
  */
-#define NUMBER_OF_KERNELS   
+#define NUMBER_OF_KERNELS
 
 /**
- * This macro should be defined according to the total amount of modules
- * that each single kernel can manage.
+ * This macro defines the maximum amount of request handlers per request.
  */
-#define NUMBER_OF_MODULES    
+#define REQUEST_HANDLER_LIMIT
 
 /**
- * This macro defines how many messages the message queue of one kernel 
+ * This macro defines how many request messages the message queue of one kernel
  * can store.
  */
-#define MESSAGE_QUEUE_LENGTH 
+#define MESSAGE_QUEUE_LENGTH
 
 /**
- * The message data size defines the size of the message data field in bytes.
+ * The message data size defines the number of bytes in the data field of a message.
  */
-#define MESSAGE_DATA_SIZE     
+#define MESSAGE_DATA_SIZE
 
 /**
- * This macro defines how many event messages of the same type (same ID) can be
- * stored in the messages queue at a time.
+ * If this macro is set to 1, a request limit is used. This means that the amount
+ * of request messages in the message queue is controlled and limited by the kernel.
+ * This is useful to prevent an overflow of requests.
  */
-#define MAX_EVENT_COUNT      
+#define USE_REQUEST_LIMIT 0
 
-#endif
+/**
+ * This macro defines how many requests of the same type (same ID) can be
+ * stored in the messages queue at a time. This macro only has an effect if
+ * USE_REQUEST_LIMIT is set to 1.
+ */
+#define REQUEST_LIMIT
+
+#endif // OPEN_EDOS_CONFIG_H
