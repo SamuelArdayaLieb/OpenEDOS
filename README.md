@@ -2,11 +2,10 @@
 
 The Open Source Event Driven Operating System (OpenEDOS) is a modular and extensible operating system designed for microcontrollers. It provides a framework for building event-driven applications with message-based communication between modules, allowing for scalability and extensibility. The provided structures and functions can be used to implement a multitasking operating system or a single-threaded embedded system with modular components. The library is written in C and aims to offer a flexible and efficient environment for developing embedded systems.
 
-## Major Update v2.0.0
+## Update v0.2.1
 
-Even though there was not much activity going on in this repository, OpenEDOS has been worked with and worked on for quite some time now.
-The system has recently been rewritten, moving from C++ to C in order to increase performance. This refactoring also lead to reduced complexity,
-increasing the overall quality of the software. More stuff (examples, tests, documentation, etc.) will be added in the near future (see below).
+The versioning has been adjusted. The latest version is changed from v2.0.0 to v0.2.0. (With this update the version will be v0.2.1)
+With v0.2.1, the OpenEDOS SystemBuilder is introduced. It is a command line tool that allows you to quickly set up an event-based application.
 
 ## Key Concepts
 - The system lets you define custom requests and register custom handlers for these requests.
@@ -23,5 +22,4 @@ increasing the overall quality of the software. More stuff (examples, tests, doc
 - Detailed introduction and examples, including build instructions
 - Detailed documentation and design guide
 - Complete Unit Test coverage
-- The OpenEDOS Systembuilder, including a code-generator for rapid development
 - features, updates and fixes
