@@ -1,5 +1,5 @@
 /**
- * OpenEDOS Core v0.2.1
+ * OpenEDOS Core v0.2.2
  *
  * Copyright (c) 2022-2024 Samuel Ardaya-Lieb
  *
@@ -47,6 +47,10 @@
 #include "defines.h"
 #include "request_map.h"
 #include "message_queue.h"
+
+#if USE_SYSTEM_REQUESTS
+#include "../../system_requests/system_requests_intf.h"
+#endif
 
 struct Kernel_s
 {

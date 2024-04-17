@@ -137,8 +137,16 @@ class InterfaceSource(File):
             f"\"{header_name}\"",
             "\"kernel_switch.h\""
             ]
+        id = "INTERFACE GLOBALS"
+        self.user_code_globals = user_codes[id] if id in user_codes else UserCode(identifier=id)
         id = "INTERFACE SOURCE"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
+
+    def _user_includes(self) -> str:
+        text = "/* Includes, typedefs, globals, etc. */\n"
+        text += self.user_code_globals.get_text()
+        text += "\n"
+        return text
 
     def _requests(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
@@ -153,6 +161,7 @@ class InterfaceSource(File):
 
     def get_text(self) -> str:        
         self.sections.append(self._includes())
+        self.sections.append(self._user_includes())
         self.sections.append(self._requests())
         self.sections.append("\n/* Something else...? */\n")
         self.sections.append(self.user_code.get_text())

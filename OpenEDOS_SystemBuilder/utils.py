@@ -14,7 +14,7 @@ from typing import Tuple
 INDENT = "\t"
 
 OPENEDOS_SYSTEMBUILDER_VERSION = "0.1"
-OPENEDOS_CORE_VERSION          = "0.2.1"
+OPENEDOS_CORE_VERSION          = "0.2.2"
 
 class bcolors:
     HEADER = '\033[95m'

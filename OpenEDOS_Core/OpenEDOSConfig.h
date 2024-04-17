@@ -27,7 +27,7 @@
  * of request messages in the message queue is controlled and limited by the kernel.
  * This is useful to prevent an overflow of requests.
  */
-#define USE_REQUEST_LIMIT 1
+#define USE_REQUEST_LIMIT 0
 
 /**
  * This macro defines how many requests of the same type (same ID) can be
@@ -35,5 +35,12 @@
  * USE_REQUEST_LIMIT is set to 1.
  */
 #define REQUEST_LIMIT 0
+
+/**
+ * If this macro is set to 1, the OpenEDOS core will send requests
+ * related to the system. For example, if a kernel enters its main routine,
+ * this information is shared in a request.
+ */
+#define USE_SYSTEM_REQUESTS 0
 
 #endif // OPEN_EDOS_CONFIG_H
