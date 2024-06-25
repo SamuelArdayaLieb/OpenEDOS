@@ -1,5 +1,5 @@
 /**
- * OpenEDOS Core v0.2.1
+ * OpenEDOS Core v0.2.2
  *
  * Copyright (c) 2022-2024 Samuel Ardaya-Lieb
  *
@@ -36,13 +36,13 @@
  */
 
 /* Application specific configurations */
-#include "../../OpenEDOSConfig.h"
+#include "OpenEDOSConfig.h"
 
 /* Enum of the request IDs and the total number of requests */
-#include "../../requests.h"
+#include "requests.h"
 
 /* Hardware/RTOS specific functions */
-#include "../../port.h"
+#include "port.h"
 
 /* Needed for size_t */
 #include <stddef.h>

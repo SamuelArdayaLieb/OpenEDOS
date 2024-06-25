@@ -30,6 +30,8 @@
 #ifndef REQUESTS_H
 #define REQUESTS_H
 
+#include "OpenEDOSConfig.h"
+
 /**
  * This file is used to create a unique ID for each request that exists in the
  * system. To create the ID, simply list the request in the following enum. All
@@ -43,6 +45,11 @@ typedef enum RequestID_e
      * For example:
      * RID_MyCoolRequest,
      */
+
+#if USE_SYSTEM_REQUESTS
+    /* System */
+    RID_System_Start,
+#endif
 
     /* The LAST element in this enum MUST be "NUMBER_OF_REQESTS"! */
     NUMBER_OF_REQUESTS

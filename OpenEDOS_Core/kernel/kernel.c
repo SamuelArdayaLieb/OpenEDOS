@@ -1,5 +1,5 @@
 /**
- * OpenEDOS Core v0.2.1
+ * OpenEDOS Core v0.2.2
  *
  * Copyright (c) 2022-2024 Samuel Ardaya-Lieb
  *
@@ -91,6 +91,10 @@ void Kernel_run(
     {
         return;
     }
+
+#if USE_SYSTEM_REQUESTS
+    req_System_Start(Kernel->KernelID);
+#endif
 
     while (true)
     {

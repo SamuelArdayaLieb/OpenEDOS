@@ -1,0 +1,18 @@
+name: system_requests
+author: Samuel Ardaya-Lieb
+interface:
+  create: false
+  requests:
+  - name: 'System_Start'
+    description: 'This request is sent when a kernel enters its main routine.'
+    request parameters:
+    - name: 'KernelID'
+      type: 'KernelID_t'
+      description: 'The ID of the kernel that enters its main routine.'
+    response: false
+    use message id: false
+module:
+  create: false
+  kernel: 0
+  subscribed requests:
+  used requests:

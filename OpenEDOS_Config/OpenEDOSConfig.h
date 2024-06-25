@@ -36,4 +36,11 @@
  */
 #define REQUEST_LIMIT 0
 
+/**
+ * If this macro is set to 1, the OpenEDOS core will send requests
+ * related to the system. For example, if a kernel enters its main routine,
+ * this information is shared in a request.
+ */
+#define USE_SYSTEM_REQUESTS 0
+
 #endif // OPEN_EDOS_CONFIG_H
