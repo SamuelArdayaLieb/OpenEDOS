@@ -1,5 +1,5 @@
 """
-This is the OpenEDOS SystemBuilder v0.1.
+This is the OpenEDOS SystemBuilder v0.2.
 (c) 2024 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -110,21 +110,13 @@ class RequestSender(Sender):
         name:str, 
         response:bool, 
         description:str="", 
-        args:Dict[str, Parameter]={}, 
-        message_id:bool=False, 
+        args:Dict[str, Parameter]={} 
         ) -> None:
         self.response = response
-        self.message_id = message_id
 
         type = "request"
         func_name = f"req_{name}"
         parameters = args.copy()
-        if message_id:
-            mid = Parameter(
-                name="MessageID",
-                type="MessageID_t",
-                description="An ID to associate the message.")
-            parameters["MessageID"] = mid
         if response:
             description += "\nResponse: Yes\n"
             response_handler = Parameter(
@@ -159,8 +151,6 @@ class RequestSender(Sender):
         if self.response:
             text += "\t\t.ResponseHandler = ResponseHandler,\n"
             text += "\t\t.KernelID = KernelID,\n"
-        if self.message_id:
-            text += "\t\t.MessageID = MessageID,\n"
         text += "\t};\n"
         return text
     
@@ -228,22 +218,19 @@ class Request():
         name:str,
         request_description:str="",
         request_args:Dict[str, Parameter]={},
-        has_message_id:bool=False,
         has_response:bool=False,
         response_description:str="",
         response_args:Dict[str, Parameter]={},
         ) -> None:
         self.name = name
         self.has_response = has_response
-        self.has_message_id = has_message_id
         self.has_request_args = True if len(request_args) > 0 else False
         self.has_response_args = True if len(response_args) > 0 else False
         self.request_sender = RequestSender(
             name=name,
             response=has_response,
             description=request_description,
-            args=request_args,
-            message_id=has_message_id)
+            args=request_args)
         if has_response:
             self.response_sender = ResponseSender(
                 name=name,
@@ -352,7 +339,7 @@ class RequestHandler(Handler):
         brief = f"@brief Handle the request: {name}.\n"
         type = "request"
         has_args = True if request.has_request_args else False
-        has_message_header = request.has_response or request.has_message_id       
+        has_message_header = request.has_response      
 
         super().__init__(
             name=name,
@@ -379,7 +366,7 @@ class ResponseHandler(Handler):
         brief = f"@brief Handle a response to the request: {name}.\n"
         type = "response"
         has_args = True if request.has_response_args else False
-        has_message_header = True if request.has_message_id else False
+        has_message_header = False
 
         super().__init__(
             name=name,

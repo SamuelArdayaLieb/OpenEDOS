@@ -1,5 +1,5 @@
 """
-This is the OpenEDOS SystemBuilder v0.1.
+This is the OpenEDOS SystemBuilder v0.2.
 (c) 2024 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -198,7 +198,6 @@ class ConfigParser():
                     name=name,
                     request_description=request_config["description"],
                     request_args=request_parameters,
-                    has_message_id=request_config["use message id"],
                     has_response=has_response,
                     response_description=response_description,
                     response_args=response_parameters)

@@ -1,5 +1,5 @@
 """
-This is the OpenEDOS SystemBuilder v0.1.
+This is the OpenEDOS SystemBuilder v0.2.
 (c) 2024 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -114,7 +114,6 @@ def create_module_config(
                             "description": ""
                         }
                     ],
-                    "use message id": False,
                     "response": True,
                     "response description": "",
                     "response parameters": [
@@ -146,7 +145,7 @@ def create_module_config(
     }
     
     with open(path_to_file, 'w') as outfile:
-        yaml.dump(config, outfile, default_flow_style=False)
+        yaml.dump(config, outfile, default_flow_style=False, sort_keys=False)
 
 def create_project_config(
     path_to_folder:str,

@@ -10,7 +10,6 @@ interface:
       type: 'KernelID_t'
       description: 'The ID of the kernel that enters its main routine.'
     response: false
-    use message id: false
 module:
   create: false
   kernel: 0

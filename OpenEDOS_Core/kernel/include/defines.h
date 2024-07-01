@@ -111,12 +111,6 @@ typedef void (*MessageHandler_t)();
 
 #define NO_HANDLER NULL
 
-/**
- * The message ID may be used by application logic to identify messages.
- * It is not used by the kernel.
- */
-typedef uint8_t MessageID_t;
-
 /* A data type to store message information is defined. */
 typedef uint8_t MessageInformation_t;
 
@@ -186,13 +180,6 @@ typedef struct MessageHeader_s
      * The response handler is executed in this kernel.
      */
     KernelID_t KernelID;
-
-    /**
-     * The message ID might be useful for application logic.
-     * This ID is optional and not used by the kernel.
-     */
-    MessageID_t MessageID;
-
 } MessageHeader_t;
 
 /**

@@ -1,5 +1,5 @@
 """
-This is the OpenEDOS SystemBuilder v0.1.
+This is the OpenEDOS SystemBuilder v0.2.
 (c) 2024 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
