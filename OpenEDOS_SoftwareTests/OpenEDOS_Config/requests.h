@@ -51,6 +51,9 @@ typedef enum RequestID_e
     RID_System_Start,
 #endif
 
+    /* Test Dummy */
+    RID_Dummy_Request,
+
     /* The LAST element in this enum MUST be "NUMBER_OF_REQESTS"! */
     NUMBER_OF_REQUESTS
 } RequestID_t;

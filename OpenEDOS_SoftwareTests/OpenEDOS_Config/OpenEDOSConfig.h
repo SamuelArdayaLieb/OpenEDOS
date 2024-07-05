@@ -20,7 +20,7 @@
 /**
  * The message data size defines the number of bytes in the data field of a message.
  */
-#define MESSAGE_DATA_SIZE 0
+#define MESSAGE_DATA_SIZE 2
 
 /**
  * If this macro is set to 1, a request limit is used. This means that the amount
@@ -34,13 +34,13 @@
  * stored in the messages queue at a time. This macro only has an effect if
  * USE_REQUEST_LIMIT is set to 1.
  */
-#define REQUEST_LIMIT 0
+#define REQUEST_LIMIT 1
 
 /**
  * If this macro is set to 1, the OpenEDOS core will send requests
  * related to the system. For example, if a kernel enters its main routine,
  * this information is shared in a request.
  */
-#define USE_SYSTEM_REQUESTS 0
+#define USE_SYSTEM_REQUESTS 1
 
 #endif // OPEN_EDOS_CONFIG_H
