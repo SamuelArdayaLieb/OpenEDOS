@@ -77,7 +77,7 @@ static void test_initModule(CuTest *tc)
     CuAssertIntEquals(tc, ERROR_NONE, Error);  
 }
 
-static void test_subscribeRequest(CuTest *tc)
+static void test_systemStart(CuTest *tc)
 {
     Kernel_t Kernel;
     module_TestDummy_t TestDummy;
@@ -113,16 +113,63 @@ static void test_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_1);
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_2);
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_3);  
+}
+
+static void test_subscribeRequest(CuTest *tc)
+{
+    Kernel_t Kernel;
+    module_TestDummy_t TestDummy;
+    Error_t Error;
+
+    TestParam_1 = TEST_VAL_TEST_BEGIN;
+    TestParam_2 = TEST_VAL_TEST_BEGIN;
+    TestParam_3 = TEST_VAL_TEST_BEGIN;
+
+    KernelSwitch_staticInit(
+        &KernelSwitch);
+
+    Error = Kernel_staticInit(
+        &Kernel);
+
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+
+    Error = initModule_TestDummy(
+        &TestDummy,
+        &Kernel);
+
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+
+    /* Test values should have changed. */
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
+
+    /* Unsubscribe request to see if it's not handled. */
+    unsubscribeRequest();
+    sendRequest();
+
+    /* Process request. */
+    Kernel_runOnce(&Kernel);
+
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);     
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
+
+    /* Subscribe request to see if it's handled. */
+    subscribeRequest();
+    sendRequest();
 
     /* Process request. */
     Kernel_runOnce(&Kernel);
 
     CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
     CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2);     
-    CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_3);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
 
     /* Process response. */
     Kernel_runOnce(&Kernel);
+    CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
+    CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2); 
     CuAssertIntEquals(tc, TEST_VAL_3, TestParam_3);
 }
 
@@ -133,6 +180,7 @@ void RunAllTests(void)
     
     SUITE_ADD_TEST(suite, test_Kernel_staticInit);
     SUITE_ADD_TEST(suite, test_initModule);
+    SUITE_ADD_TEST(suite, test_systemStart);
     SUITE_ADD_TEST(suite, test_subscribeRequest);
 
     CuSuiteRun(suite);

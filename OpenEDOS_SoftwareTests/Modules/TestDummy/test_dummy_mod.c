@@ -142,7 +142,7 @@ Error_t initTestDummy(void)
 	TestParam_1 = TEST_VAL_MODULE_INIT;
     TestParam_2 = TEST_VAL_MODULE_INIT;
     TestParam_3 = TEST_VAL_MODULE_INIT;
-
+	
 	/* Return no error if everything is fine. */
 	return ERROR_NONE;
 	/* USER CODE MODULE INIT END */
@@ -178,12 +178,6 @@ void handleRequest_System_Start(
 	TestParam_1 = TEST_VAL_SYSTEM_START;
     TestParam_2 = TEST_VAL_SYSTEM_START;
     TestParam_3 = TEST_VAL_SYSTEM_START;
-
-	req_Dummy_Request(
-		TEST_VAL_1,
-		TEST_VAL_2,
-		handleResponse_Dummy_Request,
-		TestDummy->Kernel->KernelID);
 	/* USER CODE REQUEST SYSTEM START END */
 }
 
@@ -205,6 +199,39 @@ void handleResponse_Dummy_Request(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE FUNCTIONS BEGIN */
+Error_t subscribeRequest(void)
+{
+	RequestID_t RequestID = RID_Dummy_Request;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request;
 
+	/* Register the request handler. */
+	return Kernel_registerHandlers(
+		TestDummy->Kernel,
+		&RequestID,
+		&RequestHandler,
+		1);
+}
+
+void unsubscribeRequest(void)
+{
+	RequestID_t RequestID = RID_Dummy_Request;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request;
+
+	/* Unregister the request handler. */
+	Kernel_unregisterHandlers(
+		TestDummy->Kernel,
+		&RequestID,
+		&RequestHandler,
+		1);
+}
+
+Error_t sendRequest(void)
+{
+	return req_Dummy_Request(
+		TEST_VAL_1,
+		TEST_VAL_2,
+		handleResponse_Dummy_Request,
+		TestDummy->Kernel->KernelID);
+}
 /* USER CODE MODULE FUNCTIONS END */
 

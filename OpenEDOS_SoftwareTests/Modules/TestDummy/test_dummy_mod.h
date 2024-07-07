@@ -64,7 +64,9 @@ Error_t initModule_TestDummy(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
-
+Error_t subscribeRequest(void);
+void unsubscribeRequest(void);
+Error_t sendRequest(void);
 /* USER CODE MODULE PROTOTYPES END */
 
 #endif//TEST_DUMMY_MOD_H
