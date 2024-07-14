@@ -75,77 +75,13 @@ def parse_configs(
     ret = firmware.parse()
 
     if ret == 0:
-        logging.info(f"Found 0 config errors after parsing all config files.")
+        logging.info(f"Found 0 configuration errors.")
     elif ret == 1:
-        logging.warning(f"Found 1 config error after parsing all config files.")
+        logging.warning(f"Found 1 configuration error.")
     else:
-        logging.warning(f"Found {ret} config errors after parsing all config files.")
+        logging.warning(f"Found {ret} configuraion errors.")
 
     return firmware, ret
-
-def create_module_config(
-    path_to_folder:str,
-    file_name:str,
-    config_name:str="",
-    author:str=""
-    ) -> None:
-    path_to_file = os.path.join(path_to_folder, file_name)
-    if os.path.isfile(path_to_file):
-        logging.warn(f"Creating module config '{config_name}': File already exists!\n@ {path_to_file}")
-        return
-    config = {
-        "name": config_name,
-        "author": author,
-        "interface": {
-            "create": True,
-            "requests": [
-                {
-                    "name": "",
-                    "description": "",
-                    "request parameters": [
-                        {
-                            "name": "",
-                            "type": "",
-                            "description": ""
-                        },
-                        {
-                            "name": "",
-                            "type": "",
-                            "description": ""
-                        }
-                    ],
-                    "response": True,
-                    "response description": "",
-                    "response parameters": [
-                        {
-                            "name": "",
-                            "type": "",
-                            "description": ""
-                        }
-                    ]
-                }
-            ]
-        },
-        "module": {
-            "create": True,
-            "kernel": 0,
-            "subscribed requests": [
-                {
-                    "name": "",
-                    "description": ""
-                }
-            ],
-            "used requests": [
-                {
-                    "name": "",
-                    "description": ""
-                }
-            ]
-        }
-    }
-    
-    with open(path_to_file, 'w') as outfile:
-        yaml.dump(config, outfile, default_flow_style=False, sort_keys=False)
 
 def create_project_config(
     path_to_folder:str,

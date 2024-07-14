@@ -4,12 +4,13 @@ This is the OpenEDOS SystemBuilder v0.2.
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
-__version__ = "0.1"
+__version__ = "0.2"
 version_message = '%(prog)s, v%(version)s\n(c) 2024 Samuel Ardaya-Lieb\nMIT license'
 
 import click
 import logging
 import utils
+import config
 
 @click.group()
 @click.version_option(version=__version__, prog_name="OpenEDOS SystemBuilder", message=version_message)
@@ -107,7 +108,7 @@ def create_module_config(
 
     if number_of_configs == 1:
         file_name = f"{utils.name_to_filename(name)}_config.yaml"
-        utils.create_module_config(
+        config.create_module_config(
             path_to_folder=path,
             file_name=file_name,
             config_name=name,
@@ -116,7 +117,7 @@ def create_module_config(
     
     for n in range(number_of_configs):
         file_name = f"{utils.name_to_filename(name)}_{n}_config.yaml"
-        utils.create_module_config(
+        config.create_module_config(
             path_to_folder=path,
             file_name=file_name,
             config_name=name,
@@ -168,3 +169,72 @@ def create_project_config(
     utils.create_project_config(
         path_to_folder=path,
         project_name=name)
+    
+@openedos_systembuilder.command()
+@click.option(
+    '-m', '--module', 
+    type=click.Path(resolve_path=True, file_okay=False), 
+    help='The path to the folder where the module config.yaml is placed.')
+@click.option(
+    '-n', '--name',
+    help='The name of the request.')
+@click.option(
+    '-r', '--response',
+    is_flag=True, 
+    default=False, 
+    help='The request has a response.')
+@click.option(
+    '-u', '--used',
+    is_flag=True, 
+    default=False, 
+    help='Lists added request under used requests.')
+@click.option(
+    '-U', '--usedonly',
+    is_flag=True, 
+    default=False, 
+    help='Lists under used requests without definition.')
+@click.option(
+    '-s', '--subscribed',
+    is_flag=True, 
+    default=False, 
+    help='Lists added request under subscribed requests.')
+@click.option(
+    '-S', '--subscribedonly',
+    is_flag=True, 
+    default=False, 
+    help='Lists under subscribed requests without definition.')
+@click.option(
+    '-d', '--debug',
+    is_flag=True, 
+    default=False, 
+    help='Print debug information.')
+def add_request(
+    module:str, 
+    name:str,
+    response:bool,
+    used:bool,
+    usedonly:bool,
+    subscribed:bool,
+    subscribedonly:bool,
+    debug:bool
+    ) -> int:
+    """Adds a request to a _config.yaml."""
+    utils.set_logging(debug)
+    
+    conf, file_name = config.read_config(module)
+    if conf is None:
+        return
+
+    config.add_request(
+        config=conf,
+        request_name=name,
+        has_response=response,
+        used=(used or usedonly),
+        subscribed=(subscribed or subscribedonly),
+        defined=(not(usedonly or subscribedonly)))
+
+    config.save_config(
+        path_to_folder=module,
+        file_name=file_name,
+        config=conf,
+        override=True)

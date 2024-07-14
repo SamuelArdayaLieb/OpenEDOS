@@ -223,6 +223,8 @@ class Request():
         response_args:Dict[str, Parameter]={},
         ) -> None:
         self.name = name
+        self.request_description = request_description
+        self.response_description = response_description
         self.has_response = has_response
         self.has_request_args = True if len(request_args) > 0 else False
         self.has_response_args = True if len(response_args) > 0 else False
