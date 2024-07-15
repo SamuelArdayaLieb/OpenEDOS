@@ -1,8 +1,4 @@
-#include "AllTests.h"
-
-/* CuTest includes */
-#include "CuTest.h"
-#include <stdio.h>
+#include "single_kernel.h"
 
 /* OpenEDOS core */
 #include "kernel_switch.h"
@@ -12,10 +8,6 @@
 #include "system_requests/system_requests_intf.h"
 #include "test_dummy_intf.h"
 #include "test_dummy_mod.h"
-
-uint8_t TestParam_1;
-uint8_t TestParam_2;
-uint8_t TestParam_3;
 
 static KernelSwitch_t KernelSwitch;
 
@@ -228,27 +220,12 @@ static void test_RequestLimitReached(CuTest *tc)
     CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 }
 
-void RunAllTests(void) 
+void add_singleKernel(CuSuite *suite)
 {
-    CuString *output = CuStringNew();
-    CuSuite* suite = CuSuiteNew();
-    
     SUITE_ADD_TEST(suite, test_Kernel_staticInit);
     SUITE_ADD_TEST(suite, test_initModule);
     SUITE_ADD_TEST(suite, test_systemStart);
     SUITE_ADD_TEST(suite, test_subscribeRequest);
     SUITE_ADD_TEST(suite, test_MessageQueue_isFull);
     SUITE_ADD_TEST(suite, test_RequestLimitReached);
-
-    CuSuiteRun(suite);
-    CuSuiteSummary(suite, output);
-    CuSuiteDetails(suite, output);
-    printf("%s\n", output->buffer);
-}
-
-int main(void) 
-{    
-    RunAllTests();
-
-    return 0;
 }

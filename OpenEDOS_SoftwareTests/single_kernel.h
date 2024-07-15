@@ -1,6 +1,7 @@
-#ifndef ALL_TESTS_H
-#define ALL_TESTS_H
+#ifndef SINGEL_KERNEL_H
+#define SINGLE_KERNEL_H
 
+#include "CuTest.h"
 #include <stdint.h>
 
 #define TEST_VAL_TEST_BEGIN   0
@@ -14,4 +15,6 @@ extern uint8_t TestParam_1;
 extern uint8_t TestParam_2;
 extern uint8_t TestParam_3;
 
-#endif//ALL_TESTS_H
+void add_singleKernel(CuSuite *suite);
+
+#endif//SINGEL_KERNEL_H

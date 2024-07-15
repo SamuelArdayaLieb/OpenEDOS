@@ -22,7 +22,7 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include "../../AllTests.h"
+#include "../../single_kernel.h"
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */

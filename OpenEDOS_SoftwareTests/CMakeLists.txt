@@ -12,11 +12,15 @@ project(${PROJECT_NAME} VERSION 1.0)
 set(CORE_PATH "${PROJECT_SOURCE_DIR}/../OpenEDOS_Core")
 set(CONFIG_PATH "${PROJECT_SOURCE_DIR}/OpenEDOS_Config")
 set(MODULE_PATH "${PROJECT_SOURCE_DIR}/Modules")
-set(EXEC_FILE "${PROJECT_SOURCE_DIR}/AllTests.c")
+set(EXEC_FILE "${PROJECT_SOURCE_DIR}/main.c")
 
 #------------------------------------------ add executable
 
-add_executable(${PROJECT_NAME} ${EXEC_FILE} CuTest.c)
+add_executable(${PROJECT_NAME} 
+${EXEC_FILE} 
+CuTest.c
+single_kernel.c
+multi_kernel.c)
 
 #------------------------------------------ add the core library "OpenEDOS" 
 #------------------------------------------ and include the config
