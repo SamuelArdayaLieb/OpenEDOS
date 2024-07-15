@@ -8,7 +8,7 @@
  * @file test_dummy_intf.c
  * @author Samuel Ardaya-Lieb
  * @version 0.0.1
- * @date 2024-07-05
+ * @date 2024-07-14
  * 
  * copyright (c) 2024 Samuel Ardaya-Lieb, MIT license
  */
@@ -22,38 +22,48 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-Error_t req_Dummy_Request(
+Error_t req_Dummy_Request_1(
 	uint8_t Dummy_Request_Param_1,
 	uint8_t Dummy_Request_Param_2,
 	MessageHandler_t ResponseHandler,
 	KernelID_t KernelID)
 {
 	MessageHeader_t MessageHeader = {
-		.RequestID = RID_Dummy_Request,
+		.RequestID = RID_Dummy_Request_1,
 		.ResponseHandler = ResponseHandler,
 		.KernelID = KernelID,
 	};
 
 	return KernelSwitch_sendRequest(
 		&MessageHeader,
-		&(struct requestArgs_Dummy_Request_s){
+		&(struct requestArgs_Dummy_Request_1_s){
 			Dummy_Request_Param_1,
 			Dummy_Request_Param_2,
 		});
 }
 
 
-Error_t res_Dummy_Request(
+Error_t res_Dummy_Request_1(
 	uint8_t Dummy_Response_Param_1,
 	MessageHeader_t* RequestHeader)
 {
 	return KernelSwitch_sendResponse(
 		RequestHeader,
-		&(struct responseArgs_Dummy_Request_s){
+		&(struct responseArgs_Dummy_Request_1_s){
 			Dummy_Response_Param_1,
 		});
 }
 
+Error_t req_Dummy_Request_2(void)
+{
+	MessageHeader_t MessageHeader = {
+		.RequestID = RID_Dummy_Request_2,
+	};
+
+	return KernelSwitch_sendRequest(
+		&MessageHeader,
+		NULL);
+}
 
 /* Something else...? */
 /* USER CODE INTERFACE SOURCE BEGIN */

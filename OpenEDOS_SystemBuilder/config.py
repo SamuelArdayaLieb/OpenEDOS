@@ -69,8 +69,8 @@ def add_request(
         request = Request(request_name,"",args,has_response,"",args) 
 
         request_dict = {
-            "name": f"{request.name}",
-            "description": f"{request.request_description}",
+            "name": request.name,
+            "description": request.request_description,
             "request parameters": [],
             "response": request.has_response,
         }
@@ -100,20 +100,15 @@ def add_request(
 
         config["interface"]["requests"].append(request_dict)
     
-    if used:
-        request_dict = {
-            "name" : f"{request_name}",
-            "description": ""
-        }
+    request_dict = {
+        "name" : request_name,
+        "description": ""
+    }    
 
+    if used:
         config["module"]["used requests"].append(request_dict)
 
     if subscribed:
-        request_dict = {
-            "name" : f"{request_name}",
-            "description": ""
-        }
-
         config["module"]["subscribed requests"].append(request_dict)       
 
     return config

@@ -8,7 +8,7 @@
  * @file test_dummy_mod.c
  * @author Samuel Ardaya-Lieb
  * @version 0.0.1
- * @date 2024-07-05
+ * @date 2024-07-14
  * 
  * copyright (c) 2024 Samuel Ardaya-Lieb, MIT license
  */
@@ -42,7 +42,7 @@ static inline Error_t initTestDummy(void);
 //~~~~~~~~~~~~~~~~~~~~~~ Request handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Handle the request: Dummy_Request.
+ * @brief Handle the request: Dummy_Request_1.
  * 
  * The TestDummy subscribes this request in order to test the OpenEDOS core.
  * 
@@ -50,9 +50,9 @@ static inline Error_t initTestDummy(void);
  * 
  * @param Args Pointer to the request parameters.
  */
-static void handleRequest_Dummy_Request(
+static void handleRequest_Dummy_Request_1(
 	MessageHeader_t *Header,
-	struct requestArgs_Dummy_Request_s *Args);
+	struct requestArgs_Dummy_Request_1_s *Args);
 
 /**
  * @brief Handle the request: System_Start.
@@ -65,18 +65,25 @@ static void handleRequest_System_Start(
 	MessageHeader_t *Header,
 	struct requestArgs_System_Start_s *Args);
 
+/**
+ * @brief Handle the request: Dummy_Request_2.
+ * 
+ * The TestDummy subscribes this request in order to test the OpenEDOS core.
+ */
+static void handleRequest_Dummy_Request_2(void);
+
 //~~~~~~~~~~~~~~~~~~~~~ Response handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Handle a response to the request: Dummy_Request.
+ * @brief Handle a response to the request: Dummy_Request_1.
  * 
  * The TestDummy subscribes this request in order to test the OpenEDOS core.
  * 
  * @param Args Pointer to the response parameters.
  */
-static void handleResponse_Dummy_Request(
+static void handleResponse_Dummy_Request_1(
 	MessageHeader_t *Header,
-	struct responseArgs_Dummy_Request_s *Args);
+	struct responseArgs_Dummy_Request_1_s *Args);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module initialization ~~~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -87,14 +94,16 @@ Error_t initModule_TestDummy(
 {
 	/* List the requests this module will handle. */
 	RequestID_t RequestIDs[] = {
-		RID_Dummy_Request,
+		RID_Dummy_Request_1,
 		RID_System_Start,
+		RID_Dummy_Request_2,
 	};
 
 	/* List the request handlers accordingly. */
 	MessageHandler_t RequestHandlers[] = {
-		(MessageHandler_t)handleRequest_Dummy_Request,
+		(MessageHandler_t)handleRequest_Dummy_Request_1,
 		(MessageHandler_t)handleRequest_System_Start,
+		(MessageHandler_t)handleRequest_Dummy_Request_2,
 	};
 
 	/* Register the request handlers. */
@@ -153,18 +162,18 @@ Error_t initTestDummy(void)
 /**
  * The TestDummy subscribes this request in order to test the OpenEDOS core.
  */
-void handleRequest_Dummy_Request(
+void handleRequest_Dummy_Request_1(
 	MessageHeader_t *Header,
-	struct requestArgs_Dummy_Request_s *Args)
+	struct requestArgs_Dummy_Request_1_s *Args)
 {
-	/* USER CODE REQUEST DUMMY REQUEST BEGIN */
+	/* USER CODE REQUEST DUMMY REQUEST 1 BEGIN */
 	TestParam_1 = Args->Dummy_Request_Param_1;
 	TestParam_2 = Args->Dummy_Request_Param_2;
 
-	res_Dummy_Request(
+	res_Dummy_Request_1(
 		TEST_VAL_3, 
 		Header);
-	/* USER CODE REQUEST DUMMY REQUEST END */
+	/* USER CODE REQUEST DUMMY REQUEST 1 END */
 }
 
 /**
@@ -181,14 +190,24 @@ void handleRequest_System_Start(
 	/* USER CODE REQUEST SYSTEM START END */
 }
 
+/**
+ * The TestDummy subscribes this request in order to test the OpenEDOS core.
+ */
+void handleRequest_Dummy_Request_2(void)
+{
+	/* USER CODE REQUEST DUMMY REQUEST 2 BEGIN */
+
+	/* USER CODE REQUEST DUMMY REQUEST 2 END */
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /**
  * The TestDummy subscribes this request in order to test the OpenEDOS core.
  */
-void handleResponse_Dummy_Request(
+void handleResponse_Dummy_Request_1(
 	MessageHeader_t *Header,
-	struct responseArgs_Dummy_Request_s *Args)
+	struct responseArgs_Dummy_Request_1_s *Args)
 {
 	/* USER CODE RESPONSE DUMMY REQUEST BEGIN */
 	TestParam_3 = Args->Dummy_Response_Param_1;
@@ -199,10 +218,10 @@ void handleResponse_Dummy_Request(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE FUNCTIONS BEGIN */
-Error_t subscribeRequest(void)
+Error_t subscribeRequest_1(void)
 {
-	RequestID_t RequestID = RID_Dummy_Request;
-	MessageHandler_t RequestHandler = handleRequest_Dummy_Request;
+	RequestID_t RequestID = RID_Dummy_Request_1;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request_1;
 
 	/* Register the request handler. */
 	return Kernel_registerHandlers(
@@ -212,10 +231,10 @@ Error_t subscribeRequest(void)
 		1);
 }
 
-void unsubscribeRequest(void)
+void unsubscribeRequest_1(void)
 {
-	RequestID_t RequestID = RID_Dummy_Request;
-	MessageHandler_t RequestHandler = handleRequest_Dummy_Request;
+	RequestID_t RequestID = RID_Dummy_Request_1;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request_1;
 
 	/* Unregister the request handler. */
 	Kernel_unregisterHandlers(
@@ -225,13 +244,44 @@ void unsubscribeRequest(void)
 		1);
 }
 
-Error_t sendRequest(void)
+Error_t sendRequest_1(void)
 {
-	return req_Dummy_Request(
+	return req_Dummy_Request_1(
 		TEST_VAL_1,
 		TEST_VAL_2,
-		handleResponse_Dummy_Request,
+		handleResponse_Dummy_Request_1,
 		TestDummy->Kernel->KernelID);
+}
+
+Error_t subscribeRequest_2(void)
+{
+	RequestID_t RequestID = RID_Dummy_Request_2;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request_2;
+
+	/* Register the request handler. */
+	return Kernel_registerHandlers(
+		TestDummy->Kernel,
+		&RequestID,
+		&RequestHandler,
+		1);
+}
+
+void unsubscribeRequest_2(void)
+{
+	RequestID_t RequestID = RID_Dummy_Request_2;
+	MessageHandler_t RequestHandler = handleRequest_Dummy_Request_2;
+
+	/* Unregister the request handler. */
+	Kernel_unregisterHandlers(
+		TestDummy->Kernel,
+		&RequestID,
+		&RequestHandler,
+		1);
+}
+
+Error_t sendRequest_2(void)
+{
+	return req_Dummy_Request_2();
 }
 /* USER CODE MODULE FUNCTIONS END */
 

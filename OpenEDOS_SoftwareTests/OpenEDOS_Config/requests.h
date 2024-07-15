@@ -52,7 +52,8 @@ typedef enum RequestID_e
 #endif
 
     /* Test Dummy */
-    RID_Dummy_Request,
+    RID_Dummy_Request_1,
+    RID_Dummy_Request_2,
 
     /* The LAST element in this enum MUST be "NUMBER_OF_REQESTS"! */
     NUMBER_OF_REQUESTS

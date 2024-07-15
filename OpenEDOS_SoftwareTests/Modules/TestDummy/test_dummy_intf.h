@@ -8,7 +8,7 @@
  * @file test_dummy_intf.h
  * @author Samuel Ardaya-Lieb
  * @version 0.0.1
- * @date 2024-07-05
+ * @date 2024-07-14
  * 
  * copyright (c) 2024 Samuel Ardaya-Lieb, MIT license
  */
@@ -29,13 +29,12 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-/* Dummy_Request */
+/* Dummy_Request_1 */
 
 /**
- * @brief Send a message to request: Dummy_Request.
+ * @brief Send a message to request: Dummy_Request_1.
  * 
  * This request is used to test the OpenEDOS core.
- * 
  * Response: Yes
  * 
  * @param Dummy_Request_Param_1 A dummy parameter for testing.
@@ -50,19 +49,19 @@
  * - processing the message results in an error.
  * Otherwise ERROR_NONE is returned.
  */
-Error_t req_Dummy_Request(
+Error_t req_Dummy_Request_1(
 	uint8_t Dummy_Request_Param_1,
 	uint8_t Dummy_Request_Param_2,
 	MessageHandler_t ResponseHandler,
 	KernelID_t KernelID);
 
-struct requestArgs_Dummy_Request_s {
+struct requestArgs_Dummy_Request_1_s {
 	uint8_t Dummy_Request_Param_1;
 	uint8_t Dummy_Request_Param_2;
 };
 
 /**
- * @brief Send a response to the request: Dummy_Request.
+ * @brief Send a response to the request: Dummy_Request_1.
  * 
  * The response is used to test the OpenEDOS core.
  * 
@@ -73,12 +72,26 @@ struct requestArgs_Dummy_Request_s {
  * - processing the message results in an error.
  * Otherwise ERROR_NONE is returned.
  */
-Error_t res_Dummy_Request(
+Error_t res_Dummy_Request_1(
 	uint8_t Dummy_Response_Param_1,
 	MessageHeader_t* RequestHeader);
 
-struct responseArgs_Dummy_Request_s {
+struct responseArgs_Dummy_Request_1_s {
 	uint8_t Dummy_Response_Param_1;
 };
+
+/* Dummy_Request_2 */
+
+/**
+ * @brief Send a message to request: Dummy_Request_2.
+ * 
+ * This request is used to test the OpenEDOS core.
+ * Response: No
+ * 
+ * @return Error_t An error is returned if
+ * - processing the message results in an error.
+ * Otherwise ERROR_NONE is returned.
+ */
+Error_t req_Dummy_Request_2(void);
 
 #endif//TEST_DUMMY_INTF_H

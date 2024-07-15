@@ -19,6 +19,25 @@ uint8_t TestParam_3;
 
 static KernelSwitch_t KernelSwitch;
 
+static void init(CuTest *tc, Kernel_t *Kernel)
+{
+    Error_t Error;
+    
+    TestParam_1 = TEST_VAL_TEST_BEGIN;
+    TestParam_2 = TEST_VAL_TEST_BEGIN;
+    TestParam_3 = TEST_VAL_TEST_BEGIN;
+
+    KernelSwitch_staticInit(&KernelSwitch);
+
+    Error = Kernel_staticInit(Kernel);
+
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+
+    /* There should be no message in the queue. */
+    CuAssertIntEquals(tc, 0, 
+        Kernel->KernelSwitch->MessageQueues[Kernel->KernelID].NumberOfMessages);
+}
+
 static void test_Kernel_staticInit(CuTest *tc)
 {
     Kernel_t Kernel_1, Kernel_2;
@@ -55,13 +74,7 @@ static void test_initModule(CuTest *tc)
     module_TestDummy_t TestDummy;
     Error_t Error;
 
-    KernelSwitch_staticInit(
-        &KernelSwitch);
-
-    Error = Kernel_staticInit(
-        &Kernel);
-
-    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    init(tc, &Kernel);
 
     Error = initModule_TestDummy(
         &TestDummy,
@@ -83,17 +96,7 @@ static void test_systemStart(CuTest *tc)
     module_TestDummy_t TestDummy;
     Error_t Error;
 
-    TestParam_1 = TEST_VAL_TEST_BEGIN;
-    TestParam_2 = TEST_VAL_TEST_BEGIN;
-    TestParam_3 = TEST_VAL_TEST_BEGIN;
-
-    KernelSwitch_staticInit(
-        &KernelSwitch);
-
-    Error = Kernel_staticInit(
-        &Kernel);
-
-    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    init(tc, &Kernel);
 
     Error = initModule_TestDummy(
         &TestDummy,
@@ -107,12 +110,19 @@ static void test_systemStart(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
 
     /* Process system start request. */
-    req_System_Start(Kernel.KernelID);
+    Error = req_System_Start(Kernel.KernelID);
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    /* There should be one message in the queue. */
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
+
     Kernel_runOnce(&Kernel);
 
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_1);
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_2);
     CuAssertIntEquals(tc, TEST_VAL_SYSTEM_START, TestParam_3);  
+
+    /* There should be one message in the queue. */
+    CuAssertIntEquals(tc, 0, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 }
 
 static void test_subscribeRequest(CuTest *tc)
@@ -121,17 +131,7 @@ static void test_subscribeRequest(CuTest *tc)
     module_TestDummy_t TestDummy;
     Error_t Error;
 
-    TestParam_1 = TEST_VAL_TEST_BEGIN;
-    TestParam_2 = TEST_VAL_TEST_BEGIN;
-    TestParam_3 = TEST_VAL_TEST_BEGIN;
-
-    KernelSwitch_staticInit(
-        &KernelSwitch);
-
-    Error = Kernel_staticInit(
-        &Kernel);
-
-    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    init(tc, &Kernel);
 
     Error = initModule_TestDummy(
         &TestDummy,
@@ -145,8 +145,10 @@ static void test_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
 
     /* Unsubscribe request to see if it's not handled. */
-    unsubscribeRequest();
-    sendRequest();
+    unsubscribeRequest_1();
+    Error = sendRequest_1();
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 0, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 
     /* Process request. */
     Kernel_runOnce(&Kernel);
@@ -156,8 +158,11 @@ static void test_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
 
     /* Subscribe request to see if it's handled. */
-    subscribeRequest();
-    sendRequest();
+    Error = subscribeRequest_1();
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    Error = sendRequest_1();
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 
     /* Process request. */
     Kernel_runOnce(&Kernel);
@@ -165,12 +170,62 @@ static void test_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
     CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2);     
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 
     /* Process response. */
     Kernel_runOnce(&Kernel);
     CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
     CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2); 
     CuAssertIntEquals(tc, TEST_VAL_3, TestParam_3);
+    CuAssertIntEquals(tc, 0, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
+}
+
+static void test_MessageQueue_isFull(CuTest *tc)
+{
+    Kernel_t Kernel;
+    module_TestDummy_t TestDummy;
+    Error_t Error;
+
+    init(tc, &Kernel);
+
+    Error = initModule_TestDummy(
+        &TestDummy,
+        &Kernel);
+    CuAssertIntEquals(tc, ERROR_NONE, Error);    
+
+    /* Sending one request should return no error. */
+    Error = sendRequest_1();
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
+
+    /* The message queue length is 1. Sending another request should return an error. */
+    Error = sendRequest_2();
+    CuAssertIntEquals(tc, ERROR_MESSAGE_QUEUE_FULL, Error);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
+}
+
+static void test_RequestLimitReached(CuTest *tc)
+{
+    Kernel_t Kernel;
+    module_TestDummy_t TestDummy;
+    Error_t Error;
+
+    init(tc, &Kernel);
+
+    Error = initModule_TestDummy(
+        &TestDummy,
+        &Kernel);
+    CuAssertIntEquals(tc, ERROR_NONE, Error);    
+
+    /* Sending one request should return no error. */
+    Error = sendRequest_1();
+    CuAssertIntEquals(tc, ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
+
+    /* The request limit is 1. Sending another request should return an error. */
+    Error = sendRequest_1();
+    CuAssertIntEquals(tc, ERROR_REQUEST_LIMIT_REACHED, Error);
+    CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
 }
 
 void RunAllTests(void) 
@@ -182,6 +237,8 @@ void RunAllTests(void)
     SUITE_ADD_TEST(suite, test_initModule);
     SUITE_ADD_TEST(suite, test_systemStart);
     SUITE_ADD_TEST(suite, test_subscribeRequest);
+    SUITE_ADD_TEST(suite, test_MessageQueue_isFull);
+    SUITE_ADD_TEST(suite, test_RequestLimitReached);
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);

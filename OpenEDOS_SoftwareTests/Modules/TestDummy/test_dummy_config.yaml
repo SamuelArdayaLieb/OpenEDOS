@@ -3,34 +3,41 @@ author: Samuel Ardaya-Lieb
 interface:
   create: true
   requests:
-  - name: 'Dummy_Request'
-    description: |
-      This request is used to test the OpenEDOS core.
+  - name: Dummy_Request_1
+    description: This request is used to test the OpenEDOS core.
     request parameters:
-    - name: 'Dummy_Request_Param_1'
-      type: 'uint8_t'
-      description: 'A dummy parameter for testing.'
-    - name: 'Dummy_Request_Param_2'
-      type: 'uint8_t'
-      description: 'A dummy parameter for testing.'
+    - name: Dummy_Request_Param_1
+      type: uint8_t
+      description: A dummy parameter for testing.
+    - name: Dummy_Request_Param_2
+      type: uint8_t
+      description: A dummy parameter for testing.
     response: true
-    response description: |
-      The response is used to test the OpenEDOS core.
+    response description: The response is used to test the OpenEDOS core.
     response parameters:
-    - name: 'Dummy_Response_Param_1'
-      type: 'uint8_t'
-      description: 'A dummy parameter for testing.'
+    - name: Dummy_Response_Param_1
+      type: uint8_t
+      description: A dummy parameter for testing.
+  - name: Dummy_Request_2
+    description: This request is used to test the OpenEDOS core.
+    request parameters:
+    response: false
 module:
   create: true
   kernel: 0
   subscribed requests:
-  - name: 'Dummy_Request'
-    description: | 
-      The TestDummy subscribes this request in order to test the OpenEDOS core.
-  - name: 'System_Start'
-    description: |
-      Test the system request functionality.
+  - name: Dummy_Request_1
+    description: The TestDummy subscribes this request in order to test the OpenEDOS
+      core.
+  - name: System_Start
+    description: Test the system request functionality.
+  - name: Dummy_Request_2
+    description: The TestDummy subscribes this request in order to test the OpenEDOS
+      core.
   used requests:
-  - name: 'Dummy_Request'
-    description: |
-      The TestDummy subscribes this request in order to test the OpenEDOS core.
+  - name: Dummy_Request_1
+    description: The TestDummy subscribes this request in order to test the OpenEDOS
+      core.
+  - name: Dummy_Request_2
+    description: The TestDummy subscribes this request in order to test the OpenEDOS
+      core.

@@ -8,7 +8,7 @@
  * @file test_dummy_mod.h
  * @author Samuel Ardaya-Lieb
  * @version 0.0.1
- * @date 2024-07-05
+ * @date 2024-07-14
  * 
  * copyright (c) 2024 Samuel Ardaya-Lieb, MIT license
  */
@@ -64,9 +64,13 @@ Error_t initModule_TestDummy(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
-Error_t subscribeRequest(void);
-void unsubscribeRequest(void);
-Error_t sendRequest(void);
+Error_t subscribeRequest_1(void);
+void unsubscribeRequest_1(void);
+Error_t sendRequest_1(void);
+
+Error_t subscribeRequest_2(void);
+void unsubscribeRequest_2(void);
+Error_t sendRequest_2(void);
 /* USER CODE MODULE PROTOTYPES END */
 
 #endif//TEST_DUMMY_MOD_H
