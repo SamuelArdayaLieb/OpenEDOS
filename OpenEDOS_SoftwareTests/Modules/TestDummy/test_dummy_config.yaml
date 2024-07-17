@@ -29,7 +29,7 @@ module:
   - name: Dummy_Request_1
     description: The TestDummy subscribes this request in order to test the OpenEDOS
       core.
-  - name: System_Start
+  - name: Kernel_Start
     description: Test the system request functionality.
   - name: Dummy_Request_2
     description: The TestDummy subscribes this request in order to test the OpenEDOS

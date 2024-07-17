@@ -93,7 +93,7 @@ void Kernel_run(
     }
 
 #if USE_SYSTEM_REQUESTS
-    req_System_Start(Kernel->KernelID);
+    req_Kernel_Start(Kernel->KernelID);
 #endif
 
     while (true)
@@ -125,11 +125,7 @@ void Kernel_runOnce(
 
     Message = KernelSwitch_getMessage(Kernel->KernelID);
 
-    if (Message == NULL)
-    {
-        IDLE(Kernel->KernelID);
-    }
-    else
+    if (Message != NULL)
     {
         Kernel_handleMessage(
             Kernel,

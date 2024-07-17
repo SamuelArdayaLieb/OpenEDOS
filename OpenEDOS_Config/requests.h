@@ -48,7 +48,8 @@ typedef enum RequestID_e
 
 #if USE_SYSTEM_REQUESTS
     /* System */
-    RID_System_Start,
+    RID_Kernel_Start,
+    RID_Kernel_Stop,
 #endif
 
     /* The LAST element in this enum MUST be "NUMBER_OF_REQESTS"! */

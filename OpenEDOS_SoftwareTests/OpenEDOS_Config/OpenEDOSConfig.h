@@ -4,7 +4,7 @@
 /**
  * This macro defines the total amount of kernels in the application.
  */
-#define NUMBER_OF_KERNELS 1
+#define NUMBER_OF_KERNELS 3
 
 /**
  * This macro defines the maximum amount of request handlers per request.

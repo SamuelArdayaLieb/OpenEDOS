@@ -32,7 +32,7 @@ static void init(CuTest *tc, Kernel_t *Kernel)
 
 static void test_Kernel_staticInit(CuTest *tc)
 {
-    Kernel_t Kernel_1, Kernel_2;
+    Kernel_t Kernel_1;
     Error_t Error;
 
     KernelSwitch_staticInit(
@@ -42,20 +42,12 @@ static void test_Kernel_staticInit(CuTest *tc)
      * According to the OpenEDOS config, the switch works with one kernel.
      * Initializing the kernel should return no error.
      */
-    Error = Kernel_staticInit(
-        &Kernel_1);
+    Error = Kernel_staticInit(&Kernel_1);
 
     CuAssertIntEquals(tc, ERROR_NONE, Error);
 
-    /* Initializing a second kernel should return an error. */
-    Error = Kernel_staticInit(
-        &Kernel_2);
-
-    CuAssertIntEquals(tc, ERROR_KERNEL_LIMIT_REACHED, Error);
-
-    /* Reinitializing the same kernel should again return no error. */
-    Error = Kernel_staticInit(
-        &Kernel_1);
+    /* Reinitializing the same kernel should return no error. */
+    Error = Kernel_staticInit(&Kernel_1);
 
     CuAssertIntEquals(tc, ERROR_NONE, Error);  
 }
@@ -101,8 +93,8 @@ static void test_systemStart(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
 
-    /* Process system start request. */
-    Error = req_System_Start(Kernel.KernelID);
+    /* Process kernel start request. */
+    Error = req_Kernel_Start(Kernel.KernelID);
     CuAssertIntEquals(tc, ERROR_NONE, Error);
     /* There should be one message in the queue. */
     CuAssertIntEquals(tc, 1, Kernel.KernelSwitch->MessageQueues[Kernel.KernelID].NumberOfMessages);
@@ -122,7 +114,7 @@ static void test_subscribeRequest(CuTest *tc)
     Kernel_t Kernel;
     module_TestDummy_t TestDummy;
     Error_t Error;
-
+    
     init(tc, &Kernel);
 
     Error = initModule_TestDummy(

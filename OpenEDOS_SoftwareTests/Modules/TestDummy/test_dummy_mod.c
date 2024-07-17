@@ -55,15 +55,15 @@ static void handleRequest_Dummy_Request_1(
 	struct requestArgs_Dummy_Request_1_s *Args);
 
 /**
- * @brief Handle the request: System_Start.
+ * @brief Handle the request: Kernel_Start.
  * 
  * Test the system request functionality.
  * 
  * @param Args Pointer to the request parameters.
  */
-static void handleRequest_System_Start(
+static void handleRequest_Kernel_Start(
 	MessageHeader_t *Header,
-	struct requestArgs_System_Start_s *Args);
+	struct requestArgs_Kernel_Start_s *Args);
 
 /**
  * @brief Handle the request: Dummy_Request_2.
@@ -95,14 +95,14 @@ Error_t initModule_TestDummy(
 	/* List the requests this module will handle. */
 	RequestID_t RequestIDs[] = {
 		RID_Dummy_Request_1,
-		RID_System_Start,
+		RID_Kernel_Start,
 		RID_Dummy_Request_2,
 	};
 
 	/* List the request handlers accordingly. */
 	MessageHandler_t RequestHandlers[] = {
 		(MessageHandler_t)handleRequest_Dummy_Request_1,
-		(MessageHandler_t)handleRequest_System_Start,
+		(MessageHandler_t)handleRequest_Kernel_Start,
 		(MessageHandler_t)handleRequest_Dummy_Request_2,
 	};
 
@@ -179,15 +179,15 @@ void handleRequest_Dummy_Request_1(
 /**
  * Test the system request functionality.
  */
-void handleRequest_System_Start(
+void handleRequest_Kernel_Start(
 	MessageHeader_t *Header,
-	struct requestArgs_System_Start_s *Args)
+	struct requestArgs_Kernel_Start_s *Args)
 {
-	/* USER CODE REQUEST SYSTEM START BEGIN */
+	/* USER CODE REQUEST KERNEL START BEGIN */
 	TestParam_1 = TEST_VAL_SYSTEM_START;
     TestParam_2 = TEST_VAL_SYSTEM_START;
     TestParam_3 = TEST_VAL_SYSTEM_START;
-	/* USER CODE REQUEST SYSTEM START END */
+	/* USER CODE REQUEST KERNEL START END */
 }
 
 /**

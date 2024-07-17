@@ -3,15 +3,25 @@ author: Samuel Ardaya-Lieb
 interface:
   create: false
   requests:
-  - name: 'System_Start'
-    description: 'This request is sent when a kernel enters its main routine.'
+  - name: Kernel_Start
+    description: This request is sent when a kernel enters its main routine.
     request parameters:
-    - name: 'KernelID'
-      type: 'KernelID_t'
-      description: 'The ID of the kernel that enters its main routine.'
+    - name: KernelID
+      type: KernelID_t
+      description: The ID of the kernel that enters its main routine.
+    response: false
+  - name: Kernel_Stop
+    description: |
+      This request stops a kernel.
+      The main routine of that kernel will return
+      once all currently queued messages have been processed.
+    request parameters:
+    - name: KernelID
+      type: KernelID_t
+      description: The ID of the kernel to be stopped.
     response: false
 module:
   create: false
   kernel: 0
-  subscribed requests:
-  used requests:
+  subscribed requests: []
+  used requests: []
