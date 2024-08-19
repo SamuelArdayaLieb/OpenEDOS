@@ -117,7 +117,7 @@ def generate_modules(
     
     fw.generate()
 
-    logging.info("Source code generation completed.")  
+    logging.info(f"{utils.bcolors.OKGREEN}Source code generation completed.{utils.bcolors.ENDC}")  
 
     fw.system_info() 
 
@@ -401,7 +401,7 @@ def create_request_header(
         path_to_config_folder=path_to_config_folder,
         path_to_project_config=path_to_project_config)
     
-    logging.info("Generation of oe_requests.h completed.")
+    logging.info(f"{utils.bcolors.OKGREEN}Generation of oe_requests.h completed.{utils.bcolors.ENDC}") 
 
 @openedos.command(no_args_is_help=True)
 @click.argument(
@@ -455,7 +455,7 @@ def create_all_modules_header(
         fw=fw,
         path_to_project_folder=path)
 
-    logging.info("Generation of all_modules.h completed.")
+    logging.info(f"{utils.bcolors.OKGREEN}Generation of all_modules.h completed.{utils.bcolors.ENDC}") 
 
 @openedos.command(no_args_is_help=True)
 @click.argument(
@@ -530,7 +530,7 @@ def create_main(
         fw=fw,
         path_to_project_folder=path)
     
-    logging.info("Generation of main.c completed.")
+    logging.info(f"{utils.bcolors.OKGREEN}Generation of main.c completed.{utils.bcolors.ENDC}") 
     
 @openedos.command(no_args_is_help=True)
 @click.argument(
@@ -612,7 +612,7 @@ def update_project(
             fw=fw,
             path_to_config_folder=path_to_config_folder)
     
-    logging.info("Source code generation completed.") 
+    logging.info(f"{utils.bcolors.OKGREEN}Source code generation completed.{utils.bcolors.ENDC}") 
      
     fw.system_info() 
     
