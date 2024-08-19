@@ -1,6 +1,7 @@
 Examples/
 Modules/
 Test/
+SoftwareTests*/
 SoftwareTests/build/
 .vscode/
 *.egg-info
