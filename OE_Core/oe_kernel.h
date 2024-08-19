@@ -111,10 +111,9 @@ void OE_Kernel_unregisterHandlers(
  * @param RequestID The request ID to be checked.
  *
  * @return true At least one handler is registered.
- *
  * @return false No handler is registered.
  */
-bool OE_Kernel_handlerRegistered(
+inline bool OE_Kernel_handlerRegistered(
     OE_Kernel_t *Kernel,
     OE_RequestID_t RequestID);
 
@@ -150,6 +149,7 @@ void OE_Kernel_run(
  * message queue. The behaviour of the system can then be observed step by step.
  *
  * @param Kernel The pointer to the kernel that runs once.
+ * 
  * @return true A message was handled.
  * @return false No message was handled.
  */

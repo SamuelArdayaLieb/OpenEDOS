@@ -232,6 +232,7 @@ OE_Error_t OE_Core_sendRequest(
 {
     OE_Message_t *Message = NULL;
     OE_KernelID_t KernelID;
+    bool handlerRegistered = false;
 
     if (Header->KernelID >= OE_NUMBER_OF_KERNELS)
     {
@@ -251,6 +252,7 @@ OE_Error_t OE_Core_sendRequest(
         /* Check which Kernels receive the request. */
         if (OE_Kernel_handlerRegistered(OE_Core->Kernels[KernelID], Header->RequestID))
         {
+            handlerRegistered = true;
 #if OE_USE_REQUEST_LIMIT
             if (OE_Core_registerFull(KernelID, Header->RequestID))
             {
@@ -266,6 +268,11 @@ OE_Error_t OE_Core_sendRequest(
                 return OE_ERROR_MESSAGE_QUEUE_FULL;
             }
         }
+    }
+
+    if (!handlerRegistered)
+    {
+        return OE_ERROR_NONE;
     }
 
     /* Send loop. */
@@ -378,6 +385,18 @@ OE_Message_t *OE_Core_getMessage(
         &OE_Core->MessageQueues[KernelID]);
 
     if (Message == NULL)
+    {
+        OE_EXIT_CRITICAL();
+
+        return NULL;
+    }
+
+    /** 
+     * If a module unsubscribed to a request after it was placed in the message queue,
+     * the unsubscribed request is still in the queue. Check again to protect state machines.
+     */
+    if ((Message->Header.Information & OE_MESSAGE_TYPE_REQUEST)
+    && (!OE_Kernel_handlerRegistered(OE_Core->Kernels[KernelID], Message->Header.RequestID)))
     {
         OE_EXIT_CRITICAL();
 
