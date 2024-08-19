@@ -94,14 +94,14 @@ void OE_Kernel_run(
     }
 }
 
-void OE_Kernel_runOnce(
+bool OE_Kernel_runOnce(
     OE_Kernel_t *Kernel)
 {
     OE_Message_t *Message = NULL;
 
     if (Kernel->KernelID >= OE_NUMBER_OF_KERNELS)
     {
-        return;
+        return false;
     }
 
     Message = OE_Core_getMessage(Kernel->KernelID);
@@ -111,7 +111,11 @@ void OE_Kernel_runOnce(
         OE_Kernel_handleMessage(
             Kernel,
             Message);
+
+        return true;
     }
+
+    return false;
 }
 
 void OE_Kernel_handleMessage(

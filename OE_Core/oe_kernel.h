@@ -150,8 +150,10 @@ void OE_Kernel_run(
  * message queue. The behaviour of the system can then be observed step by step.
  *
  * @param Kernel The pointer to the kernel that runs once.
+ * @return true A message was handled.
+ * @return false No message was handled.
  */
-void OE_Kernel_runOnce(
+bool OE_Kernel_runOnce(
     OE_Kernel_t *Kernel);
 
 /**
