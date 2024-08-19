@@ -1,4 +1,4 @@
 include .openedos-complete.bash
 include OE_Core/*
-include OE_Config/*
+include OE_Core/OE_Config/*
 include OE_Systembuilder/*
