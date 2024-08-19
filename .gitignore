@@ -1,4 +1,10 @@
 Examples/
-OpenEDOS_SoftwareTests/build/
+Modules/
+Test/
+SoftwareTests/build/
 .vscode/
+*.egg-info
 venv/
+notes.txt
+backlog.txt
+
