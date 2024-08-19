@@ -1,8 +1,7 @@
 Examples/
-Modules/
-Tests/
-SoftwareTests*/
-SoftwareTests/build/
+/Modules/
+Test/
+Tests/build/
 .vscode/
 *.egg-info
 venv/
