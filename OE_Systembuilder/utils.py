@@ -8,7 +8,7 @@ import logging
 
 INDENT = "\t"
 
-OPENEDOS_VERSION = "2.0.0"
+OPENEDOS_VERSION = "2.0"
 
 class bcolors:
     HEADER = '\033[95m'

@@ -4,9 +4,6 @@ OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
 
-__version__ = "2.0.0"
-version_message = '%(prog)s, v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license'
-
 import os
 import click
 import glob
@@ -16,6 +13,9 @@ from . import utils
 from . import config
 from . import firmware
 from . import project
+
+__version__ = utils.OPENEDOS_VERSION
+version_message = '%(prog)s, v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license'
 
 @click.group(no_args_is_help=True)
 @click.version_option(version=__version__, prog_name="OpenEDOS", message=version_message)

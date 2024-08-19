@@ -14,22 +14,28 @@ you can copy the script .openedos-complete.bash to your home directory (~/) and 
 to .bashrc.
 
 ### Setting it up
-Place the the file openedos-2.0.0.tar.gz in a directory. If you want to build the tarball yourself,
-clone the repository, step inside and use 
+Place the the file dist/openedos-2.0.tar.gz or dist/OpenEDOS-2.0-py3-none-any.whl in a directory. 
+If you want to build the package yourself, inside the repository use:
 ```
 python3 -m venv venv
 . venv/bin/activate
 pip install build
 python3 -m build .
 ```
-openedos-2.0.0.tar.gz should appear in dist/. 
+The packages openedos-2.0.tar.gz and OpenEDOS-2.0-py3-none-any.whl are being built in dist/. 
 
-Now you have openedos-2.0.0.tar.gz in a directory. When you are in that directory, use:
+When you have openedos-2.0.tar.gz (or OpenEDOS-2.0-py3-none-any.whl) in a directory, use:
 ```
 python3 -m venv venv
 . venv/bin/activate
-pip install openedos-2.0.0.tar.gz
-```  
+pip install openedos-2.0.tar.gz
+
+``` 
+(or:
+```
+pip install OpenEDOS-2.0-py3-none-any.whl
+```
+)
 
 This installs OpenEDOS in the venv you created.
 OpenEDOS is, at this point, a Command Line Interface (CLI) which you can use at will.
@@ -37,6 +43,8 @@ To see a list of the provided commands just type:
 ```
 openedos
 ```  
+
+A list of all available commands and a description should be shown in the terminal.
 
 ## The OpenEDOS Core
 
