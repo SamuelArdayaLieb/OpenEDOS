@@ -16,7 +16,7 @@
 /* Include necessary headers. */
 
 /* No operation. May be omitted or optimizable. */
-#define OE_NOP()
+#define OE_NOP() 
 
 /**
  * Idle, e.g. some sort of low power mode. This operating mode

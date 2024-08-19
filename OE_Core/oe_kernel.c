@@ -118,7 +118,7 @@ void OE_Kernel_handleMessage(
     OE_Kernel_t *Kernel,
     OE_Message_t *Message)
 {
-    if (Message->Header.Information & OE_MESSAGE_TYPE_REQUEST)
+    if (Message->Header.Information & OE_MESSAGE_TYPE_REQUEST) // Request
     {
         OE_RequestMapNode_t *MapNode = OE_RequestMap_getHandlers(
             &(Kernel->RequestMap),
@@ -146,7 +146,7 @@ void OE_Kernel_handleMessage(
             }
         }
     }
-    else
+    else // Response
     {
         if (Message->Header.Information & OE_MESSAGE_DATA_EMPTY)
         {
