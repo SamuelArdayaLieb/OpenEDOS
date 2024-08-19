@@ -13,13 +13,13 @@
  */
 
 /* Application specific configurations */
-#include "OE_Config/oe_config.h"
+#include "oe_config.h"
 
 /* Enum of the request IDs and the total number of requests */
-#include "OE_Config/oe_requests.h"
+#include "oe_requests.h"
 
 /* Hardware/RTOS specific functions */
-#include "OE_Config/oe_port.h"
+#include "oe_port.h"
 
 /* Needed for size_t */
 #include <stddef.h>

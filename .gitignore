@@ -1,6 +1,6 @@
 Examples/
 Modules/
-Test/
+Tests/
 SoftwareTests*/
 SoftwareTests/build/
 .vscode/

@@ -395,11 +395,14 @@ def create_request_header(
     else:
         path_to_project_config = project_config
 
+    fw, _ = firmware.parse_configs(
+        path_to_modules=path,
+        path_to_project_config=path_to_project_config)
+
     logging.info("Generating oe_requests.h...")
     project.create_requests_header(
-        path_to_module_folder=path,
-        path_to_config_folder=path_to_config_folder,
-        path_to_project_config=path_to_project_config)
+        fw=fw,
+        path_to_config_folder=path_to_config_folder)
     
     logging.info(f"{utils.bcolors.OKGREEN}Generation of oe_requests.h completed.{utils.bcolors.ENDC}") 
 

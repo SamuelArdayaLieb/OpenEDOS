@@ -162,23 +162,23 @@ def create_project(
     logging.debug("Creating project directories...")
     path_to_project_config = os.path.join(path_to_project, utils.name_to_filename(f"{project_name}_project.yaml"))
     path_to_module_folder = os.path.join(path_to_project, "Modules")
-    path_to_config_folder = os.path.join(path_to_project, "OE_Config")
     path_to_core = os.path.join(path_to_module_folder, "OE_Core")
-
+    path_to_config_folder = os.path.join(path_to_project, "OE_Config")
+    
     os.makedirs(path_to_project)
     os.makedirs(path_to_module_folder)
-    os.makedirs(path_to_config_folder)
     os.makedirs(path_to_core)
-
+    os.makedirs(path_to_config_folder)
+    
     logging.debug("Creating project config...")
     create_project_config(
         path_to_folder=path_to_project,
         project_name=project_name)
 
     logging.debug("Populating OE Config...")
-    shutil.copy(pkg_resources.resource_filename('OE_Core', 'OE_Config/oe_config.h'), path_to_config_folder)
-    shutil.copy(pkg_resources.resource_filename('OE_Core', 'OE_Config/oe_port.h'), path_to_config_folder)
-    shutil.copy(pkg_resources.resource_filename('OE_Core', 'OE_Config/oe_requests.h'), path_to_config_folder)
+    shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_config.h'), path_to_config_folder)
+    shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_port.h'), path_to_config_folder)
+    shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_requests.h'), path_to_config_folder)
 
     logging.debug("Populating OE Core...")
     # CMakeLists?
