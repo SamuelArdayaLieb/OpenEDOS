@@ -113,7 +113,7 @@ void OE_Kernel_unregisterHandlers(
  * @return true At least one handler is registered.
  * @return false No handler is registered.
  */
-inline bool OE_Kernel_handlerRegistered(
+bool OE_Kernel_handlerRegistered(
     OE_Kernel_t *Kernel,
     OE_RequestID_t RequestID);
 
