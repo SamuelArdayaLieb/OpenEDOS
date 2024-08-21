@@ -12,6 +12,7 @@ from typing import Dict, Set, Tuple
 from .message_handlers import Request
 from .config_parser import ConfigParser
 from .kernel import Kernel
+from . import utils 
 
 class Firmware():
     def __init__(self, 
@@ -161,7 +162,7 @@ def parse_configs(
     ret = firmware.parse()
 
     if ret == 0:
-        logging.info(f"Found 0 configuration errors.")
+        logging.info(f"{utils.bcolors.OKGREEN}Found 0 configuration errors.{utils.bcolors.ENDC}")
     elif ret == 1:
         logging.warning(f"Found 1 configuration error.")
     else:
