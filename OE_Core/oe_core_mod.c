@@ -92,11 +92,13 @@ static module_OE_Core_t *OE_Core;
 /**
  * @brief Custom initializer for the module: OE_Core.
  * 
+ * @param Args A pointer to the init params for the module.
+ * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-static inline OE_Error_t init_OE_Core(void);
+static inline OE_Error_t init_OE_Core(void *Args);
 
 //~~~~~~~~~~~~~~~~~~~~~~ Request handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
@@ -111,6 +113,7 @@ static inline OE_Error_t init_OE_Core(void);
 /* Initialize the module and register handlers. */
 OE_Error_t initModule_OE_Core(
     module_OE_Core_t *pOE_Core,
+    void *Args,
     OE_Kernel_t *Kernel)
 {
     OE_Error_t Error;
@@ -128,7 +131,7 @@ OE_Error_t initModule_OE_Core(
     OE_Core->Kernel = Kernel;
 
     /* Initialize the module. */
-    Error = init_OE_Core();
+    Error = init_OE_Core(Args);
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -168,7 +171,7 @@ OE_Error_t initModule_OE_Core(
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//
 
-OE_Error_t init_OE_Core(void)
+OE_Error_t init_OE_Core(void *Args)
 {
 	/* USER CODE MODULE INIT BEGIN */
 	OE_Core->NumberOfKernels = 0;
