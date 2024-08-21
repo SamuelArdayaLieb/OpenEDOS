@@ -594,7 +594,8 @@ class KernelThread():
         id = f"KERNEL {self.kernel_id} INIT"
         if id in user_codes:
             self.user_code_init = user_codes[id]
-        else: 
+            self.user_code_init.indents = 1
+        elif (id in user_codes and user_codes[id].code == "\n") or id not in user_codes:
             code = "\tOE_Error_t Error;\n"
             code += f"\tOE_Kernel_t Kernel_{self.kernel_id};\n\n"
             for module_name in self.module_names:
@@ -678,8 +679,9 @@ class MainFile(File):
 
         id = "MAIN FUNCTION"
         if id in user_codes:
-            self.user_code_main = user_codes[id] 
-        else:
+            self.user_code_main = user_codes[id]
+            self.user_code_main.indents = 1
+        elif (id in user_codes and user_codes[id].code == "\n") or id not in user_codes:
             code = "\tinitModule_OE_Core(&OE_Core, NULL);\n\n"
             if len(self.kernel_threads) == 1:
                 code += "\t/* Call the one thread function (no multi threading). */\n"
