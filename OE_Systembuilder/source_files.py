@@ -623,7 +623,8 @@ class KernelThread():
         id = f"KERNEL {self.kernel_id} RUN"
         if id in user_codes:
             self.user_code_run = user_codes[id]
-        else: 
+            self.user_code_run.indents = 1
+        elif (id in user_codes and user_codes[id].code == "\n") or id not in user_codes:
             code = "\t/* Enter kernel main routine. */\n"
             code += f"\tOE_Kernel_run(&Kernel_{self.kernel_id});\n"
             self.user_code_run = UserCode(identifier=id, code=code, indents=1)
