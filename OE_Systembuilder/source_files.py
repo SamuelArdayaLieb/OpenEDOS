@@ -252,16 +252,18 @@ the specific init function of the module.
 
 @param {self.name} A pointer to the module to be initialized.
 
+@param Args A pointer to the init params for the module.
+
 @param Kernel A pointer to the kernel to be connected.
 
 @return OE_Error_t An error is returned if
 - initializing the module results in an error.
 Otherwise OE_ERROR_NONE is returned.\n"""
-
         text += utils.text_to_comment(comment)
-        text += f"OE_Error_t initModule_{self.name}(\n"
-        text += f"\tmodule_{self.name}_t *{self.name},\n"
-        text += f"\tOE_Kernel_t *Kernel);\n\n"
+        text += f"""OE_Error_t initModule_{self.name}(
+    module_{self.name}_t *{self.name},
+    void *Args,
+    OE_Kernel_t *Kernel);\n\n""" 
         return text
 
     def _user_prototypes(self) -> str:
@@ -332,11 +334,12 @@ class ModuleSource(File):
         comment = f"@brief Custom initializer for the module: {self.name}.\n\n"
         if self.user_code_init.description != "\n":
             comment += self.user_code_init.description + "\n"
+        comment += "@param Args A pointer to the init params for the module.\n\n"
         comment += "@return OE_Error_t An error is returned if\n"
         comment += "- initializing the module results in an error.\n"
         comment += "Otherwise OE_ERROR_NONE is returned.\n"
         text += utils.text_to_comment(comment)
-        text += f"static inline OE_Error_t init_{self.name}(void);\n\n"
+        text += f"static inline OE_Error_t init_{self.name}(void *Args);\n\n"
         return text
     
     def _request_handler_prototypes(self) -> str:
@@ -363,6 +366,7 @@ class ModuleSource(File):
 /* Initialize the module and register handlers. */
 OE_Error_t initModule_{self.name}(
     module_{self.name}_t *p{self.name},
+    void *Args,
     OE_Kernel_t *Kernel)
 {'{'}
     OE_Error_t Error;
@@ -386,7 +390,7 @@ OE_Error_t initModule_{self.name}(
     {self.name}->Kernel = Kernel;
 
     /* Initialize the module. */
-    Error = init_{self.name}();
+    Error = init_{self.name}(Args);
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -427,10 +431,12 @@ OE_Error_t initModule_{self.name}(
 
     def _custom_init(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
-        text += f"OE_Error_t init_{self.name}(void)\n"
+        text += f"OE_Error_t init_{self.name}(void *Args)\n"
         text += "{\n"    
         if self.user_code_init.code == "\n":
-            self.user_code_init.code = f"\n\n\t/* Return no error if everything is fine. */\n"
+            self.user_code_init.code = "/* Avoid unused warning. */\n"
+            self.user_code_init.code += "(void)Args;\n"
+            self.user_code_init.code += f"\n\n\t/* Return no error if everything is fine. */\n"
             self.user_code_init.code += "\treturn OE_ERROR_NONE;\n"
         text += self.user_code_init.get_text()    
         text += "}\n\n"
