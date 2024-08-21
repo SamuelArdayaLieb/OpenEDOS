@@ -37,11 +37,13 @@ static module_TestDummy_t *TestDummy;
 /**
  * @brief Custom initializer for the module: TestDummy.
  * 
+ * @param Args A pointer to the init params for the module.
+ * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-static inline OE_Error_t init_TestDummy(void);
+static inline OE_Error_t init_TestDummy(void *Args);
 
 //~~~~~~~~~~~~~~~~~~~~~~ Request handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
@@ -94,6 +96,7 @@ static void handleResponse_Dummy_Request_1(
 /* Initialize the module and register handlers. */
 OE_Error_t initModule_TestDummy(
     module_TestDummy_t *pTestDummy,
+    void *Args,
     OE_Kernel_t *Kernel)
 {
     OE_Error_t Error;
@@ -117,7 +120,7 @@ OE_Error_t initModule_TestDummy(
     TestDummy->Kernel = Kernel;
 
     /* Initialize the module. */
-    Error = init_TestDummy();
+    Error = init_TestDummy(Args);
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -157,7 +160,7 @@ OE_Error_t initModule_TestDummy(
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//
 
-OE_Error_t init_TestDummy(void)
+OE_Error_t init_TestDummy(void *Args)
 {
 	/* USER CODE MODULE INIT BEGIN */
 	TestParam_1 = TEST_VAL_MODULE_INIT;

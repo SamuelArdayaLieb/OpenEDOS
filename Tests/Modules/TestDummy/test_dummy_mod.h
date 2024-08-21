@@ -56,6 +56,8 @@ typedef struct module_TestDummy_s {
  * 
  * @param TestDummy A pointer to the module to be initialized.
  * 
+ * @param Args A pointer to the init params for the module.
+ * 
  * @param Kernel A pointer to the kernel to be connected.
  * 
  * @return OE_Error_t An error is returned if
@@ -63,8 +65,9 @@ typedef struct module_TestDummy_s {
  * Otherwise OE_ERROR_NONE is returned.
  */
 OE_Error_t initModule_TestDummy(
-	module_TestDummy_t *TestDummy,
-	OE_Kernel_t *Kernel);
+    module_TestDummy_t *TestDummy,
+    void *Args,
+    OE_Kernel_t *Kernel);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 

@@ -19,7 +19,7 @@ static pthread_t threads[OE_NUMBER_OF_KERNELS];
 pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS] = { PTHREAD_MUTEX_INITIALIZER };
 pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZER };
 
-static void test_multiKernel_init(CuTest *tc)
+static void test_multiKernel_staticInit(CuTest *tc)
 {
     OE_Kernel_t Kernel_0, Kernel_1, Kernel_2, Kernel_3;
     OE_Error_t Error;
@@ -35,7 +35,7 @@ static void test_multiKernel_init(CuTest *tc)
     Error = OE_Kernel_staticInit(&Kernel_2);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
-    /* Not more than 3 kernel should be accepted. */
+    /* Not more than 3 kernels should be accepted. */
     Error = OE_Kernel_staticInit(&Kernel_3);
     CuAssertIntEquals(tc, OE_ERROR_KERNEL_LIMIT_REACHED, Error);
 
@@ -52,6 +52,11 @@ static void test_multiKernel_init(CuTest *tc)
     /* Check again. */
     Error = OE_Kernel_staticInit(&Kernel_3);
     CuAssertIntEquals(tc, OE_ERROR_KERNEL_LIMIT_REACHED, Error);
+}
+
+static void test_multiKernel_initModule(CuTest *tc)
+{
+    
 }
 
 static void *Kernel_0_thread(void *args)
@@ -123,10 +128,6 @@ static void test_multiKernel_run(CuTest *tc)
 
     sleep(5);
 
-    // req_Kernel_Stop(0);
-    // req_Kernel_Stop(1);
-    // req_Kernel_Stop(2);
-
     pthread_join(threads[0], NULL);
     pthread_join(threads[1], NULL);
     pthread_join(threads[2], NULL);
@@ -135,6 +136,6 @@ static void test_multiKernel_run(CuTest *tc)
 
 void add_multiKernel(CuSuite *suite)
 {
-    SUITE_ADD_TEST(suite, test_multiKernel_init);
+    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
     SUITE_ADD_TEST(suite, test_multiKernel_run);
 }
