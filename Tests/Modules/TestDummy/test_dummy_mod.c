@@ -4,7 +4,7 @@
  * when rerunning the code generation. Happy coding!
  * 
  * @file test_dummy_mod.c
- * @author Samuel Ardaya-Lieb
+ * @author Samu
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */

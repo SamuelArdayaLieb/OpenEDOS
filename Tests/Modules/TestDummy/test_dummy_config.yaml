@@ -1,4 +1,4 @@
-name: singleKernel_TestDummy
+name: TestDummy
 author: Samu
 interface:
   create: true

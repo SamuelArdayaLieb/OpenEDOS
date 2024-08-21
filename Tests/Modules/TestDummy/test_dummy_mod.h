@@ -3,7 +3,7 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file multi_kernel_test_dummy_1_mod.h
+ * @file test_dummy_mod.h
  * @author Samu
  */
 
@@ -21,11 +21,11 @@
 
 /* USER CODE FILE HEADER END */
 
-#ifndef MULTI_KERNEL_TEST_DUMMY_1_MOD_H
-#define MULTI_KERNEL_TEST_DUMMY_1_MOD_H
+#ifndef TEST_DUMMY_MOD_H
+#define TEST_DUMMY_MOD_H
 
 #include "oe_defines.h"
-#include "multi_kernel_test_dummy_1_intf.h"
+#include "test_dummy_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
@@ -34,7 +34,7 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module definition ~~~~~~~~~~~~~~~~~~~~~~~~//
 
-typedef struct module_multiKernel_TestDummy_1_s {
+typedef struct module_TestDummy_s {
     /* The connection to the kernel. */
     OE_Kernel_t *Kernel;
 
@@ -43,18 +43,18 @@ typedef struct module_multiKernel_TestDummy_1_s {
 
 	/* USER CODE MODULE DATA END */
 
-} module_multiKernel_TestDummy_1_t;
+} module_TestDummy_t;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Init prototype ~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Initialize the module multiKernel_TestDummy_1.
+ * @brief Initialize the module TestDummy.
  * 
  * This function registers the request handlers of the module
  * and connects the module to the kernel. It then calls 
  * the specific init function of the module.
  * 
- * @param multiKernel_TestDummy_1 A pointer to the module to be initialized.
+ * @param TestDummy A pointer to the module to be initialized.
  * 
  * @param Args A pointer to the init params for the module.
  * 
@@ -64,15 +64,21 @@ typedef struct module_multiKernel_TestDummy_1_s {
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t initModule_multiKernel_TestDummy_1(
-    module_multiKernel_TestDummy_1_t *multiKernel_TestDummy_1,
+OE_Error_t initModule_TestDummy(
+    module_TestDummy_t *TestDummy,
     void *Args,
     OE_Kernel_t *Kernel);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
+OE_Error_t subscribeRequest_1(void);
+void unsubscribeRequest_1(void);
+OE_Error_t sendRequest_1(void);
 
+OE_Error_t subscribeRequest_2(void);
+void unsubscribeRequest_2(void);
+OE_Error_t sendRequest_2(void);
 /* USER CODE MODULE PROTOTYPES END */
 
-#endif // MULTI_KERNEL_TEST_DUMMY_1_MOD_H
+#endif // TEST_DUMMY_MOD_H

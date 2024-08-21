@@ -74,6 +74,8 @@ static void *Kernel_0_thread(void *args)
 
     OE_Kernel_run(
         &Kernel);
+
+    return NULL;
 }
 
 static void *Kernel_1_thread(void *args)
@@ -91,6 +93,8 @@ static void *Kernel_1_thread(void *args)
 
     OE_Kernel_run(
         &Kernel);
+
+    return NULL;
 }
 
 static void *Kernel_2_thread(void *args)
@@ -108,6 +112,8 @@ static void *Kernel_2_thread(void *args)
 
     OE_Kernel_run(
         &Kernel);
+
+    return NULL;
 }
 
 static void test_multiKernel_run(CuTest *tc)

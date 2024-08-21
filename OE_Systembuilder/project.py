@@ -23,7 +23,7 @@ def create_project_config(
     filename = utils.name_to_filename(f"{project_name}_project.yaml")
     path_to_file = os.path.join(path_to_folder, filename)
     if os.path.isfile(path_to_file):
-        logging.warn(f"Creating project config '{project_name}': File already exists!\n@ {path_to_file}")
+        logging.warn(f"Creating project config '{project_name}': File already exists! @\n{path_to_file}")
         return
     config = {
         "project name" : project_name,
@@ -52,7 +52,7 @@ def create_requests_header(
                 request_ids[config_parser.name].append(request.RID)
 
     if os.path.isfile(path_to_file):
-        logging.debug(f"Creating oe_requests.h: Found existing file \n@{path_to_file}")
+        logging.debug(f"Creating oe_requests.h: Found existing file  @\n{path_to_file}")
         parser = CodeParser(path_to_file)
         user_codes = parser.parse_source_code()
     else:
@@ -83,7 +83,7 @@ def create_all_modules_header(
     path_to_file = os.path.join(path_to_project_folder, filename)
 
     if os.path.isfile(path_to_file):
-        logging.debug(f"Creating all_modules.h: Found existing file \n@{path_to_file}")
+        logging.debug(f"Creating all_modules.h: Found existing file  @\n{path_to_file}")
         parser = CodeParser(path_to_file)
         user_codes = parser.parse_source_code()
     else:
@@ -118,7 +118,7 @@ def create_main(
     authors:Set = set()
     
     if os.path.isfile(path_to_file):
-        logging.debug(f"Creating main.c: Found existing file \n@{path_to_file}")
+        logging.debug(f"Creating main.c: Found existing file  @\n{path_to_file}")
         parser = CodeParser(path_to_file)
         user_codes = parser.parse_source_code()
     else:
@@ -157,7 +157,7 @@ def create_project(
     logging.debug("Checking path to new project...")
     path_to_project = os.path.join(path_to_folder, project_name.replace(" ", "_"))
     if os.path.isdir(path_to_project):
-        logging.error(f"Creating project {project_name.replace(' ', '_')}: Project directory already exists!\n@{path_to_project}")
+        logging.error(f"Creating project {project_name.replace(' ', '_')}: Project directory already exists! @\n{path_to_project}")
         return
     logging.debug("Creating project directories...")
     path_to_project_config = os.path.join(path_to_project, utils.name_to_filename(f"{project_name}_project.yaml"))

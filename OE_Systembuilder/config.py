@@ -48,9 +48,9 @@ def save_config(
     ) -> None:
     path_to_file = os.path.join(path_to_folder, file_name)
     if os.path.isfile(path_to_file) and not override:
-        logging.warn(f"Creating module config '{config['name']}': File already exists!\n@ {path_to_file}")
+        logging.warn(f"Creating module config '{config['name']}': File already exists! @\n{path_to_file}")
         return
-    logging.debug(f"Saving module config '{config['name']}'\n@ {path_to_file}")
+    logging.debug(f"Saving module config '{config['name']}' @\n{path_to_file}")
     with open(path_to_file, 'w') as outfile:
         yaml.Dumper.ignore_aliases = lambda *args : True
         yaml.dump(config, outfile, default_flow_style=False, sort_keys=False)    

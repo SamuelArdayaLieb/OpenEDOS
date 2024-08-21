@@ -4,7 +4,7 @@
  * when rerunning the code generation. Happy coding!
  * 
  * @file oe_requests.h
- * @author Samuel Ardaya-Lieb
+ * @author Samu, Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */

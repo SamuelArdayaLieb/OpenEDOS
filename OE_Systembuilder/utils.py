@@ -60,20 +60,3 @@ def set_logging(
         format=f"{bcolors.OKBLUE}OpenEDOS:{bcolors.ENDC} "\
                f"{bcolors.BOLD}%(levelname)s{bcolors.ENDC}: %(message)s", 
         level=logging_level)
-
-# def create_project_config(
-#     path_to_folder:str,
-#     project_name:str
-#     ) -> None:
-#     filename = name_to_filename(f"{project_name}_project.yaml")
-#     path_to_file = os.path.join(path_to_folder, filename)
-#     if os.path.isfile(path_to_file):
-#         logging.warn(f"Creating project config '{project_name}': File already exists!\n@ {path_to_file}")
-#         return
-#     config = {
-#         "project name" : project_name,
-#         "version" : "0.0.1",
-#         "copyright notice" : ""
-#     }
-#     with open(path_to_file, 'w') as outfile:
-#         yaml.dump(config, outfile, default_flow_style=False)

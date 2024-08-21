@@ -3,7 +3,7 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file single_kernel_test_dummy_intf.h
+ * @file test_dummy_intf.h
  * @author Samu
  */
 
@@ -21,8 +21,8 @@
 
 /* USER CODE FILE HEADER END */
 
-#ifndef SINGLE_KERNEL_TEST_DUMMY_INTF_H
-#define SINGLE_KERNEL_TEST_DUMMY_INTF_H
+#ifndef TEST_DUMMY_INTF_H
+#define TEST_DUMMY_INTF_H
 
 #include "oe_defines.h"
 
@@ -98,4 +98,4 @@ struct responseArgs_Dummy_Request_1_s {
  */
 OE_Error_t req_Dummy_Request_2(void);
 
-#endif // SINGLE_KERNEL_TEST_DUMMY_INTF_H
+#endif // TEST_DUMMY_INTF_H

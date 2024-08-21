@@ -4,7 +4,7 @@
  * when rerunning the code generation. Happy coding!
  * 
  * @file main.c
- * @author Samuel Ardaya-Lieb
+ * @author Samu, Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
@@ -44,6 +44,9 @@ static OE_Core_t OE_Core;
 int main(void)
 {
 	/* USER CODE MAIN FUNCTION BEGIN */
+    /* Avoid unused warning. */
+    (void)OE_Core;
+    
     CuString *output = CuStringNew();
     CuSuite* suite = CuSuiteNew();
     

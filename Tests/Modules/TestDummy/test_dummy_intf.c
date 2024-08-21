@@ -3,7 +3,7 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file single_kernel_test_dummy_intf.c
+ * @file test_dummy_intf.c
  * @author Samu
  */
 
@@ -21,7 +21,7 @@
 
 /* USER CODE FILE HEADER END */
 
-#include "single_kernel_test_dummy_intf.h"
+#include "test_dummy_intf.h"
 #include "oe_core_mod.h"
 
 /* Includes, typedefs, globals, etc. */

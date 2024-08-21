@@ -96,14 +96,14 @@ def generate_modules(
         else:
             filename = filelist[0]
             path_to_project_config = os.path.join(path, filename)
-            logging.debug(f"Found project config\n@{path_to_project_config}")
+            logging.debug(f"Found project config @\n{path_to_project_config}")
     else:
         path_to_project_config = project_config
 
     # Look for modules folder.
     path_to_modules = os.path.join(path, "Modules")
     if os.path.isdir(path_to_modules):
-        logging.debug(f"Found modules folder\n@{path_to_modules}")
+        logging.debug(f"Found modules folder @\n{path_to_modules}")
     else:
         path_to_modules = path
 
@@ -373,7 +373,7 @@ def create_request_header(
         logging.debug("Looking for config folder...")
         if os.path.isdir(os.path.join(path, "OE_Config")):
             path_to_config_folder = os.path.join(path, "OE_Config")
-            logging.info(f"Found config folder\n@{path_to_config_folder}")
+            logging.info(f"Found config folder @\n{path_to_config_folder}")
         else:
             logging.error("Could not find config folder and no path was given!")
             return
@@ -391,7 +391,7 @@ def create_request_header(
         else:
             filename = filelist[0]
             path_to_project_config = os.path.join(path, filename)
-            logging.debug(f"Found project config\n@{path_to_project_config}")
+            logging.debug(f"Found project config @\n{path_to_project_config}")
     else:
         path_to_project_config = project_config
 
@@ -441,9 +441,9 @@ def create_all_modules_header(
         logging.debug("Looking for module folder...")
         if os.path.isdir(os.path.join(path, "Modules")):
             path_to_module_folder = os.path.join(path, "Modules")
-            logging.info(f"Found module folder\n@{path_to_module_folder}")
+            logging.info(f"Found module folder @\n{path_to_module_folder}")
         else:
-            logging.debug(f"Could not find module folder. Using directory\n@{path}")
+            logging.debug(f"Could not find module folder. Using directory @\n{path}")
             path_to_module_folder = path
     else:
         path_to_module_folder = modules
@@ -502,7 +502,7 @@ def create_main(
         logging.debug("Looking for module folder...")
         if os.path.isdir(os.path.join(path, "Modules")):
             path_to_module_folder = os.path.join(path, "Modules")
-            logging.info(f"Found module folder\n@{path_to_module_folder}")
+            logging.info(f"Found module folder @\n{path_to_module_folder}")
         else:
             logging.error("Could not find module folder and no path was given!")
             return
@@ -520,7 +520,7 @@ def create_main(
         else:
             filename = filelist[0]
             path_to_project_config = os.path.join(path, filename)
-            logging.debug(f"Found project config\n@{path_to_project_config}")
+            logging.debug(f"Found project config @\n{path_to_project_config}")
     else:
         path_to_project_config = project_config
 
@@ -575,19 +575,19 @@ def update_project(
     else:
         filename = filelist[0]
         path_to_project_config = os.path.join(path, filename)
-        logging.debug(f"Found project config\n@{path_to_project_config}")
+        logging.debug(f"Found project config @\n{path_to_project_config}")
 
     # Look for Modules folder
     path_to_modules_folder = os.path.join(path, "Modules")
     if os.path.isdir(path_to_modules_folder):
-        logging.debug(f"Found 'Modules' folder\n@{path_to_modules_folder}")
+        logging.debug(f"Found 'Modules' folder @\n{path_to_modules_folder}")
     else:
         path_to_modules_folder = path
 
     # Look for OpenEDOS Config folder.
     path_to_config_folder = os.path.join(path, "OE_Config")
     if os.path.isdir(path_to_config_folder):
-        logging.debug(f"Found OpenEDOS Config folder\n@{path_to_config_folder}")
+        logging.debug(f"Found OpenEDOS Config folder @\n{path_to_config_folder}")
     else:
         logging.warning("Could not find 'OE_Config' folder!")
         path_to_config_folder = None
