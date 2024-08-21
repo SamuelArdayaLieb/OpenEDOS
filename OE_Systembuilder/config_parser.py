@@ -209,7 +209,7 @@ class ConfigParser():
 
     def create_interface(self) -> None:
         if not self.interface_config["create"]:
-            logging.info(f"Config '{self.name}': Skip creating interface.")
+            logging.info(f"Config '{self.name}': Skip generating interface.")
             return
         logging.debug(f"Config '{self.name}': Creating interface...")
         header_user_codes = {}
@@ -239,7 +239,7 @@ class ConfigParser():
         ) -> int:
         ret = 0
         if not self.module_config["create"]:
-            logging.info(f"Config '{self.name}': Skip creating module.")
+            logging.info(f"Config '{self.name}': Skip generating module.")
             return ret
         logging.debug(f"Config '{self.name}': Creating module...")
         ret += self.create_request_handlers(all_requests)
