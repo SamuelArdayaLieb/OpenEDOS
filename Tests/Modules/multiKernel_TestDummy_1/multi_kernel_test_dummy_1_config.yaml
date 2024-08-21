@@ -1,0 +1,10 @@
+name: multiKernel_TestDummy_1
+author: Samu
+interface:
+  create: true
+  requests: []
+module:
+  create: true
+  kernel: 0
+  subscribed requests: []
+  used requests: []

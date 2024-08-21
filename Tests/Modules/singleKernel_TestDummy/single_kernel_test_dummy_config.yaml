@@ -1,5 +1,5 @@
-name: TestDummy
-author: Samuel Ardaya-Lieb
+name: singleKernel_TestDummy
+author: Samu
 interface:
   create: true
   requests:

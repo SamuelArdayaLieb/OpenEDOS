@@ -174,6 +174,9 @@ OE_Error_t initModule_OE_Core(
 OE_Error_t init_OE_Core(void *Args)
 {
 	/* USER CODE MODULE INIT BEGIN */
+    /* Avoid unused warning. */
+    (void)Args;
+
 	OE_Core->NumberOfKernels = 0;
 
     for (OE_KernelID_t KernelID = 0; KernelID < OE_NUMBER_OF_KERNELS; KernelID++)
