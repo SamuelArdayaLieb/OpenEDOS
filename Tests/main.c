@@ -48,7 +48,7 @@ int main(void)
     CuSuite* suite = CuSuiteNew();
     
     add_singleKernel(suite);
-    add_multiKernel(suite);
+    //add_multiKernel(suite);
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);

@@ -199,9 +199,9 @@ void handleRequest_Kernel_Start(
 	struct requestArgs_Kernel_Start_s *Args)
 {
 	/* USER CODE REQUEST KERNEL START BEGIN */
-	TestParam_1 = TEST_VAL_SYSTEM_START;
-    TestParam_2 = TEST_VAL_SYSTEM_START;
-    TestParam_3 = TEST_VAL_SYSTEM_START;
+	TestParam_1 = TEST_VAL_KERNEL_START;
+    TestParam_2 = TEST_VAL_KERNEL_START;
+    TestParam_3 = TEST_VAL_KERNEL_START;
 	/* USER CODE REQUEST KERNEL START END */
 }
 

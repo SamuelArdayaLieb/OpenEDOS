@@ -19,7 +19,7 @@ static void init(CuTest *tc, OE_Kernel_t *Kernel)
     TestParam_2 = TEST_VAL_TEST_BEGIN;
     TestParam_3 = TEST_VAL_TEST_BEGIN;
 
-    initModule_OE_Core(&Core, NULL);
+    initModule_OE_Core(&Core, NULL, NULL);
 
     Error = OE_Kernel_staticInit(Kernel);
 
@@ -35,7 +35,7 @@ static void test_singleKernel_staticInit(CuTest *tc)
     OE_Kernel_t Kernel_1;
     OE_Error_t Error;
 
-    initModule_OE_Core(&Core, NULL);
+    initModule_OE_Core(&Core, NULL, NULL);
     
     /**
      * According to the OpenEDOS config, the switch works with one kernel.
@@ -62,6 +62,7 @@ static void test_singleKernel_initModule(CuTest *tc)
 
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
 
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);    
@@ -69,6 +70,7 @@ static void test_singleKernel_initModule(CuTest *tc)
     /* Reinitializing the same module should not return an error. */
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
 
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);  
@@ -84,6 +86,7 @@ static void test_singleKernel_kernelStart(CuTest *tc)
 
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
 
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
@@ -119,6 +122,7 @@ static void test_singleKernel_subscribeRequest(CuTest *tc)
 
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
 
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
@@ -174,6 +178,7 @@ static void test_singleKernel_messageQueueFull(CuTest *tc)
 
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);    
 
@@ -198,6 +203,7 @@ static void test_singleKernel_requestLimitReached(CuTest *tc)
 
     Error = initModule_TestDummy(
         &TestDummy,
+        NULL,
         &Kernel);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);    
 

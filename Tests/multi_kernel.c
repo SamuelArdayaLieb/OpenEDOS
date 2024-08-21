@@ -24,7 +24,7 @@ static void test_multiKernel_staticInit(CuTest *tc)
     OE_Kernel_t Kernel_0, Kernel_1, Kernel_2, Kernel_3;
     OE_Error_t Error;
 
-    initModule_OE_Core(&Core, NULL);
+    initModule_OE_Core(&Core, NULL, NULL);
 
     Error = OE_Kernel_staticInit(&Kernel_0);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
@@ -114,7 +114,7 @@ static void test_multiKernel_run(CuTest *tc)
 {
     srand(time(NULL));
     
-    initModule_OE_Core(&Core, NULL);
+    initModule_OE_Core(&Core, NULL, NULL);
     
     pthread_create(&threads[0], NULL, Kernel_0_thread, NULL);
     pthread_create(&threads[1], NULL, Kernel_1_thread, NULL);
