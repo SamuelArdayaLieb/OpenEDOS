@@ -434,8 +434,8 @@ OE_Error_t initModule_{self.name}(
         text += f"OE_Error_t init_{self.name}(void *Args)\n"
         text += "{\n"    
         if self.user_code_init.code == "\n":
-            self.user_code_init.code = "/* Avoid unused warning. */\n"
-            self.user_code_init.code += "(void)Args;\n"
+            self.user_code_init.code = "\t/* Avoid unused warning. */\n"
+            self.user_code_init.code += "\t(void)Args;\n"
             self.user_code_init.code += f"\n\n\t/* Return no error if everything is fine. */\n"
             self.user_code_init.code += "\treturn OE_ERROR_NONE;\n"
         text += self.user_code_init.get_text()    

@@ -22,8 +22,9 @@ static void init(CuTest *tc, OE_Kernel_t *Kernel)
     initModule_OE_Core(&Core, NULL, NULL);
 
     Error = OE_Kernel_staticInit(Kernel);
-
+    
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 0, Kernel->KernelID);
 
     /* There should be no message in the queue. */
     CuAssertIntEquals(tc, 0, 
@@ -32,7 +33,7 @@ static void init(CuTest *tc, OE_Kernel_t *Kernel)
 
 static void test_singleKernel_staticInit(CuTest *tc)
 {
-    OE_Kernel_t Kernel_1;
+    OE_Kernel_t Kernel;
     OE_Error_t Error;
 
     initModule_OE_Core(&Core, NULL, NULL);
@@ -41,14 +42,16 @@ static void test_singleKernel_staticInit(CuTest *tc)
      * According to the OpenEDOS config, the switch works with one kernel.
      * Initializing the kernel should return no error.
      */
-    Error = OE_Kernel_staticInit(&Kernel_1);
+    Error = OE_Kernel_staticInit(&Kernel);
 
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 0, Kernel.KernelID);
 
     /* Reinitializing the same kernel should return no error. */
-    Error = OE_Kernel_staticInit(&Kernel_1);
+    Error = OE_Kernel_staticInit(&Kernel);
 
-    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);  
+    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    CuAssertIntEquals(tc, 0, Kernel.KernelID);  
 }
 
 static void test_singleKernel_initModule(CuTest *tc)
@@ -96,7 +99,7 @@ static void test_singleKernel_kernelStart(CuTest *tc)
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
 
-    /* Process kernel start request. */
+    /* Send kernel start request. */
     Error = req_Kernel_Start(Kernel.KernelID);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     /* There should be one message in the queue. */

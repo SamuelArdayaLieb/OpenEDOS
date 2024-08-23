@@ -84,7 +84,7 @@ class ConfigParser():
 
         logging.debug(f"Parsing config '{self.name}'...")
         
-        if self.path_to_folder.endswith(self.name):
+        if self.path_to_folder == self.name:
             self.has_folder=True
             logging.debug(f"Config '{self.name}': Using existing module folder.")
         else:

@@ -225,7 +225,7 @@ void handleResponse_Dummy_Request_1(
 	struct responseArgs_Dummy_Request_1_s *Args)
 {
 	/* USER CODE RESPONSE DUMMY REQUEST 1 BEGIN */
-
+	TestParam_3 = Args->Dummy_Response_Param_1;
 	/* USER CODE RESPONSE DUMMY REQUEST 1 END */
 }
 

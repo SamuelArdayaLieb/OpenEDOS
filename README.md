@@ -5,6 +5,14 @@ The Open Source Event Driven Operating System (OpenEDOS) is a modular and extens
 ## The OpenEDOS Systembuilder
 The OpenEDOS Systembuilder is a command line interface (CLI) built with python click. It accelerates the development
 of firmware projects through automated code generation. 
+
+### Prerequisites
+
+It is recommended to use virtual environments when working with python packages. To do so, run
+```
+sudo apt install python3-venv
+```
+
 ### Autocompletion
 If you want autocompletion for the systembuilder commands to work,
 you can copy the script .openedos-complete.bash to your home directory (~/) and add the line  
@@ -28,6 +36,14 @@ When you have openedos-2.0.tar.gz (or OpenEDOS-2.0-py3-none-any.whl) in a direct
 ```
 python3 -m venv venv
 . venv/bin/activate
+```
+It might be necessary to run:
+``` 
+pip3 install --upgrade pip
+```
+Then:
+
+```
 pip install openedos-2.0.tar.gz
 
 ``` 
