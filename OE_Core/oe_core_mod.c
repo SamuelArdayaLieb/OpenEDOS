@@ -216,12 +216,27 @@ OE_Error_t init_OE_Core(void *Args)
 OE_Error_t OE_Core_connectKernel(
     OE_Kernel_t *Kernel)
 {
-    if (OE_Core->NumberOfKernels >= OE_NUMBER_OF_KERNELS)
+    OE_KernelID_t KernelID;
+    
+    OE_ENTER_CRITICAL();
+
+    /* First, check if the kernel is already connected. */
+    for (KernelID = 0; KernelID < OE_Core->NumberOfKernels; KernelID++)
     {
-        return OE_ERROR_KERNEL_LIMIT_REACHED;
+        if (OE_Core->Kernels[KernelID] == Kernel)
+        {
+            OE_EXIT_CRITICAL();
+
+            return OE_ERROR_NONE;
+        }
     }
 
-    OE_ENTER_CRITICAL();
+    if (OE_Core->NumberOfKernels >= OE_NUMBER_OF_KERNELS)
+    {
+        OE_EXIT_CRITICAL();
+
+        return OE_ERROR_KERNEL_LIMIT_REACHED;
+    }
 
     Kernel->KernelID = OE_Core->NumberOfKernels;
 

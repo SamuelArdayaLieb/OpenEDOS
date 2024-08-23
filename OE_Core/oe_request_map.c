@@ -29,6 +29,18 @@ static inline void OE_RequestMap_removeHandler(
     OE_RequestMapNode_t *Node,
     OE_MessageHandler_t RequestHandler);
 
+/**
+ * @brief Check if a request handler is already registered in a map node.
+ * 
+ * @param Node The node to be checked.
+ * @param RequestHandler The searched request handler. 
+ * @return true If the request handler is registered.
+ * @return false If the request handler is not registered.
+ */
+static inline bool OE_RequestMap_handlerRegistered(
+    OE_RequestMapNode_t *Node,
+    OE_MessageHandler_t RequestHandler);
+
 void OE_RequestMap_staticInit(
     OE_RequestMap_t *RequestMap)
 {
@@ -52,9 +64,15 @@ OE_Error_t OE_RequestMap_registerHandlers(
     size_t Count;
     OE_RequestMapNode_t *Node;
 
-    /* First, check if all the passed request IDs and handlers are valid. */
+    /* Check if a handler is already registered and if the passed data ist valid. */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
+        Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
+        if (OE_RequestMap_handlerRegistered(Node, RequestHandlers[Count]))
+        {
+            continue;
+        }
+
         if (RequestIDs[Count] >= OE_NUMBER_OF_REQUESTS)
         {
             return OE_ERROR_REQUEST_ID_INVALID;
@@ -195,4 +213,23 @@ void OE_RequestMap_removeHandler(
             return;
         }
     }
+}
+
+bool OE_RequestMap_handlerRegistered(
+    OE_RequestMapNode_t *Node,
+    OE_MessageHandler_t RequestHandler)
+{
+    /* This function assumes that the passed data is valid! */
+    
+    /* Search for the handler in the map node. */
+    for (size_t Count = 0; Count < Node->NumberOfHandlers; Count++)
+    {
+        /* Did we find the handler? */
+        if (Node->RequestHandlers[Count] == RequestHandler)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
