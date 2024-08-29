@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 static OE_Core_t OE_Core;
-static OE_Kernel_t Kernel_0, Kernel_1, Kernel_2;
+static OE_Kernel_t Kernel_0, Kernel_1, Kernel_2, Kernel_3;
 
 static pthread_t threads[OE_NUMBER_OF_KERNELS];
 
@@ -49,7 +49,6 @@ static void init(CuTest *tc)
 
 static void test_multiKernel_staticInit(CuTest *tc)
 {
-    OE_Kernel_t Kernel_3;
     OE_Error_t Error;
 
     initModule_OE_Core(&OE_Core, NULL, NULL);
@@ -90,21 +89,20 @@ static void test_multiKernel_staticInit(CuTest *tc)
 
 static void test_multiKernel_initModule(CuTest *tc)
 {
+    (void)tc;
     
+    /**
+     * @TODO: Implement test!
+     */
 }
 
 static void *Kernel_0_thread(void *args)
 {
     (void)args;
 
-    //module_Input_t Input;
-    
-    // initModule_Input(
-    //     &Input, 
-    //     &Kernel);
-
-    // OE_Kernel_run(
-    //     &Kernel_0);
+    /**
+     * @TODO: Implement test!
+     */
 
     return NULL;
 }
@@ -113,14 +111,9 @@ static void *Kernel_1_thread(void *args)
 {
     (void)args;
 
-    //module_Input_t Input;
-    
-    // initModule_Input(
-    //     &Input, 
-    //     &Kernel);
-
-    // OE_Kernel_run(
-    //     &Kernel);
+    /**
+     * @TODO: Implement test!
+     */
 
     return NULL;
 }
@@ -129,14 +122,9 @@ static void *Kernel_2_thread(void *args)
 {
     (void)args;
 
-    //module_Input_t Input;
-    
-    // initModule_Input(
-    //     &Input, 
-    //     &Kernel);
-
-    // OE_Kernel_run(
-    //     &Kernel);
+    /**
+     * @TODO: Implement test!
+     */
 
     return NULL;
 }

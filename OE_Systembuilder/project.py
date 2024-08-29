@@ -181,7 +181,7 @@ def create_project(
     shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_requests.h'), path_to_config_folder)
 
     logging.debug("Populating OE Core...")
-    # CMakeLists?
+    shutil.copy(pkg_resources.resource_filename('OE_Core', 'CMakeLists.txt'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_config.yaml'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_intf.c'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_intf.h'), path_to_core)

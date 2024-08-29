@@ -39,7 +39,7 @@ static void test_singleKernel_staticInit(CuTest *tc)
     initModule_OE_Core(&Core, NULL, NULL);
     
     /**
-     * According to the OpenEDOS config, the switch works with one kernel.
+     * According to the OpenEDOS config, the core works with one kernel.
      * Initializing the kernel should return no error.
      */
     Error = OE_Kernel_staticInit(&Kernel);
