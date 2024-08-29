@@ -1,4 +1,6 @@
-include .openedos-complete.bash
-include OE_Core/*
 include OE_Config/*
+include OE_Core/*
+include OE_Scripts/*
+include OE_Scripts/CMake_Project/*
+include OE_Scripts/CMake_Modules/*
 include OE_Systembuilder/*

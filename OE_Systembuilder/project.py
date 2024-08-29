@@ -175,13 +175,19 @@ def create_project(
         path_to_folder=path_to_project,
         project_name=project_name)
 
+    logging.debug("Copying build files...")
+    shutil.copy(pkg_resources.resource_filename(
+        'OE_Scripts', 'CMake_Project/CMakeLists.txt'), path_to_project)
+    shutil.copy(pkg_resources.resource_filename(
+        'OE_Scripts', 'CMake_Modules/CMakeLists.txt'), path_to_module_folder)
+    shutil.copy(pkg_resources.resource_filename('OE_Core', 'CMakeLists.txt'), path_to_core)
+
     logging.debug("Populating OE Config...")
     shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_config.h'), path_to_config_folder)
     shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_port.h'), path_to_config_folder)
     shutil.copy(pkg_resources.resource_filename('OE_Config', 'oe_requests.h'), path_to_config_folder)
 
     logging.debug("Populating OE Core...")
-    shutil.copy(pkg_resources.resource_filename('OE_Core', 'CMakeLists.txt'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_config.yaml'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_intf.c'), path_to_core)
     shutil.copy(pkg_resources.resource_filename('OE_Core', 'oe_core_intf.h'), path_to_core)
