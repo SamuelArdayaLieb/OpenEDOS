@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 
 #------------------------------------------ set project name
 
-set(PROJECT_NAME "Tests")
+set(PROJECT_NAME "OE_Tests")
 project(${PROJECT_NAME} VERSION 1.0)
 
 #------------------------------------------ set absolute paths

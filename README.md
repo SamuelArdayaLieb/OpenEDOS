@@ -15,7 +15,7 @@ sudo apt install python3-venv
 
 ### Autocompletion
 If you want autocompletion for the systembuilder commands to work,
-you can copy the script .openedos-complete.bash to your home directory (~/) and add the line  
+you can copy the script OE_Scripts/.openedos-complete.bash to your home directory (~/) and add the line  
 ```
 . ~/.openedos-complete.bash
 ```
