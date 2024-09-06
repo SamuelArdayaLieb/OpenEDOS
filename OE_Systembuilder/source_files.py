@@ -42,7 +42,7 @@ class File():
                 identifier=id, 
                 code=utils.text_to_comment(code))
             
-        id = "FILE HEADER"
+        id = "FILE INTRODUCTION"
         self.file_header = user_codes[id] if id in user_codes else UserCode(identifier=id)
 
         self.includes:List[str] = []
