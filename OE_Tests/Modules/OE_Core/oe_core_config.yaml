@@ -1,0 +1,18 @@
+name: OE_Core
+author: Samuel Ardaya-Lieb
+interface:
+  create: false
+  requests:
+  - name: Kernel_Start
+    description: This request is sent when a kernel enters its main routine.
+    request parameters:
+    - name: KernelID
+      type: OE_KernelID_t
+      description: The ID of the kernel that enters its main routine.
+    response: false
+module:
+  create: false
+  kernel: 0
+  used requests:
+  - name: Kernel_Start
+    description: The kernel send this request before it starts its main routine.
