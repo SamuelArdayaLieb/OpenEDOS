@@ -10,27 +10,30 @@ INDENT = "\t"
 
 OPENEDOS_VERSION = "2.0"
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
-def text_to_comment(text:str) -> str:
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
+def text_to_comment(text: str) -> str:
     comment = "/**\n"
     lines = text.split("\n")[:-1]
     for line in lines:
         comment += f" * {line}\n"
     comment += " */\n"
     return comment
-        
-def name_to_filename(name:str) -> str:
-    name = name.replace(' ', '_')
+
+
+def name_to_filename(name: str) -> str:
+    name = name.replace(" ", "_")
     if len(name) < 3:
         return name.lower()
     charakter_0 = name[0]
@@ -49,14 +52,14 @@ def name_to_filename(name:str) -> str:
     filename += charakter
     return filename.lower()
 
-def set_logging(
-    debug:bool
-    ) -> None:
+
+def set_logging(debug: bool) -> None:
     logging_level = logging.INFO
     if debug:
         logging_level = logging.DEBUG
 
     logging.basicConfig(
-        format=f"{bcolors.OKBLUE}OpenEDOS:{bcolors.ENDC} "\
-               f"{bcolors.BOLD}%(levelname)s{bcolors.ENDC}: %(message)s", 
-        level=logging_level)
+        format=f"{bcolors.OKBLUE}OpenEDOS:{bcolors.ENDC} "
+        f"{bcolors.BOLD}%(levelname)s{bcolors.ENDC}: %(message)s",
+        level=logging_level,
+    )
