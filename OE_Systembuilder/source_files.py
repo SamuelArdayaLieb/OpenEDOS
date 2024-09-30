@@ -633,7 +633,7 @@ class KernelThread:
             code += "\t/* Initialize all modules. */\n"
             for module_name in self.module_names:
                 code += f"""\tModuleArgs = NULL;
-    \tError = initModule_{module_name}(
+    Error = initModule_{module_name}(
         &{module_name},
         ModuleArgs,
         &Kernel_{self.kernel_id});
@@ -641,7 +641,7 @@ class KernelThread:
     {'{'}
         /* Error handling or debugging... */
         return;
-    {'}'}\n"""
+    {'}'}\n\n"""
             self.user_code_init = UserCode(identifier=id, code=code, indents=1)
 
         id = f"KERNEL {self.kernel_id} RUN"
