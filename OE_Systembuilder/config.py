@@ -45,7 +45,7 @@ def save_config(
 ) -> None:
     path_to_file = os.path.join(path_to_folder, file_name)
     if os.path.isfile(path_to_file) and not override:
-        logging.warn(
+        logging.warning(
             f"Creating module config '{config['name']}': File already exists! @\n{path_to_file}"
         )
         return

@@ -39,6 +39,7 @@ class Firmware:
                 "project name": "",
                 "version": "",
                 "copyright notice": "",
+                "generate main": False,
             }
         self.project_name = self.project_config["project name"]
         for tup in os.walk(self.path_to_module_folder):

@@ -33,7 +33,7 @@ def openedos():
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def parse_modules(path: str, debug: bool) -> int:
+def parse_configs(path: str, debug: bool) -> int:
     """
     Parse module configs located in PATH and subdirectories of PATH.
     """
@@ -84,7 +84,7 @@ def generate_modules(path: str, project_config: str, force: bool, debug: bool) -
         # Look for project config.
         filelist = glob.glob(f"{path}/*_project.yaml")
         if len(filelist) == 0:
-            logging.warn("Coud not find project config and no path was given!")
+            logging.warning("Coud not find project config and no path was given!")
         elif len(filelist) > 1:
             logging.error("Found more than one project config file!")
             return
@@ -127,7 +127,7 @@ def generate_modules(path: str, project_config: str, force: bool, debug: bool) -
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def add_module_config(
+def create_config(
     path: str, name: str, number: int, author: str, debug: bool
 ) -> None:
     """
@@ -228,7 +228,7 @@ def add_request(
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def add_project_config(path: str, name: str, debug: bool) -> None:
+def create_project_config(path: str, name: str, debug: bool) -> None:
     """
     Create a new project config in PATH.
     """
@@ -260,7 +260,7 @@ def create_project(path: str, name: str, debug: bool):
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def list_request_ids(path: str, debug: bool) -> None:
+def list_requests(path: str, debug: bool) -> None:
     """
     List all request IDs extracted from module configs located in PATH
     and subdirectories.
@@ -300,7 +300,7 @@ def list_request_ids(path: str, debug: bool) -> None:
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def create_request_header(
+def generate_request_header(
     path: str, config_folder: str, project_config: str, debug: bool
 ) -> None:
     """
@@ -332,7 +332,7 @@ def create_request_header(
         # Look for _project.yaml.
         filelist = glob.glob(f"{path}/*_project.yaml")
         if len(filelist) == 0:
-            logging.warn("Coud not find project config and no path was given!")
+            logging.warning("Coud not find project config and no path was given!")
         elif len(filelist) > 1:
             logging.error("Found more than one project config file!")
             return
@@ -367,9 +367,9 @@ def create_request_header(
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def create_all_modules_header(path: str, modules: str, debug: bool) -> None:
+def generate_modules_header(path: str, modules: str, debug: bool) -> None:
     """
-    Create all_modules.h in PATH.
+    Generate all_modules.h in PATH.
     The all_modules.h file will be generated based on all configs found in the given
     modules folder and subdirectories. If no path to a modules folder is given, all
     configs inside PATH are considered. If no path to a modules folder is given and a
@@ -424,9 +424,9 @@ def create_all_modules_header(path: str, modules: str, debug: bool) -> None:
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def create_main(path: str, modules: str, project_config: str, debug: bool) -> None:
+def generate_main(path: str, modules: str, project_config: str, debug: bool) -> None:
     """
-    Create main.c in PATH.
+    Generate main.c in PATH.
     The main.c file will be generated based on all configs found in PATH
     and subdirectories. If no path to a modules folder is given and a directory 'Modules'
     is found inside PATH, only module configs inside that folder are considered.
@@ -454,7 +454,7 @@ def create_main(path: str, modules: str, project_config: str, debug: bool) -> No
         # Look for _project.yaml.
         filelist = glob.glob(f"{path}/*_project.yaml")
         if len(filelist) == 0:
-            logging.warn("Coud not find project config and no path was given!")
+            logging.warning("Coud not find project config and no path was given!")
         elif len(filelist) > 1:
             logging.error("Found more than one project config files!")
             return
@@ -505,7 +505,7 @@ def update_project(path: str, force: bool, debug: bool) -> None:
     # Look for project config in given directory.
     filelist = glob.glob(f"{path}/*_project.yaml")
     if len(filelist) == 0:
-        logging.warn("Coud not find project config and no path was given!")
+        logging.warning("Coud not find project config and no path was given!")
     elif len(filelist) > 1:
         logging.error("Found more than one project config files!")
         return
@@ -541,9 +541,11 @@ def update_project(path: str, force: bool, debug: bool) -> None:
     fw.generate()
 
     if path != path_to_modules_folder:
-        project.create_main(fw=fw, path_to_project_folder=path)
         project.create_all_modules_header(fw=fw, path_to_project_folder=path)
 
+    if fw.project_config["generate main"]:
+        project.create_main(fw=fw, path_to_project_folder=path)
+    
     if path_to_config_folder is not None:
         project.create_requests_header(
             fw=fw, path_to_config_folder=path_to_config_folder
