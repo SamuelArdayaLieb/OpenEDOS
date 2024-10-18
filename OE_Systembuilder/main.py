@@ -16,7 +16,7 @@ from . import project
 
 __version__ = utils.OPENEDOS_VERSION
 version_message = (
-    "%(prog)s, v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license"
+    "%(prog)s v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license"
 )
 
 
