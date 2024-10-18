@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.0
+ * @version 2.1
  * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
@@ -17,9 +17,9 @@
  */
 /* USER CODE COPYRIGHT NOTICE END */
 
-/* USER CODE FILE HEADER BEGIN */
+/* USER CODE FILE INTRODUCTION BEGIN */
 
-/* USER CODE FILE HEADER END */
+/* USER CODE FILE INTRODUCTION END */
 
 #ifndef OE_CORE_INTF_H
 #define OE_CORE_INTF_H

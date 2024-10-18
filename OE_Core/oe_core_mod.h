@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.0
+ * @version 2.1
  * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
@@ -17,14 +17,14 @@
  */
 /* USER CODE COPYRIGHT NOTICE END */
 
-/* USER CODE FILE HEADER BEGIN */
+/* USER CODE FILE INTRODUCTION BEGIN */
 /**
  * @brief This file describes the core. The core is responsible for
  * receiving messages and forwarding them to the correct kernels. It also checks
  * the request limit for each request. The core holds one message queue
  * for each kernel and sends messages addressed to a kernel to its queue.
  */
-/* USER CODE FILE HEADER END */
+/* USER CODE FILE INTRODUCTION END */
 
 #ifndef OE_CORE_MOD_H
 #define OE_CORE_MOD_H

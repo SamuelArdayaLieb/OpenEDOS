@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.0
+ * @version 2.1
  * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
@@ -17,10 +17,10 @@
  */
 /* USER CODE COPYRIGHT NOTICE END */
 
-/* USER CODE FILE HEADER BEGIN */
+/* USER CODE FILE INTRODUCTION BEGIN */
 #include "oe_config.h"
 #if OE_USE_SYSTEM_REQUESTS
-/* USER CODE FILE HEADER END */
+/* USER CODE FILE INTRODUCTION END */
 
 #include "oe_core_intf.h"
 #include "oe_core_mod.h"
