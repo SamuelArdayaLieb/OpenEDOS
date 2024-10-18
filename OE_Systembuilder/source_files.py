@@ -575,7 +575,7 @@ class AllModules(File):
         module_headers: List[ModuleHeader],
         user_codes: Dict[str, UserCode] = {},
     ) -> None:
-        filename = "all_modules.h"
+        filename = "oe_all_modules.h"
         super().__init__(
             filename=filename,
             author=author,
@@ -678,7 +678,7 @@ class MainFile(File):
 
         super().__init__(filename, author, version, copyright_notice, user_codes)
 
-        self.includes = ['"oe_core_mod.h"', '"oe_kernel.h"', '"all_modules.h"']
+        self.includes = ['"oe_core_mod.h"', '"oe_kernel.h"', '"oe_all_modules.h"']
 
         self.kernel_threads: List[KernelThread] = []
         for kernel_id, module_names in modules.items():

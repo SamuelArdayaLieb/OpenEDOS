@@ -79,15 +79,15 @@ def create_all_modules_header(
     fw: firmware.Firmware,
     path_to_project_folder: str,
 ) -> None:
-    filename = "all_modules.h"
+    filename = "oe_all_modules.h"
     path_to_file = os.path.join(path_to_project_folder, filename)
 
     if os.path.isfile(path_to_file):
-        logging.debug(f"Creating all_modules.h: Found existing file  @\n{path_to_file}")
+        logging.debug(f"Creating oe_all_modules.h: Found existing file  @\n{path_to_file}")
         parser = CodeParser(path_to_file)
         user_codes = parser.parse_source_code()
     else:
-        logging.debug(f"Creating new file 'all_modules.h'...")
+        logging.debug(f"Creating new file 'oe_all_modules.h'...")
         user_codes = {}
 
     module_headers = []
@@ -104,7 +104,7 @@ def create_all_modules_header(
         user_codes=user_codes,
     )
 
-    logging.debug("Generating header file 'all_modules.h'...")
+    logging.debug("Writing header file 'oe_all_modules.h'...")
     with open(path_to_file, "w") as file:
         file.write(all_modules.get_text())
 
@@ -245,7 +245,7 @@ def create_project(path_to_folder: str, project_name: str) -> None:
 
     logging.debug("Creating oe_requests.h...")
     create_requests_header(fw=fw, path_to_config_folder=path_to_config_folder)
-    logging.debug("Creating all_modules.h...")
+    logging.debug("Creating oe_all_modules.h...")
     create_all_modules_header(fw=fw, path_to_project_folder=path_to_project)
 
     logging.info(f"Generation of project {project_name} completed!")

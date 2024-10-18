@@ -249,7 +249,7 @@ def create_project(path: str, name: str, debug: bool):
     A top level project directory is created in PATH. Inside that directory,
     the OpenEDOS Core and OpenEDOS Config folders are placed. Also, an empty
     'Modules' folder and a project config are created. Finally, the files
-    oe_requests.h, all_modules.h and main.c are created.
+    oe_requests.h, oe_all_modules.h and main.c are created.
     """
     utils.set_logging(debug)
     project.create_project(path_to_folder=path, project_name=name)
@@ -369,11 +369,11 @@ def generate_request_header(
 )
 def generate_modules_header(path: str, modules: str, debug: bool) -> None:
     """
-    Generate all_modules.h in PATH.
-    The all_modules.h file will be generated based on all configs found in the given
+    Generate oe_all_modules.h in PATH.
+    The file oe_all_modules.h will be generated based on all configs found in the given
     modules folder and subdirectories. If no path to a modules folder is given, all
     configs inside PATH are considered. If no path to a modules folder is given and a
-    directory 'Modules' is found inside PATH, only module configs inside that folder
+    directory 'Modules' is found inside PATH, only module configs inside that directory
     are considered.
     """
     utils.set_logging(debug)
@@ -392,7 +392,7 @@ def generate_modules_header(path: str, modules: str, debug: bool) -> None:
     else:
         path_to_module_folder = modules
 
-    logging.info("Generating all_modules.h...")
+    logging.info("Generating oe_all_modules.h...")
 
     fw, _ = firmware.parse_configs(
         path_to_modules=path_to_module_folder, path_to_project_config=None
@@ -401,7 +401,7 @@ def generate_modules_header(path: str, modules: str, debug: bool) -> None:
     project.create_all_modules_header(fw=fw, path_to_project_folder=path)
 
     logging.info(
-        f"{utils.bcolors.OKGREEN}Generation of all_modules.h completed.{utils.bcolors.ENDC}"
+        f"{utils.bcolors.OKGREEN}Generation of oe_all_modules.h completed.{utils.bcolors.ENDC}"
     )
 
 
