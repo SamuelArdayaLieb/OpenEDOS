@@ -1,6 +1,5 @@
-Examples/
+build/
 /Modules/
-OE_Tests/build/
 .vscode/
 *.egg-info
 venv/

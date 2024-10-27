@@ -1,0 +1,20 @@
+name: Timer
+author: Samuel Ardaya-Lieb
+interface:
+  create: true
+  requests:
+  - name: Tick
+    description: The periodic timer tick.
+    request parameters: []
+    response: false
+module:
+  create: true
+  kernel: 0
+  subscribed requests:
+  - name: Kernel_Start
+    description: Start the timer initially.
+  - name: Tick
+    description: Restart the timer.
+  used requests:
+  - name: Tick
+    description: Emitted periodically.

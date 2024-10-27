@@ -1,0 +1,13 @@
+name: Printer
+author: Samuel Ardaya-Lieb
+interface:
+  create: false
+  requests: []
+module:
+  create: true
+  kernel: 0
+  subscribed requests:
+  - name: Tick
+    description: |
+      Print 'Hello World' to the terminal.
+  used requests: []
