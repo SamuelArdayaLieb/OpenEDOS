@@ -5,4 +5,5 @@ build/
 venv/
 notes.txt
 backlog.txt
+metrics.txt
 

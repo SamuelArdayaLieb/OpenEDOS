@@ -271,8 +271,11 @@ class Handler:
         self.type = type
         self.has_args = has_args
         self.has_header = has_message_header
-        if description[-1] != "\n":
-            description += "\n"
+        try:
+            if description[-1] != "\n":
+                description += "\n"
+        except:
+            description = "\n"
         self.description = description
         id = f"{type.upper()} {utils.name_to_filename(name=name).replace('_', ' ').upper()}"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
