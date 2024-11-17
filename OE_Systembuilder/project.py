@@ -83,7 +83,9 @@ def create_all_modules_header(
     path_to_file = os.path.join(path_to_project_folder, filename)
 
     if os.path.isfile(path_to_file):
-        logging.debug(f"Creating oe_all_modules.h: Found existing file  @\n{path_to_file}")
+        logging.debug(
+            f"Creating oe_all_modules.h: Found existing file  @\n{path_to_file}"
+        )
         parser = CodeParser(path_to_file)
         user_codes = parser.parse_source_code()
     else:

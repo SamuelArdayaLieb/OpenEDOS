@@ -15,9 +15,7 @@ from . import firmware
 from . import project
 
 __version__ = utils.OPENEDOS_VERSION
-version_message = (
-    "%(prog)s v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license"
-)
+version_message = "%(prog)s v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license"
 
 
 @click.group(no_args_is_help=True)
@@ -127,9 +125,7 @@ def generate_modules(path: str, project_config: str, force: bool, debug: bool) -
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def create_config(
-    path: str, name: str, number: int, author: str, debug: bool
-) -> None:
+def create_config(path: str, name: str, number: int, author: str, debug: bool) -> None:
     """
     Create new module configs in PATH.
     """
@@ -545,7 +541,7 @@ def update_project(path: str, force: bool, debug: bool) -> None:
 
     if fw.project_config["generate main"]:
         project.create_main(fw=fw, path_to_project_folder=path)
-    
+
     if path_to_config_folder is not None:
         project.create_requests_header(
             fw=fw, path_to_config_folder=path_to_config_folder
