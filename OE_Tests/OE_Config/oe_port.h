@@ -1,10 +1,6 @@
 /**
- * OpenEDOS Config: oe_port.h
+ * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
- * @version 2.0
- * 
- * Copyright (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
- *
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */
 

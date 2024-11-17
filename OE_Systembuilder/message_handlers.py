@@ -9,12 +9,9 @@ from typing import List, Dict, Set
 from .user_code import UserCode
 from . import utils
 
-class Parameter():
-    def __init__(self, 
-        name:str, 
-        type:str, 
-        description:str
-        ) -> None:
+
+class Parameter:
+    def __init__(self, name: str, type: str, description: str) -> None:
         self.name = name
         self.type = type
         self.description = description
@@ -22,23 +19,25 @@ class Parameter():
     def get_comment_text(self) -> str:
         return f"@param {self.name} {self.description}"
 
-    def get_prototype_text(self, pointer:bool=False) -> str:
+    def get_prototype_text(self, pointer: bool = False) -> str:
         if pointer:
             text = f"\t{self.type} *{self.name}"
         else:
             text = f"\t{self.type} {self.name}"
         return text
 
-class Sender():
-    def __init__(self,
-        name:str,
-        func_name:str,
-        type:str,
-        brief:str,
-        description:str="",
-        parameters:Dict[str, Parameter]={},
-        args:Dict[str, Parameter]={}
-        ) -> None:
+
+class Sender:
+    def __init__(
+        self,
+        name: str,
+        func_name: str,
+        type: str,
+        brief: str,
+        description: str = "",
+        parameters: Dict[str, Parameter] = {},
+        args: Dict[str, Parameter] = {},
+    ) -> None:
         self.name = name
         self.func_name = func_name
         self.type = type
@@ -54,30 +53,30 @@ class Sender():
         if len(self.parameters) == 0:
             text = "(void)"
             return text
-        text = "("  
+        text = "("
         for param in self.parameters.values():
             text += f"\n{param.get_prototype_text()},"
         text = f"{text[:-1]})"
         return text
-    
+
     def _comment(self) -> str:
         text = self.brief
         if self.description != "":
-            text += f"\n{self.description}"    
+            text += f"\n{self.description}"
         for param in self.parameters.values():
             text += f"\n{param.get_comment_text()}"
         text += "\n@return OE_Error_t An error is returned if\n"
         text += "- processing the message results in an error.\n"
         text += "Otherwise OE_ERROR_NONE is returned.\n"
         return utils.text_to_comment(text)
-    
+
     def _prototype(self) -> str:
         text = self._comment()
         text += f"OE_Error_t {self.func_name}"
         text += self._params()
         text += ";\n\n"
         return text
-    
+
     def _struct(self) -> str:
         if len(self.args) == 0:
             return ""
@@ -86,7 +85,7 @@ class Sender():
             text += f"\t{arg.type} {arg.name};\n"
         text += "};\n\n"
         return text
-    
+
     def _header(self) -> str:
         return ""
 
@@ -100,18 +99,20 @@ class Sender():
         text = self._prototype()
         text += self._struct()
         return text
-    
+
     def get_source_text(self) -> str:
         text = self._body()
         return text
 
+
 class RequestSender(Sender):
-    def __init__(self, 
-        name:str, 
-        response:bool, 
-        description:str="", 
-        args:Dict[str, Parameter]={} 
-        ) -> None:
+    def __init__(
+        self,
+        name: str,
+        response: bool,
+        description: str = "",
+        args: Dict[str, Parameter] = {},
+    ) -> None:
         self.response = response
 
         type = "request"
@@ -122,13 +123,15 @@ class RequestSender(Sender):
             response_handler = Parameter(
                 name="ResponseHandler",
                 type="OE_MessageHandler_t",
-                description="A pointer to the function\n" \
-                "that will handle the response to this request.\n")
+                description="A pointer to the function\n"
+                "that will handle the response to this request.\n",
+            )
             kernel_id = Parameter(
                 name="KernelID",
                 type="OE_KernelID_t",
-                description="The ID of the kernel to which\n" \
-                "the requesting module belongs.\n")
+                description="The ID of the kernel to which\n"
+                "the requesting module belongs.\n",
+            )
             parameters["ResponseHandler"] = response_handler
             parameters["KernelID"] = kernel_id
         else:
@@ -136,14 +139,7 @@ class RequestSender(Sender):
 
         brief = f"@brief Send a message to request: {name}.\n"
 
-        super().__init__(
-            name,
-            func_name,
-            type,
-            brief,
-            description,
-            parameters,
-            args)
+        super().__init__(name, func_name, type, brief, description, parameters, args)
 
     def _header(self) -> str:
         text = "\n\tOE_MessageHeader_t MessageHeader = {\n"
@@ -153,7 +149,7 @@ class RequestSender(Sender):
             text += "\t\t.KernelID = KernelID,\n"
         text += "\t};\n"
         return text
-    
+
     def _body(self) -> str:
         text = f"OE_Error_t {self.func_name}"
         text += self._params()
@@ -169,34 +165,29 @@ class RequestSender(Sender):
                 text += f"\t\t\t{arg.name},\n"
             text += "\t\t});\n}\n\n"
         return text
-        
+
+
 class ResponseSender(Sender):
-    def __init__(self, 
-        name:str,  
-        description:str="", 
-        args:Dict[str, Parameter]={},  
-        ) -> None:
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        args: Dict[str, Parameter] = {},
+    ) -> None:
         type = "response"
         func_name = f"res_{name}"
         parameters = args.copy()
         request_header = Parameter(
             "RequestHeader",
             "OE_MessageHeader_t*",
-            "A pointer to the header of\n"\
-            "the request message to which this response is sent."
+            "A pointer to the header of\n"
+            "the request message to which this response is sent.",
         )
         parameters["RequestHeader"] = request_header
         brief = f"@brief Send a response to the request: {name}.\n"
 
-        super().__init__(
-            name,
-            func_name,
-            type,
-            brief,
-            description,
-            parameters,
-            args)
-        
+        super().__init__(name, func_name, type, brief, description, parameters, args)
+
     def _body(self) -> str:
         text = f"OE_Error_t {self.func_name}"
         text += self._params()
@@ -212,16 +203,18 @@ class ResponseSender(Sender):
                 text += f"\t\t\t{arg.name},\n"
             text += "\t\t});\n}\n\n"
         return text
-    
-class Request():
-    def __init__(self,
-        name:str,
-        request_description:str="",
-        request_args:Dict[str, Parameter]={},
-        has_response:bool=False,
-        response_description:str="",
-        response_args:Dict[str, Parameter]={},
-        ) -> None:
+
+
+class Request:
+    def __init__(
+        self,
+        name: str,
+        request_description: str = "",
+        request_args: Dict[str, Parameter] = {},
+        has_response: bool = False,
+        response_description: str = "",
+        response_args: Dict[str, Parameter] = {},
+    ) -> None:
         self.name = name
         self.request_description = request_description
         self.response_description = response_description
@@ -232,16 +225,16 @@ class Request():
             name=name,
             response=has_response,
             description=request_description,
-            args=request_args)
+            args=request_args,
+        )
         if has_response:
             self.response_sender = ResponseSender(
-                name=name,
-                description=response_description,
-                args=response_args)
+                name=name, description=response_description, args=response_args
+            )
         self.RID = f"RID_{name}"
-        self.request_handlers:List[RequestHandler] = []
-        self.response_handlers:List[ResponseHandler] = []
-        self.used_by:Set[str] = set()
+        self.request_handlers: List[RequestHandler] = []
+        self.response_handlers: List[ResponseHandler] = []
+        self.used_by: Set[str] = set()
         self.interface = None
 
     def get_header_text(self):
@@ -257,29 +250,34 @@ class Request():
             text += "\n"
             text += self.response_sender.get_source_text()
         return text
-    
-class Handler():
-    def __init__(self,
-        name:str,          
-        func_name:str,
-        brief:str,         
-        type:str,
-        has_args:bool,
-        has_message_header:bool,
-        description:str="",
-        user_codes:Dict[str, UserCode]={},
-        module_name:str=""
-        ) -> None:
-        self.name = name  
+
+
+class Handler:
+    def __init__(
+        self,
+        name: str,
+        func_name: str,
+        brief: str,
+        type: str,
+        has_args: bool,
+        has_message_header: bool,
+        description: str = "",
+        user_codes: Dict[str, UserCode] = {},
+        module_name: str = "",
+    ) -> None:
+        self.name = name
         self.func_name = func_name
         self.brief = brief
-        self.type = type    
+        self.type = type
         self.has_args = has_args
         self.has_header = has_message_header
-        if description[-1] != "\n":
-            description += "\n"
+        try:
+            if description[-1] != "\n":
+                description += "\n"
+        except:
+            description = "\n"
         self.description = description
-        id=f"{type.upper()} {utils.name_to_filename(name=name).replace('_', ' ').upper()}"
+        id = f"{type.upper()} {utils.name_to_filename(name=name).replace('_', ' ').upper()}"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
         self.user_code.indents = 1
         self.module_name = module_name
@@ -289,11 +287,13 @@ class Handler():
         if self.description != "":
             text += f"\n{self.description}"
         if self.has_header:
-            text += f"\n@param Header Pointer to the header of the {self.type} message.\n"    
+            text += (
+                f"\n@param Header Pointer to the header of the {self.type} message.\n"
+            )
         if self.has_args:
             text += f"\n@param Args Pointer to the {self.type} parameters.\n"
         return utils.text_to_comment(text)
-    
+
     def get_prototype(self):
         text = self._comment()
         text += f"static void {self.func_name}("
@@ -308,7 +308,7 @@ class Handler():
         elif not self.has_args and not self.has_header:
             text += "void);\n\n"
         return text
-    
+
     def get_body(self):
         text = utils.text_to_comment(self.description)
         text += f"void {self.func_name}("
@@ -327,13 +327,15 @@ class Handler():
         text += "}\n\n"
         return text
 
+
 class RequestHandler(Handler):
-    def __init__(self,
-        request:Request, 
-        description:str="",
-        user_codes:Dict[str, UserCode]={},
-        module_name:str=""
-        ) -> None:
+    def __init__(
+        self,
+        request: Request,
+        description: str = "",
+        user_codes: Dict[str, UserCode] = {},
+        module_name: str = "",
+    ) -> None:
         self.request = request
         self.RID = request.RID
         name = request.name
@@ -341,7 +343,7 @@ class RequestHandler(Handler):
         brief = f"@brief Handle the request: {name}.\n"
         type = "request"
         has_args = True if request.has_request_args else False
-        has_message_header = request.has_response      
+        has_message_header = request.has_response
 
         super().__init__(
             name=name,
@@ -352,19 +354,22 @@ class RequestHandler(Handler):
             has_message_header=has_message_header,
             description=description,
             user_codes=user_codes,
-            module_name=module_name)
-        
+            module_name=module_name,
+        )
+
+
 class ResponseHandler(Handler):
-    def __init__(self, 
-        request:Request,
-        description:str="",
-        user_codes:Dict[str, UserCode]={},
-        module_name:str=""
-        ) -> None:
+    def __init__(
+        self,
+        request: Request,
+        description: str = "",
+        user_codes: Dict[str, UserCode] = {},
+        module_name: str = "",
+    ) -> None:
         self.request = request
         self.RID = request.RID
         name = request.name
-        func_name = f"handleResponse_{name}"  
+        func_name = f"handleResponse_{name}"
         brief = f"@brief Handle a response to the request: {name}.\n"
         type = "response"
         has_args = True if request.has_response_args else False
@@ -379,4 +384,5 @@ class ResponseHandler(Handler):
             has_message_header=has_message_header,
             description=description,
             user_codes=user_codes,
-            module_name=module_name)
+            module_name=module_name,
+        )

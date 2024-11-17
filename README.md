@@ -22,17 +22,17 @@ you can copy the script OE_Scripts/.openedos-complete.bash to your home director
 to .bashrc.
 
 ### Setting it up
-Place the the file dist/openedos-2.0.tar.gz or dist/OpenEDOS-2.0-py3-none-any.whl in a directory. 
-If you want to build the package yourself, inside the repository use:
+Place the the file dist/openedos-X.Y.tar.gz or dist/OpenEDOS-X.Y-py3-none-any.whl in a directory (replace X.Y with the actual version
+of the package, e.g. 2.0). If you want to build the package yourself, inside the repository use:
 ```
 python3 -m venv venv
 . venv/bin/activate
 pip install build
 python3 -m build .
 ```
-The packages openedos-2.0.tar.gz and OpenEDOS-2.0-py3-none-any.whl are being built in dist/. 
+The packages openedos-X.Y.tar.gz and OpenEDOS-X.Y-py3-none-any.whl are being built in dist/. 
 
-When you have openedos-2.0.tar.gz (or OpenEDOS-2.0-py3-none-any.whl) in a directory, use:
+When you have openedos-X.Y.tar.gz (or OpenEDOS-X.Y-py3-none-any.whl) in a directory, use:
 ```
 python3 -m venv venv
 . venv/bin/activate
@@ -44,12 +44,12 @@ pip3 install --upgrade pip
 Then:
 
 ```
-pip install openedos-2.0.tar.gz
+pip install openedos-X.Y.tar.gz
 
 ``` 
 (or:
 ```
-pip install OpenEDOS-2.0-py3-none-any.whl
+pip install OpenEDOS-X.Y-py3-none-any.whl
 ```
 )
 

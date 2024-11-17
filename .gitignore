@@ -1,9 +1,9 @@
-Examples/
+build/
 /Modules/
-OE_Tests/build/
 .vscode/
 *.egg-info
 venv/
 notes.txt
 backlog.txt
+metrics.txt
 

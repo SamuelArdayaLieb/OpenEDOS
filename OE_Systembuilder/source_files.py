@@ -10,14 +10,16 @@ from .message_handlers import Request, RequestHandler, ResponseHandler
 from .user_code import UserCode
 from . import utils
 
-class File():    
-    def __init__(self, 
-        filename:str, 
-        author:str, 
-        version:str,
-        copyright_notice:str,
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
+
+class File:
+    def __init__(
+        self,
+        filename: str,
+        author: str,
+        version: str,
+        copyright_notice: str,
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         self.filename = filename
         self.author = author
         self.version = version
@@ -37,17 +39,17 @@ class File():
             if self.copyright_notice != "\n":
                 code += "\n"
                 code += self.copyright_notice
-            
-            self.intro = UserCode(
-                identifier=id, 
-                code=utils.text_to_comment(code))
-            
-        id = "FILE INTRODUCTION"
-        self.file_header = user_codes[id] if id in user_codes else UserCode(identifier=id)
 
-        self.includes:List[str] = []
-        self.sections:List[str] = []
-        
+            self.intro = UserCode(identifier=id, code=utils.text_to_comment(code))
+
+        id = "FILE INTRODUCTION"
+        self.file_header = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
+
+        self.includes: List[str] = []
+        self.sections: List[str] = []
+
     def _includes(self) -> str:
         text = ""
         for include in self.includes:
@@ -65,7 +67,7 @@ when rerunning the code generation. Happy coding!
         text = utils.text_to_comment(text)
         text += "\n"
         return text
-        
+
     def get_text(self) -> str:
         text = self._introduction()
         text += self.intro.get_text()
@@ -75,32 +77,34 @@ when rerunning the code generation. Happy coding!
         for section in self.sections:
             text += section
         return text
-    
+
+
 class InterfaceHeader(File):
     def __init__(
-        self, 
-        name:str,
-        author:str,  
-        version:str, 
-        copyright_notice:str,
-        requests:Dict[str, Request]={},
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
+        self,
+        name: str,
+        author: str,
+        version: str,
+        copyright_notice: str,
+        requests: Dict[str, Request] = {},
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         filename = utils.name_to_filename(f"{name}_intf.h")
         super().__init__(
-            filename=filename, 
-            author=author,  
-            version=version, 
+            filename=filename,
+            author=author,
+            version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
+            user_codes=user_codes,
+        )
+
         self.name = name
         self.requests = requests
 
-        self.includes = ["\"oe_defines.h\""]
+        self.includes = ['"oe_defines.h"']
         id = "INTERFACE HEADER"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
-        
+
     def _guard_top(self) -> str:
         text = f"#ifndef {self.filename.replace('.', '_').upper()}\n"
         text += f"#define {self.filename.replace('.', '_').upper()}\n\n"
@@ -127,35 +131,36 @@ class InterfaceHeader(File):
         self.sections.append(self._requests())
         self.sections.append(self._guard_bot())
         return super().get_text()
-    
-class InterfaceSource(File):    
+
+
+class InterfaceSource(File):
     def __init__(
-        self, 
-        name:str,
-        author: str,  
-        version: str, 
+        self,
+        name: str,
+        author: str,
+        version: str,
         copyright_notice: str,
-        requests:Dict[str, Request]={},
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
+        requests: Dict[str, Request] = {},
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         filename = utils.name_to_filename(f"{name}_intf.c")
         super().__init__(
-            filename=filename, 
-            author=author,  
-            version=version, 
+            filename=filename,
+            author=author,
+            version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
+            user_codes=user_codes,
+        )
+
         self.name = name
         self.requests = requests
 
         header_name = utils.name_to_filename(f"{name}_intf.h")
-        self.includes = [
-            f"\"{header_name}\"",
-            "\"oe_core_mod.h\""
-            ]
+        self.includes = [f'"{header_name}"', '"oe_core_mod.h"']
         id = "INTERFACE GLOBALS"
-        self.user_code_globals = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_globals = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         id = "INTERFACE SOURCE"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
 
@@ -167,7 +172,7 @@ class InterfaceSource(File):
 
     def _requests(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
-        
+
         if len(self.requests) > 0:
             for request in self.requests.values():
                 text += request.get_source_text()
@@ -176,7 +181,7 @@ class InterfaceSource(File):
 
         return text
 
-    def get_text(self) -> str:        
+    def get_text(self) -> str:
         self.sections.append(self._includes())
         self.sections.append(self._user_includes())
         self.sections.append(self._requests())
@@ -184,36 +189,42 @@ class InterfaceSource(File):
         self.sections.append(self.user_code.get_text())
         return super().get_text()
 
+
 class ModuleHeader(File):
     def __init__(
-        self, 
-        name:str,
-        author: str,  
-        version: str, 
+        self,
+        name: str,
+        author: str,
+        version: str,
         copyright_notice: str,
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         filename = utils.name_to_filename(f"{name}_mod.h")
         super().__init__(
-            filename=filename, 
-            author=author,  
-            version=version, 
+            filename=filename,
+            author=author,
+            version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
+            user_codes=user_codes,
+        )
+
         self.name = name
 
         id = "MODULE GLOBALS"
-        self.user_code_globals = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_globals = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         id = "MODULE DATA"
-        self.user_code_module_data = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_module_data = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         self.user_code_module_data.indents = 1
         id = "MODULE PROTOTYPES"
-        self.user_code_prototypes = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_prototypes = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
 
-        self.includes = [
-            "\"oe_defines.h\""
-        ]
+        self.includes = ['"oe_defines.h"']
 
     def _guard_top(self) -> str:
         text = f"#ifndef {self.filename.replace('.', '_').upper()}\n"
@@ -263,7 +274,7 @@ Otherwise OE_ERROR_NONE is returned.\n"""
         text += f"""OE_Error_t initModule_{self.name}(
     module_{self.name}_t *{self.name},
     void *Args,
-    OE_Kernel_t *Kernel);\n\n""" 
+    OE_Kernel_t *Kernel);\n\n"""
         return text
 
     def _user_prototypes(self) -> str:
@@ -282,41 +293,46 @@ Otherwise OE_ERROR_NONE is returned.\n"""
         self.sections.append(self._guard_bot())
         return super().get_text()
 
+
 class ModuleSource(File):
     def __init__(
-        self, 
-        name:str,
-        author: str,  
-        version: str, 
+        self,
+        name: str,
+        author: str,
+        version: str,
         copyright_notice: str,
-        request_handlers:Dict[str, RequestHandler]={},
-        response_handlers:Dict[str, ResponseHandler]={},
-        user_codes:Dict[str, UserCode]={},
-        ) -> None:
+        request_handlers: Dict[str, RequestHandler] = {},
+        response_handlers: Dict[str, ResponseHandler] = {},
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         filename = utils.name_to_filename(f"{name}_mod.c")
         super().__init__(
-            filename=filename, 
-            author=author,  
-            version=version, 
+            filename=filename,
+            author=author,
+            version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
+            user_codes=user_codes,
+        )
+
         self.name = name
         id = "MODULE GLOBALS"
-        self.user_code_globals = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_globals = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         id = "MODULE INIT"
-        self.user_code_init = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_init = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         self.user_code_init.indents = 1
         id = "MODULE FUNCTIONS"
-        self.user_code_funcs = user_codes[id] if id in user_codes else UserCode(identifier=id)
+        self.user_code_funcs = (
+            user_codes[id] if id in user_codes else UserCode(identifier=id)
+        )
         self.request_handlers = request_handlers
         self.response_handlers = response_handlers
 
         headername = utils.name_to_filename(f"{name}_mod.h")
-        self.includes = [
-            f"\"{headername}\"",
-            "\"oe_kernel.h\""
-        ]
+        self.includes = [f'"{headername}"', '"oe_kernel.h"']
 
     def _user_includes(self) -> str:
         text = "/* Includes, prototypes, globals, etc. */\n"
@@ -328,7 +344,7 @@ class ModuleSource(File):
         text = "/* Global pointer to the module. */\n"
         text += f"static module_{self.name}_t *{self.name};\n\n"
         return text
-    
+
     def _init_prototype(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~ Custom init prototype ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         comment = f"@brief Custom initializer for the module: {self.name}.\n\n"
@@ -341,7 +357,7 @@ class ModuleSource(File):
         text += utils.text_to_comment(comment)
         text += f"static inline OE_Error_t init_{self.name}(void *Args);\n\n"
         return text
-    
+
     def _request_handler_prototypes(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~ Request handler prototypes ~~~~~~~~~~~~~~~~~~~~~//\n\n"
         if len(self.request_handlers) == 0:
@@ -432,13 +448,15 @@ OE_Error_t initModule_{self.name}(
     def _custom_init(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         text += f"OE_Error_t init_{self.name}(void *Args)\n"
-        text += "{\n"    
+        text += "{\n"
         if self.user_code_init.code == "\n":
             self.user_code_init.code = "\t/* Avoid unused warning. */\n"
             self.user_code_init.code += "\t(void)Args;\n"
-            self.user_code_init.code += f"\n\n\t/* Return no error if everything is fine. */\n"
+            self.user_code_init.code += (
+                f"\n\n\t/* Return no error if everything is fine. */\n"
+            )
             self.user_code_init.code += "\treturn OE_ERROR_NONE;\n"
-        text += self.user_code_init.get_text()    
+        text += self.user_code_init.get_text()
         text += "}\n\n"
         return text
 
@@ -450,7 +468,7 @@ OE_Error_t initModule_{self.name}(
         else:
             text += "/* This module does not implement any request handlers. */\n\n"
         return text
-    
+
     def _responses(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         if len(self.response_handlers) > 0:
@@ -459,7 +477,7 @@ OE_Error_t initModule_{self.name}(
         else:
             text += "/* This module does not implement any response handlers. */\n\n"
         return text
-    
+
     def _user_funcs(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         text += self.user_code_funcs.get_text()
@@ -479,30 +497,30 @@ OE_Error_t initModule_{self.name}(
         self.sections.append(self._responses())
         self.sections.append(self._user_funcs())
         return super().get_text()
-    
+
+
 class RequestsHeader(File):
     def __init__(
-        self, 
-        author: str,  
-        version: str, 
+        self,
+        author: str,
+        version: str,
         copyright_notice: str,
-        request_ids:Dict[str, List[str]]={},
-        user_codes:Dict[str, UserCode]={},
-        ) -> None:
+        request_ids: Dict[str, List[str]] = {},
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         filename = "oe_requests.h"
-        
+
         super().__init__(
             filename=filename,
             author=author,
             version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
+            user_codes=user_codes,
+        )
+
         self.request_ids = request_ids
 
-        self.includes = [
-            "\"oe_config.h\""
-        ]
+        self.includes = ['"oe_config.h"']
 
     def _guard_top(self) -> str:
         text = f"#ifndef {self.filename.replace('.', '_').upper()}\n"
@@ -530,41 +548,43 @@ typedef enum OE_RequestID_e
             text += f"\t/* {interface_name} */\n"
             for id in ids:
                 text += f"\t{id},\n"
-            text += "\n"    
+            text += "\n"
         text += f"""\t/* The LAST element in this enum MUST be "OE_NUMBER_OF_REQESTS"! */
     OE_NUMBER_OF_REQUESTS
 {'}'} OE_RequestID_t;\n\n"""
         return text
-        
+
     def _guard_bot(self) -> str:
         text = f"#endif // {self.filename.replace('.', '_').upper()}"
         return text
-    
+
     def get_text(self) -> str:
         self.sections.append(self._guard_top())
         self.sections.append(self._file_description())
         self.sections.append(self._request_ids())
         self.sections.append(self._guard_bot())
         return super().get_text()
-    
+
+
 class AllModules(File):
     def __init__(
         self,
-        author: str, 
-        version: str, 
-        copyright_notice: str, 
-        module_headers:List[ModuleHeader],
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
-        filename = "all_modules.h"
+        author: str,
+        version: str,
+        copyright_notice: str,
+        module_headers: List[ModuleHeader],
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
+        filename = "oe_all_modules.h"
         super().__init__(
             filename=filename,
             author=author,
             version=version,
             copyright_notice=copyright_notice,
-            user_codes=user_codes)
-        
-        self.includes = [f"\"{header.filename}\"" for header in module_headers]
+            user_codes=user_codes,
+        )
+
+        self.includes = [f'"{header.filename}"' for header in module_headers]
 
     def _guard_top(self) -> str:
         text = f"#ifndef {self.filename.replace('.', '_').upper()}\n"
@@ -573,7 +593,7 @@ class AllModules(File):
 
     def _guard_bot(self) -> str:
         text = f"#endif // {self.filename.replace('.', '_').upper()}"
-        return text        
+        return text
 
     def get_text(self) -> str:
         self.sections.append(self._guard_top())
@@ -581,13 +601,14 @@ class AllModules(File):
         self.sections.append(self._guard_bot())
         return super().get_text()
 
-class KernelThread():
+
+class KernelThread:
     def __init__(
         self,
-        kernel_id:int,
-        module_names:List[str]=[],
-        user_codes:Dict[str, UserCode]={}
-        ) -> None:
+        kernel_id: int,
+        module_names: List[str] = [],
+        user_codes: Dict[str, UserCode] = {},
+    ) -> None:
         self.kernel_id = kernel_id
         self.module_names = module_names
 
@@ -612,7 +633,7 @@ class KernelThread():
             code += "\t/* Initialize all modules. */\n"
             for module_name in self.module_names:
                 code += f"""\tModuleArgs = NULL;
-    \tError = initModule_{module_name}(
+    Error = initModule_{module_name}(
         &{module_name},
         ModuleArgs,
         &Kernel_{self.kernel_id});
@@ -620,7 +641,7 @@ class KernelThread():
     {'{'}
         /* Error handling or debugging... */
         return;
-    {'}'}\n"""
+    {'}'}\n\n"""
             self.user_code_init = UserCode(identifier=id, code=code, indents=1)
 
         id = f"KERNEL {self.kernel_id} RUN"
@@ -643,39 +664,32 @@ class KernelThread():
         text += "}\n\n"
         return text
 
+
 class MainFile(File):
     def __init__(
-        self, 
-        author: str, 
-        version: str, 
-        copyright_notice: str, 
-        user_codes:Dict[str, UserCode]={},
-        modules:Dict[int, List[str]]={}
-        ) -> None:
+        self,
+        author: str,
+        version: str,
+        copyright_notice: str,
+        user_codes: Dict[str, UserCode] = {},
+        modules: Dict[int, List[str]] = {},
+    ) -> None:
         filename = "main.c"
 
-        super().__init__(
-            filename, 
-            author, 
-            version, 
-            copyright_notice, 
-            user_codes)
+        super().__init__(filename, author, version, copyright_notice, user_codes)
 
-        self.includes = [
-            "\"oe_core_mod.h\"",
-            "\"oe_kernel.h\"",
-            "\"all_modules.h\""
-        ]
+        self.includes = ['"oe_core_mod.h"', '"oe_kernel.h"', '"oe_all_modules.h"']
 
-        self.kernel_threads:List[KernelThread] = []
+        self.kernel_threads: List[KernelThread] = []
         for kernel_id, module_names in modules.items():
             self.kernel_threads.append(
                 KernelThread(
                     kernel_id=kernel_id,
                     module_names=module_names,
-                    user_codes=user_codes)
+                    user_codes=user_codes,
                 )
-            
+            )
+
         id = "MAIN GLOBALS"
         self.user_code_globals = user_codes[id] if id in user_codes else UserCode(id)
         id = "MAIN SOURCE"
@@ -693,13 +707,13 @@ class MainFile(File):
             else:
                 code += "\t/* Create threads. */\n\n"
             self.user_code_main = UserCode(identifier=id, code=code, indents=1)
-            
+
     def _user_includes(self) -> str:
         text = "/* Includes, prototypes, globals, etc. */\n"
         text += self.user_code_globals.get_text()
         text += "\n"
         return text
-    
+
     def _kernel_threads_prototypes(self) -> str:
         text = "/* Kernel threads. */\n"
         for kernel_thread in self.kernel_threads:
@@ -716,7 +730,7 @@ class MainFile(File):
         text += "\n\t/* Never reached... */\n"
         text += "\treturn 0;\n}\n\n"
         return text
-    
+
     def _kernel_threads(self) -> str:
         text = ""
         for kernel_thread in self.kernel_threads:
