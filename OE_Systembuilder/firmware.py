@@ -112,7 +112,7 @@ class Firmware:
                     config = yaml.load(config_file, Loader=yaml.FullLoader)
 
                     config_parser = self.config_parsers[config["name"]]
-                    ret = config_parser.create_module(self.requests)
+                    ret += config_parser.create_module(self.requests)
         return ret
 
     def create_kernels(self) -> int:
