@@ -186,8 +186,8 @@ def parse_configs(
             f"{utils.bcolors.OKGREEN}Found 0 configuration errors.{utils.bcolors.ENDC}"
         )
     elif ret == 1:
-        logging.warning(f"Found 1 configuration error.")
+        logging.warning(f"{utils.bcolors.FAIL}Found 1 configuration error.{utils.bcolors.ENDC}")
     else:
-        logging.warning(f"Found {ret} configuraion errors.")
+        logging.warning(f"{utils.bcolors.FAIL}Found {ret} configuraion errors.{utils.bcolors.ENDC}")
 
     return firmware, ret
