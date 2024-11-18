@@ -49,9 +49,23 @@ class Firmware:
             path_to_folder = tup[0]
             ret += self.parse_modules_in_folder(path_to_folder)
         ret += self.create_kernels()
+        logging.debug("Checking if each request is used and handled...")
         for request in self.requests.values():
-            if not request.request_handlers:
-                logging.warning(f"Request {request.name} has no handlers!")
+            # We consider 3 cases...
+            # Case 1: A request is not used and not handled. This makes the definition
+            # of the request obsolete, but is not considered an error.
+            if not request.used_by and not request.request_handlers:
+                logging.warning(f"Request {request.name} is not used and not handled!")
+            # Case 2: A request is handled but not used. This is considered an error
+            # because it indicates an incomplete system description.
+            elif not request.used_by and request.request_handlers:
+                logging.warning(f"Request {request.name} is handled but not used!")
+                ret += 1
+            # Case 3: A request is used but not handled. This is considered an error
+            # because it indicates an incomplete system description.
+            elif request.used_by and not request.request_handlers:
+                logging.warning(f"Request {request.name} is used but not handled!")
+                ret += 1
         return ret
 
     def parse_interfaces_in_folder(self, path_to_folder: str) -> int:
