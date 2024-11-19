@@ -29,7 +29,7 @@ class Firmware:
         logging.debug(debug_message)
 
     def parse(self) -> int:
-        ret = 0
+        error_count = 0
         if self.path_to_project_config is not None:
             with open(self.path_to_project_config, "r") as config_file:
                 logging.debug("Loading project config...")
@@ -44,11 +44,11 @@ class Firmware:
         self.project_name = self.project_config["project name"]
         for tup in os.walk(self.path_to_module_folder):
             path_to_folder = tup[0]
-            ret += self.parse_interfaces_in_folder(path_to_folder)
+            error_count = self.parse_interfaces_in_folder(path_to_folder, error_count)
         for tup in os.walk(self.path_to_module_folder):
             path_to_folder = tup[0]
-            ret += self.parse_modules_in_folder(path_to_folder)
-        ret += self.create_kernels()
+            error_count = self.parse_modules_in_folder(path_to_folder, error_count)
+        error_count = self.create_kernels(error_count)
         logging.debug("Checking if each request is used and handled...")
         for request in self.requests.values():
             # We consider 3 cases...
@@ -59,17 +59,16 @@ class Firmware:
             # Case 2: A request is handled but not used. This is considered an error
             # because it indicates an incomplete system description.
             elif not request.used_by and request.request_handlers:
-                logging.warning(f"Request {request.name} is handled but not used!")
-                ret += 1
+                error_count += 1
+                logging.warning(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is handled but not used!")
             # Case 3: A request is used but not handled. This is considered an error
             # because it indicates an incomplete system description.
             elif request.used_by and not request.request_handlers:
-                logging.warning(f"Request {request.name} is used but not handled!")
-                ret += 1
-        return ret
+                error_count += 1
+                logging.warning(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is used but not handled!")
+        return error_count
 
-    def parse_interfaces_in_folder(self, path_to_folder: str) -> int:
-        ret = 0
+    def parse_interfaces_in_folder(self, path_to_folder: str, error_count:int=0) -> int:
         logging.debug(f"Parsing configs in folder:\n{path_to_folder}...")
         for filename in os.listdir(path_to_folder):
             if filename.endswith("_config.yaml"):
@@ -79,8 +78,8 @@ class Firmware:
 
                     name = config["name"]
                     if name in self.config_parsers:
-                        logging.error(f"Config with name '{name}' already exists!")
-                        ret += 1
+                        error_count += 1
+                        logging.error(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config with name '{name}' already exists!")
 
                     config_parser = ConfigParser(
                         config=config,
@@ -89,34 +88,30 @@ class Firmware:
                         config_filename=filename,
                     )
 
-                    ret += config_parser.parse_config()
+                    error_count = config_parser.parse_config(error_count)
 
                     for request in config_parser.requests.values():
                         if request.name in self.requests:
+                            error_count += 1
                             logging.error(
-                                f"Request with name '{request.name}' already exists!"
+                                f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request with name '{request.name}' already exists!"
                             )
-                            ret += 1
-
                         self.requests[request.name] = request
                     self.config_parsers[config_parser.name] = config_parser
-        return ret
+        return error_count
 
-    def parse_modules_in_folder(self, path_to_folder: str) -> int:
-        ret = 0
+    def parse_modules_in_folder(self, path_to_folder: str, error_count:int=0) -> int:
         logging.debug(f"Parsing module configs in folder:\n{path_to_folder}...")
         for filename in os.listdir(path_to_folder):
             if filename.endswith("_config.yaml"):
                 with open(os.path.join(path_to_folder, filename), "r") as config_file:
                     logging.debug(f"Found config file: {filename}. Loading config...")
                     config = yaml.load(config_file, Loader=yaml.FullLoader)
-
                     config_parser = self.config_parsers[config["name"]]
-                    ret += config_parser.create_module(self.requests)
-        return ret
+                    error_count = config_parser.create_module(self.requests, error_count)
+        return error_count
 
-    def create_kernels(self) -> int:
-        ret = 0
+    def create_kernels(self, error_count:int=0) -> int:
         kernel_numbers: Set[int] = set()
         for config_parser in self.config_parsers.values():
             if config_parser.module is None:
@@ -127,10 +122,10 @@ class Firmware:
         if len(kernel_numbers):
             if (len(kernel_numbers) - 1) != max(kernel_numbers):
                 # nok
-                message = f"Invalid kernel numbers: {kernel_numbers}!\n"
+                error_count += 1
+                message = f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Invalid kernel numbers: {kernel_numbers}!\n"
                 message += "Please ensure that all kernels are enumerated consecutively, starting with 0!"
                 logging.error(message)
-                ret += 1
             else:
                 # ok
                 if len(kernel_numbers) == 1:
@@ -146,7 +141,7 @@ class Firmware:
                 self.kernels[kernel_number] = Kernel(kernel_number=kernel_number)
             self.kernels[kernel_number].add_module(config_parser.module)
 
-        return ret
+        return error_count
 
     def generate(self) -> None:
         for config_parser in self.config_parsers.values():
@@ -179,15 +174,15 @@ def parse_configs(
     path_to_modules: str, path_to_project_config: str
 ) -> Tuple[Firmware, int]:
     firmware = Firmware(path_to_modules, path_to_project_config)
-    ret = firmware.parse()
+    error_count = firmware.parse()
 
-    if ret == 0:
+    if error_count == 0:
         logging.info(
             f"{utils.bcolors.OKGREEN}Found 0 configuration errors.{utils.bcolors.ENDC}"
         )
-    elif ret == 1:
+    elif error_count == 1:
         logging.warning(f"{utils.bcolors.FAIL}Found 1 configuration error.{utils.bcolors.ENDC}")
     else:
-        logging.warning(f"{utils.bcolors.FAIL}Found {ret} configuraion errors.{utils.bcolors.ENDC}")
+        logging.warning(f"{utils.bcolors.FAIL}Found {error_count} configuraion errors.{utils.bcolors.ENDC}")
 
-    return firmware, ret
+    return firmware, error_count

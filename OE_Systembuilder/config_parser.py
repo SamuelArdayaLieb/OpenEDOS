@@ -97,8 +97,7 @@ class ConfigParser:
             )
             self.module_config["used requests"] = None
 
-    def parse_config(self) -> int:
-        ret = 0
+    def parse_config(self, error_count:int=0) -> int:
         self.check_config()
 
         logging.debug(f"Parsing config '{self.name}'...")
@@ -129,11 +128,11 @@ class ConfigParser:
 
         self.look_for_files()
 
-        ret += self.create_requests()
+        error_count = self.create_requests(error_count)
 
         self.create_interface()
 
-        return ret
+        return error_count
 
     def look_for_files(self):
         debug = f"Config '{self.name}': Looking for existing source code:\n"
@@ -163,18 +162,16 @@ class ConfigParser:
             debug += "No file found."
         logging.debug(debug)
 
-    def create_requests(self) -> int:
+    def create_requests(self, error_count:int=0) -> int:
         logging.debug(f"Config '{self.name}': Creating requests...")
-        ret = 0
         request_configs = self.interface_config["requests"]
         if request_configs is not None:
             for request_config in request_configs:
                 name = request_config["name"]
                 if name in self.requests:
+                    error_count += 1
                     logging.error(
-                        f"Config '{self.name}': Multiple definitions of request '{name}'!"
-                    )
-                    ret += 1
+                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Multiple definitions of request '{name}'!")
                     continue
                 request_parameters: Dict[str, Parameter] = {}
                 response_parameters: Dict[str, Parameter] = {}
@@ -189,11 +186,11 @@ class ConfigParser:
                             description=request_parameter_config["description"],
                         )
                         if request_parameter_name in request_parameters:
+                            error_count += 1
                             logging.error(
-                                f"Config '{self.name}': Request '{name}':\n"
+                                f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Request '{name}':\n"
                                 f"Multiple definitions of request parameter '{request_parameter_name}'!"
                             )
-                            ret += 1
                             continue
                         debug = f"Config '{self.name}': Request '{name}': Adding request parameter with:\n"
                         debug += f"Parameter name: {request_parameter_name}\n"
@@ -218,11 +215,11 @@ class ConfigParser:
                                 description=response_parameter_config["description"],
                             )
                             if response_parameter_name in response_parameters:
+                                error_count += 1
                                 logging.error(
-                                    f"Config '{self.name}': Request '{name}':\n"
+                                    f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Request '{name}':\n"
                                     f"Multiple definitions of response parameter '{response_parameter_name}'!"
                                 )
-                                ret += 1
                                 continue
                             debug = f"Config '{self.name}': Request '{name}': Adding response parameter with:\n"
                             debug += f"Parameter name: {response_parameter_name}\n"
@@ -247,7 +244,7 @@ class ConfigParser:
                 self.requests[name] = request
         else:
             logging.debug(f"Config '{self.name}': No requests defined.")
-        return ret
+        return error_count
 
     def create_interface(self) -> None:
         if not self.interface_config["create"]:
@@ -281,14 +278,13 @@ class ConfigParser:
         for request in self.requests.values():
             request.interface = self.interface
 
-    def create_module(self, all_requests: Dict[str, Request]) -> int:
-        ret = 0
+    def create_module(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
         if not self.module_config["create"]:
             logging.info(f"Config '{self.name}': Skip generating module.")
-            return ret
+            return error_count
         logging.debug(f"Config '{self.name}': Creating module...")
-        ret += self.create_request_handlers(all_requests)
-        ret += self.create_response_handlers(all_requests)
+        error_count = self.create_request_handlers(all_requests, error_count)
+        error_count = self.create_response_handlers(all_requests, error_count)
         header_user_codes = {}
         source_user_codes = {}
         if self.has_module_header:
@@ -322,10 +318,9 @@ class ConfigParser:
         for request in self.used_requests.values():
             if request.interface is not None:
                 self.module.add_include(request.interface.get_include())
-        return ret
+        return error_count
 
-    def create_request_handlers(self, all_requests: Dict[str, Request]) -> int:
-        ret = 0
+    def create_request_handlers(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
         handler_configs = self.module_config["subscribed requests"]
         if handler_configs is not None:
             logging.debug(f"Config '{self.name}': Parsing subscribed requests...")
@@ -339,17 +334,17 @@ class ConfigParser:
                     f"Config '{self.name}': Creating request handler for subscribed request '{name}'..."
                 )
                 if name in self.subscribed_requests:
+                    error_count += 1
                     logging.error(
-                        f"Config '{self.name}': Subscribed request '{name}' is already listed!"
+                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Subscribed request '{name}' is already listed!"
                     )
-                    ret += 1
                     continue
                 if not (name in all_requests):
+                    error_count += 1
                     logging.warning(
-                        f"Config '{self.name}': Subscribed request '{name}' is not defined!"
+                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Subscribed request '{name}' is not defined!"
                     )
                     request = Request(name)
-                    ret += 1
                 else:
                     request = all_requests[name]
                 self.subscribed_requests[name] = request
@@ -361,10 +356,9 @@ class ConfigParser:
                 )
                 request.request_handlers.append(handler)
                 self.request_handlers[name] = handler
-        return ret
+        return error_count
 
-    def create_response_handlers(self, all_requests: Dict[str, Request]) -> int:
-        ret = 0
+    def create_response_handlers(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
         handler_configs = self.module_config["used requests"]
         if handler_configs is not None:
             logging.debug(f"Config '{self.name}': Parsing used requests...")
@@ -378,14 +372,14 @@ class ConfigParser:
                     logging.error(
                         f"Config '{self.name}': Used request '{name}' is already listed!"
                     )
-                    ret += 1
+                    error_count += 1
                     continue
                 if not (name in all_requests):
                     logging.warning(
                         f"Config '{self.name}': Used request '{name}' is not defined!"
                     )
                     request = Request(name)
-                    ret += 1
+                    error_count += 1
                 else:
                     request = all_requests[name]
                 request.used_by.add(self.name)
@@ -402,7 +396,7 @@ class ConfigParser:
                     )
                     request.response_handlers.append(handler)
                     self.response_handlers[name] = handler
-        return ret
+        return error_count
 
     def generate(self) -> None:
         logging.debug(f"Config '{self.name}': Generating code files...")
