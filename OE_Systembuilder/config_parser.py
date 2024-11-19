@@ -248,10 +248,7 @@ class ConfigParser:
         return error_count
 
     def create_interface(self) -> None:
-        if not self.interface_config["create"]:
-            logging.info(f"Config '{self.name}': Skip generating interface.")
-            return
-        logging.debug(f"Config '{self.name}': Creating interface...")
+        logging.debug(f"Config '{self.name}': Analyzing interface...")
         header_user_codes = {}
         source_user_codes = {}
         if self.has_interface_header:
@@ -282,10 +279,7 @@ class ConfigParser:
     def create_module(
         self, all_requests: Dict[str, Request], error_count: int = 0
     ) -> int:
-        if not self.module_config["create"]:
-            logging.info(f"Config '{self.name}': Skip generating module.")
-            return error_count
-        logging.debug(f"Config '{self.name}': Creating module...")
+        logging.debug(f"Config '{self.name}': Analyzing module...")
         error_count = self.create_request_handlers(all_requests, error_count)
         error_count = self.create_response_handlers(all_requests, error_count)
         header_user_codes = {}
@@ -414,6 +408,12 @@ class ConfigParser:
                 os.path.join(self.path_to_folder, self.config_filename),
             )
         if self.interface is not None:
-            self.interface.generate()
+            if not self.interface_config["create"]:
+                logging.info(f"Config '{self.name}': Skip generating interface.")
+            else:
+                self.interface.generate()
         if self.module is not None:
-            self.module.generate()
+            if not self.module_config["create"]:
+                logging.info(f"Config '{self.name}': Skip generating module.")
+            else:
+                self.module.generate()
