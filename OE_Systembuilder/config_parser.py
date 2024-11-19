@@ -97,7 +97,7 @@ class ConfigParser:
             )
             self.module_config["used requests"] = None
 
-    def parse_config(self, error_count:int=0) -> int:
+    def parse_config(self, error_count: int = 0) -> int:
         self.check_config()
 
         logging.debug(f"Parsing config '{self.name}'...")
@@ -162,7 +162,7 @@ class ConfigParser:
             debug += "No file found."
         logging.debug(debug)
 
-    def create_requests(self, error_count:int=0) -> int:
+    def create_requests(self, error_count: int = 0) -> int:
         logging.debug(f"Config '{self.name}': Creating requests...")
         request_configs = self.interface_config["requests"]
         if request_configs is not None:
@@ -171,7 +171,8 @@ class ConfigParser:
                 if name in self.requests:
                     error_count += 1
                     logging.error(
-                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Multiple definitions of request '{name}'!")
+                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Multiple definitions of request '{name}'!"
+                    )
                     continue
                 request_parameters: Dict[str, Parameter] = {}
                 response_parameters: Dict[str, Parameter] = {}
@@ -278,7 +279,9 @@ class ConfigParser:
         for request in self.requests.values():
             request.interface = self.interface
 
-    def create_module(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
+    def create_module(
+        self, all_requests: Dict[str, Request], error_count: int = 0
+    ) -> int:
         if not self.module_config["create"]:
             logging.info(f"Config '{self.name}': Skip generating module.")
             return error_count
@@ -320,7 +323,9 @@ class ConfigParser:
                 self.module.add_include(request.interface.get_include())
         return error_count
 
-    def create_request_handlers(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
+    def create_request_handlers(
+        self, all_requests: Dict[str, Request], error_count: int = 0
+    ) -> int:
         handler_configs = self.module_config["subscribed requests"]
         if handler_configs is not None:
             logging.debug(f"Config '{self.name}': Parsing subscribed requests...")
@@ -358,7 +363,9 @@ class ConfigParser:
                 self.request_handlers[name] = handler
         return error_count
 
-    def create_response_handlers(self, all_requests: Dict[str, Request], error_count:int=0) -> int:
+    def create_response_handlers(
+        self, all_requests: Dict[str, Request], error_count: int = 0
+    ) -> int:
         handler_configs = self.module_config["used requests"]
         if handler_configs is not None:
             logging.debug(f"Config '{self.name}': Parsing used requests...")

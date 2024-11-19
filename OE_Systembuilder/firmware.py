@@ -60,15 +60,21 @@ class Firmware:
             # because it indicates an incomplete system description.
             elif not request.used_by and request.request_handlers:
                 error_count += 1
-                logging.warning(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is handled but not used!")
+                logging.warning(
+                    f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is handled but not used!"
+                )
             # Case 3: A request is used but not handled. This is considered an error
             # because it indicates an incomplete system description.
             elif request.used_by and not request.request_handlers:
                 error_count += 1
-                logging.warning(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is used but not handled!")
+                logging.warning(
+                    f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Request {request.name} is used but not handled!"
+                )
         return error_count
 
-    def parse_interfaces_in_folder(self, path_to_folder: str, error_count:int=0) -> int:
+    def parse_interfaces_in_folder(
+        self, path_to_folder: str, error_count: int = 0
+    ) -> int:
         logging.debug(f"Parsing configs in folder:\n{path_to_folder}...")
         for filename in os.listdir(path_to_folder):
             if filename.endswith("_config.yaml"):
@@ -79,7 +85,9 @@ class Firmware:
                     name = config["name"]
                     if name in self.config_parsers:
                         error_count += 1
-                        logging.error(f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config with name '{name}' already exists!")
+                        logging.error(
+                            f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config with name '{name}' already exists!"
+                        )
 
                     config_parser = ConfigParser(
                         config=config,
@@ -100,7 +108,7 @@ class Firmware:
                     self.config_parsers[config_parser.name] = config_parser
         return error_count
 
-    def parse_modules_in_folder(self, path_to_folder: str, error_count:int=0) -> int:
+    def parse_modules_in_folder(self, path_to_folder: str, error_count: int = 0) -> int:
         logging.debug(f"Parsing module configs in folder:\n{path_to_folder}...")
         for filename in os.listdir(path_to_folder):
             if filename.endswith("_config.yaml"):
@@ -108,10 +116,12 @@ class Firmware:
                     logging.debug(f"Found config file: {filename}. Loading config...")
                     config = yaml.load(config_file, Loader=yaml.FullLoader)
                     config_parser = self.config_parsers[config["name"]]
-                    error_count = config_parser.create_module(self.requests, error_count)
+                    error_count = config_parser.create_module(
+                        self.requests, error_count
+                    )
         return error_count
 
-    def create_kernels(self, error_count:int=0) -> int:
+    def create_kernels(self, error_count: int = 0) -> int:
         kernel_numbers: Set[int] = set()
         for config_parser in self.config_parsers.values():
             if config_parser.module is None:
@@ -181,8 +191,12 @@ def parse_configs(
             f"{utils.bcolors.OKGREEN}Found 0 configuration errors.{utils.bcolors.ENDC}"
         )
     elif error_count == 1:
-        logging.warning(f"{utils.bcolors.FAIL}Found 1 configuration error.{utils.bcolors.ENDC}")
+        logging.warning(
+            f"{utils.bcolors.FAIL}Found 1 configuration error.{utils.bcolors.ENDC}"
+        )
     else:
-        logging.warning(f"{utils.bcolors.FAIL}Found {error_count} configuraion errors.{utils.bcolors.ENDC}")
+        logging.warning(
+            f"{utils.bcolors.FAIL}Found {error_count} configuraion errors.{utils.bcolors.ENDC}"
+        )
 
     return firmware, error_count
