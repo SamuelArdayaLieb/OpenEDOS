@@ -138,10 +138,10 @@ def create_main(
         author_string = ", ".join(authors)
 
     for kernel_id, kernel in fw.kernels.items():
-        if "OE_Core" in kernel.modules.keys():
-            modules[kernel_id] = list(kernel.modules.keys()).remove("OE_Core")
-        else:
-            modules[kernel_id] = list(kernel.modules.keys())
+        module_list = list(kernel.modules.keys())
+        if "OE_Core" in module_list:
+            module_list.remove("OE_Core")
+        modules[kernel_id] = module_list
 
     main = MainFile(
         author=author_string,
