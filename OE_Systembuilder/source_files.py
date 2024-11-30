@@ -405,24 +405,18 @@ OE_Error_t initModule_{self.name}(
     {self.name} = p{self.name};
     {self.name}->Kernel = Kernel;
 
-    /* Initialize the module. */
-    Error = init_{self.name}(Args);
-
-    /* Check for errors. */
-    if (Error != OE_ERROR_NONE)
-    {'{'}
-        {self.name}->Kernel = NULL;
-        {self.name} = NULL;
-        
-        return Error;
-    {'}'}
-
     /* Register the request handlers. */
     Error = OE_Kernel_registerHandlers(
         Kernel,
         RequestIDs,
         RequestHandlers,
         sizeof(RequestIDs)/sizeof(OE_RequestID_t));
+
+    if (Error == OE_ERROR_NONE)
+    {'{'}
+        /* Initialize the module. */
+        Error = init_{self.name}(Args);        
+    {'}'}
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
