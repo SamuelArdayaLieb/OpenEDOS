@@ -159,6 +159,12 @@ typedef struct OE_MessageHeader_s
     OE_KernelID_t KernelID;
 } OE_MessageHeader_t;
 
+#define OE_EMPTY_HEADER (OE_MessageHeader_t){ \
+    .Information=OE_MESSAGE_TYPE_REQUEST|OE_MESSAGE_DATA_EMPTY, \
+    .KernelID=OE_NO_KERNEL, \
+    .RequestID=OE_NUMBER_OF_REQUESTS, \
+    .ResponseHandler=OE_NO_HANDLER}
+
 /**
  * A struct is used to store the data of a message. It consists of the
  * message header and the data field.
