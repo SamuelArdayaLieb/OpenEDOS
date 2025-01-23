@@ -347,9 +347,13 @@ class ConfigParser:
                 else:
                     request = all_requests[name]
                 self.subscribed_requests[name] = request
+                try:
+                    description = handler_config["description"]
+                except:
+                    description = f"Handle the request: {name}."
                 handler = RequestHandler(
                     request=request,
-                    description=handler_config["description"],
+                    description=description,
                     user_codes=user_codes,
                     module_name=self.name,
                 )
@@ -389,9 +393,10 @@ class ConfigParser:
                     logging.debug(
                         f"Config '{self.name}': Creating response handler for used request '{name}'..."
                     )
+                    description = "Handle the response."
                     handler = ResponseHandler(
                         request=request,
-                        description=handler_config["description"],
+                        description=description,
                         user_codes=user_codes,
                         module_name=self.name,
                     )

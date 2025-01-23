@@ -415,7 +415,7 @@ OE_Error_t initModule_{self.name}(
     if (Error == OE_ERROR_NONE)
     {'{'}
         /* Initialize the module. */
-        Error = init_{self.name}(Args);        
+        Error = init_{self.name}(Args);
     {'}'}
 
     /* Check for errors. */
