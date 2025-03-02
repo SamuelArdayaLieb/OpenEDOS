@@ -11,8 +11,8 @@ class UserCode:
     def __init__(
         self,
         identifier: str = "",
-        description: str = "\n",
-        code: str = "\n",
+        description: str = "",
+        code: str = "",
         indents: int = 0,
     ) -> None:
         self.identifier = identifier
@@ -21,9 +21,9 @@ class UserCode:
         self.indents = indents
 
     def get_text(self) -> str:
-        text = self.indents * "\t" + f"/* USER CODE {self.identifier} BEGIN */\n"
+        text = self.indents * "    " + f"/* USER CODE {self.identifier} BEGIN */\n"
         text += self.code
-        text += self.indents * "\t" + f"/* USER CODE {self.identifier} END */\n"
+        text += self.indents * "    " + f"/* USER CODE {self.identifier} END */\n"
         return text
 
 

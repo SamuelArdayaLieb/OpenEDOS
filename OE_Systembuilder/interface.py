@@ -29,11 +29,6 @@ class Interface:
         self.author = author
         self.version = version
         self.copyright_notice = copyright_notice
-        try:
-            if self.copyright_notice[-1] != "\n":
-                self.copyright_notice += "\n"
-        except:
-            self.copyright_notice = "\n"
         self.requests = requests
         self.header_user_codes: Dict[str, UserCode] = {}
         self.source_user_codes: Dict[str, UserCode] = {}

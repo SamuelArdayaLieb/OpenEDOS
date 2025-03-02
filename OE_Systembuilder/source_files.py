@@ -22,24 +22,28 @@ class File:
     ) -> None:
         self.filename = filename
         self.author = author
-        self.version = version
-        try:
-            if copyright_notice[-1] != "\n":
-                copyright_notice += "\n"
-        except:
-            copyright_notice = "\n"
-        finally:
-            self.copyright_notice = copyright_notice
 
+        if type(version) is str and len(version) > 0:
+            self.version = f"@version {version}\n"
+        else:
+            self.version = ""
+
+        if type(copyright_notice) is str and len(copyright_notice) > 0:
+            self.copyright_notice = copyright_notice 
+            # add newline if not there already
+            if self.copyright_notice[-1] != "\n":
+                self.copyright_notice += "\n"
+            if self.version != "":
+                self.copyright_notice = "\n"+self.copyright_notice
+        else:
+            self.copyright_notice = ""
+        
+        # search for user codes
         id = "COPYRIGHT NOTICE"
         if id in user_codes:
             self.intro = user_codes[id]
         else:
-            code = f"@version {self.version}\n"
-            if self.copyright_notice != "\n":
-                code += "\n"
-                code += self.copyright_notice
-
+            code = self.version + self.copyright_notice
             self.intro = UserCode(identifier=id, code=utils.text_to_comment(code))
 
         id = "FILE INTRODUCTION"

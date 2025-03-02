@@ -24,6 +24,8 @@ class bcolors:
 
 
 def text_to_comment(text: str) -> str:
+    if text == "":
+        return ""
     comment = "/**\n"
     lines = text.split("\n")[:-1]
     for line in lines:
