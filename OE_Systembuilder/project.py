@@ -27,7 +27,6 @@ def create_project_config(path_to_folder: str, project_name: str) -> None:
         return
     config = {
         "project name": project_name,
-        "version": "0.1",
         "copyright notice": "",
         "generate main": False,
     }
