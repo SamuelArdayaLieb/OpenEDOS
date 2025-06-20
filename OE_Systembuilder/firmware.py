@@ -34,6 +34,19 @@ class Firmware:
             with open(self.path_to_project_config, "r") as config_file:
                 logging.debug("Loading project config...")
                 self.project_config = yaml.load(config_file, Loader=yaml.FullLoader)
+                # check if keys are missing in the given project config
+                if "project name" not in self.project_config:
+                    error_count += 1
+                    logging.error(
+                            f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Missing key in project config: 'project name'!"
+                        )
+                    self.project_config["project name"] = "default"
+                if "version" not in self.project_config:
+                    self.project_config["version"] = ""
+                if "copyright notice" not in self.project_config:
+                    self.project_config["copyright notice"] = ""
+                if "generate main" not in self.project_config:
+                    self.project_config["generate main"] = False
         else:
             self.project_config = {
                 "project name": "",
