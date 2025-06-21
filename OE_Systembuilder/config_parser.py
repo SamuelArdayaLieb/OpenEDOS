@@ -174,69 +174,79 @@ class ConfigParser:
                         f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Multiple definitions of request '{name}'!"
                     )
                     continue
+                request_description = request_config["description"] if "description" in request_config else ""
+                if request_description is None:
+                    request_description = ""
                 request_parameters: Dict[str, Parameter] = {}
                 response_parameters: Dict[str, Parameter] = {}
                 logging.debug(f"Config '{self.name}': Creating request '{name}'...")
-                request_parameter_configs = request_config["request parameters"]
+                request_parameter_configs = request_config["request parameters"] if "request parameters" in request_config else None
                 if request_parameter_configs is not None:
                     for request_parameter_config in request_parameter_configs:
                         request_parameter_name = request_parameter_config["name"]
-                        request_parameter = Parameter(
-                            name=request_parameter_name,
-                            type=request_parameter_config["type"],
-                            description=request_parameter_config["description"],
-                        )
                         if request_parameter_name in request_parameters:
                             error_count += 1
                             logging.error(
                                 f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Request '{name}':\n"
                                 f"Multiple definitions of request parameter '{request_parameter_name}'!"
                             )
-                            continue
+                            continue                        
+                        request_parameter_type = request_parameter_config["type"]
+                        request_parameter_description = request_parameter_config["description"] if "description" in request_parameter_config else ""
+                        if request_parameter_description is None:
+                            request_parameter_description = ""
+                        request_parameter = Parameter(
+                            name=request_parameter_name,
+                            type=request_parameter_type,
+                            description=request_parameter_description,
+                        )
                         debug = f"Config '{self.name}': Request '{name}': Adding request parameter with:\n"
                         debug += f"Parameter name: {request_parameter_name}\n"
-                        debug += f"Parameter type: {request_parameter_config['type']}\n"
-                        debug += f"Parameter description: {request_parameter_config['description']}"
+                        debug += f"Parameter type: {request_parameter_type}\n"
+                        debug += f"Parameter description: {request_parameter_description}"
                         logging.debug(debug)
                         request_parameters[request_parameter_name] = request_parameter
-
-                has_response = request_config["response"]
                 response_description = ""
+                has_response = request_config["response"] if "response" in request_config else False
                 if has_response:
+                    if ("response description" in request_config) and (request_config["response description"] is not None):
+                        response_description = request_config["response description"] 
                     logging.debug(
                         f"Config '{self.name}': Request '{name}': Creating response..."
                     )
-                    response_parameter_configs = request_config["response parameters"]
+                    response_parameter_configs = request_config["response parameters"] if "response parameters" in request_config else None
                     if response_parameter_configs is not None:
                         for response_parameter_config in response_parameter_configs:
                             response_parameter_name = response_parameter_config["name"]
-                            response_parameter = Parameter(
-                                name=response_parameter_name,
-                                type=response_parameter_config["type"],
-                                description=response_parameter_config["description"],
-                            )
                             if response_parameter_name in response_parameters:
                                 error_count += 1
                                 logging.error(
                                     f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Config '{self.name}': Request '{name}':\n"
                                     f"Multiple definitions of response parameter '{response_parameter_name}'!"
                                 )
-                                continue
+                                continue                            
+                            response_parameter_type = response_parameter_config["type"]
+                            response_parameter_description = response_parameter_config["description"] if "description" in response_parameter_config else ""
+                            if response_parameter_description is None:
+                                response_parameter_description = ""
+                            response_parameter = Parameter(
+                                name=response_parameter_name,
+                                type=response_parameter_type,
+                                description=response_parameter_description,
+                            )
                             debug = f"Config '{self.name}': Request '{name}': Adding response parameter with:\n"
                             debug += f"Parameter name: {response_parameter_name}\n"
                             debug += (
-                                f"Parameter type: {response_parameter_config['type']}\n"
+                                f"Parameter type: {response_parameter_type}\n"
                             )
-                            debug += f"Parameter description: {response_parameter_config['description']}"
+                            debug += f"Parameter description: {response_parameter_description}"
                             logging.debug(debug)
                             response_parameters[response_parameter_name] = (
                                 response_parameter
                             )
-                    response_description = request_config["response description"]
-
                 request = Request(
                     name=name,
-                    request_description=request_config["description"],
+                    request_description=request_description,
                     request_args=request_parameters,
                     has_response=has_response,
                     response_description=response_description,
@@ -347,10 +357,9 @@ class ConfigParser:
                 else:
                     request = all_requests[name]
                 self.subscribed_requests[name] = request
-                try:
-                    description = handler_config["description"]
-                except:
-                    description = f"Handle the request: {name}."
+                description = handler_config["description"] if "description" in handler_config else ""
+                if description is None:
+                    description = ""
                 handler = RequestHandler(
                     request=request,
                     description=description,
@@ -393,10 +402,8 @@ class ConfigParser:
                     logging.debug(
                         f"Config '{self.name}': Creating response handler for used request '{name}'..."
                     )
-                    description = "Handle the response."
                     handler = ResponseHandler(
                         request=request,
-                        description=description,
                         user_codes=user_codes,
                         module_name=self.name,
                     )

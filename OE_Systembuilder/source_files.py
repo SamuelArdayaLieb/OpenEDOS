@@ -182,14 +182,13 @@ class InterfaceSource(File):
                 text += request.get_source_text()
         else:
             text += "/* There are no requests associated with this interface. */\n\n"
-
         return text
 
     def get_text(self) -> str:
         self.sections.append(self._includes())
         self.sections.append(self._user_includes())
         self.sections.append(self._requests())
-        self.sections.append("\n/* Something else...? */\n")
+        self.sections.append("/* Something else...? */\n")
         self.sections.append(self.user_code.get_text())
         return super().get_text()
 
@@ -266,11 +265,8 @@ and connects the module to the kernel. It then calls
 the specific init function of the module.
 
 @param {self.name} A pointer to the module to be initialized.
-
 @param Args A pointer to the init params for the module.
-
 @param Kernel A pointer to the kernel to be connected.
-
 @return OE_Error_t An error is returned if
 - initializing the module results in an error.
 Otherwise OE_ERROR_NONE is returned.\n"""
@@ -352,9 +348,7 @@ class ModuleSource(File):
     def _init_prototype(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~ Custom init prototype ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         comment = f"@brief Custom initializer for the module: {self.name}.\n\n"
-        if self.user_code_init.description != "\n":
-            comment += self.user_code_init.description + "\n"
-        comment += "@param Args A pointer to the init params for the module.\n\n"
+        comment += "@param Args A pointer to the init params for the module.\n"
         comment += "@return OE_Error_t An error is returned if\n"
         comment += "- initializing the module results in an error.\n"
         comment += "Otherwise OE_ERROR_NONE is returned.\n"
@@ -471,7 +465,7 @@ OE_Error_t initModule_{self.name}(
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         if len(self.response_handlers) > 0:
             for handler in self.response_handlers.values():
-                text += f"{handler.get_body()}\n"
+                text += f"{handler.get_body()}"
         else:
             text += "/* This module does not implement any response handlers. */\n\n"
         return text
