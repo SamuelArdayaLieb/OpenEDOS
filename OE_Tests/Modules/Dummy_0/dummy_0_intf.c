@@ -3,14 +3,12 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file test_dummy_intf.c
- * @author Samu
+ * @file dummy_0_intf.c
+ * @author Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
- * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -18,62 +16,46 @@
 /* USER CODE COPYRIGHT NOTICE END */
 
 /* USER CODE FILE INTRODUCTION BEGIN */
-
 /* USER CODE FILE INTRODUCTION END */
 
-#include "test_dummy_intf.h"
+#include "dummy_0_intf.h"
 #include "oe_core_mod.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE INTERFACE GLOBALS BEGIN */
-
 /* USER CODE INTERFACE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-OE_Error_t req_Dummy_Request_1(
-	uint8_t Dummy_Request_Param_1,
-	uint8_t Dummy_Request_Param_2,
+OE_Error_t req_Dummy_0_Req(
+	uint8_t param,
 	OE_MessageHandler_t ResponseHandler,
 	OE_KernelID_t KernelID)
 {
 	OE_MessageHeader_t MessageHeader = {
-		.RequestID = RID_Dummy_Request_1,
+		.RequestID = RID_Dummy_0_Req,
 		.ResponseHandler = ResponseHandler,
 		.KernelID = KernelID,
 	};
 
 	return OE_Core_sendRequest(
 		&MessageHeader,
-		&(struct requestArgs_Dummy_Request_1_s){
-			Dummy_Request_Param_1,
-			Dummy_Request_Param_2,
+		&(struct requestArgs_Dummy_0_Req_s){
+			param,
 		});
 }
 
-OE_Error_t res_Dummy_Request_1(
-	uint8_t Dummy_Response_Param_1,
+OE_Error_t res_Dummy_0_Req(
+	uint8_t param,
 	OE_MessageHeader_t* RequestHeader)
 {
 	return OE_Core_sendResponse(
 		RequestHeader,
-		&(struct responseArgs_Dummy_Request_1_s){
-			Dummy_Response_Param_1,
+		&(struct responseArgs_Dummy_0_Req_s){
+			param,
 		});
-}
-
-OE_Error_t req_Dummy_Request_2(void)
-{
-	OE_MessageHeader_t MessageHeader = {
-		.RequestID = RID_Dummy_Request_2,
-	};
-
-	return OE_Core_sendRequest(
-		&MessageHeader,
-		NULL);
 }
 
 /* Something else...? */
 /* USER CODE INTERFACE SOURCE BEGIN */
-
 /* USER CODE INTERFACE SOURCE END */

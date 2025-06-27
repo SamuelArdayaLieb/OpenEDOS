@@ -1,0 +1,23 @@
+name: 'Dummy_0'
+author: Samuel Ardaya-Lieb
+interface:
+  create: true
+  requests:
+  - name: Dummy_0_Req
+    description: Send one byte 'param' to Dummy 0.
+    request parameters:
+    - name: param
+      type: uint8_t
+    response: true
+    response description: Return the received byte 'param'.
+    response parameters:
+    - name: param
+      type: uint8_t
+module:
+  create: true
+  kernel: 0
+  subscribed requests:
+  - name: Kernel_Start
+  - name: Dummy_0_Req
+  used requests:
+  - name: Dummy_0_Req

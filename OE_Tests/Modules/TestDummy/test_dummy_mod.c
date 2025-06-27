@@ -26,7 +26,7 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include "../../single_kernel.h"
+#include "../../oe_test.h"
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -38,7 +38,6 @@ static module_TestDummy_t *TestDummy;
  * @brief Custom initializer for the module: TestDummy.
  * 
  * @param Args A pointer to the init params for the module.
- * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
@@ -53,7 +52,6 @@ static inline OE_Error_t init_TestDummy(void *Args);
  * The TestDummy subscribes this request in order to test the OpenEDOS core.
  * 
  * @param Header Pointer to the header of the request message.
- * 
  * @param Args Pointer to the request parameters.
  */
 static void handleRequest_Dummy_Request_1(
@@ -82,8 +80,6 @@ static void handleRequest_Dummy_Request_2(void);
 
 /**
  * @brief Handle a response to the request: Dummy_Request_1.
- * 
- * The TestDummy subscribes this request in order to test the OpenEDOS core.
  * 
  * @param Args Pointer to the response parameters.
  */
@@ -119,24 +115,18 @@ OE_Error_t initModule_TestDummy(
     TestDummy = pTestDummy;
     TestDummy->Kernel = Kernel;
 
-    /* Initialize the module. */
-    Error = init_TestDummy(Args);
-
-    /* Check for errors. */
-    if (Error != OE_ERROR_NONE)
-    {
-        TestDummy->Kernel = NULL;
-        TestDummy = NULL;
-        
-        return Error;
-    }
-
     /* Register the request handlers. */
     Error = OE_Kernel_registerHandlers(
         Kernel,
         RequestIDs,
         RequestHandlers,
         sizeof(RequestIDs)/sizeof(OE_RequestID_t));
+
+    if (Error == OE_ERROR_NONE)
+    {
+        /* Initialize the module. */
+        Error = init_TestDummy(Args);
+    }
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -162,73 +152,60 @@ OE_Error_t initModule_TestDummy(
 
 OE_Error_t init_TestDummy(void *Args)
 {
-	/* USER CODE MODULE INIT BEGIN */
+    /* USER CODE MODULE INIT BEGIN */
 	TestParam_1 = TEST_VAL_MODULE_INIT;
     TestParam_2 = TEST_VAL_MODULE_INIT;
     TestParam_3 = TEST_VAL_MODULE_INIT;
 	
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
-	/* USER CODE MODULE INIT END */
+    /* USER CODE MODULE INIT END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Request handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-/**
- * The TestDummy subscribes this request in order to test the OpenEDOS core.
- */
 void handleRequest_Dummy_Request_1(
 	OE_MessageHeader_t *Header,
 	struct requestArgs_Dummy_Request_1_s *Args)
 {
-	/* USER CODE REQUEST DUMMY REQUEST 1 BEGIN */
+    /* USER CODE REQUEST DUMMY REQUEST 1 BEGIN */
 	TestParam_1 = Args->Dummy_Request_Param_1;
 	TestParam_2 = Args->Dummy_Request_Param_2;
 
 	res_Dummy_Request_1(
 		TEST_VAL_3, 
 		Header);
-	/* USER CODE REQUEST DUMMY REQUEST 1 END */
+    /* USER CODE REQUEST DUMMY REQUEST 1 END */
 }
 
-/**
- * Test the system request functionality.
- */
 void handleRequest_Kernel_Start(
 	OE_MessageHeader_t *Header,
 	struct requestArgs_Kernel_Start_s *Args)
 {
-	/* USER CODE REQUEST KERNEL START BEGIN */
+    /* USER CODE REQUEST KERNEL START BEGIN */
 	TestParam_1 = TEST_VAL_KERNEL_START;
     TestParam_2 = TEST_VAL_KERNEL_START;
     TestParam_3 = TEST_VAL_KERNEL_START;
-	/* USER CODE REQUEST KERNEL START END */
+    /* USER CODE REQUEST KERNEL START END */
 }
 
-/**
- * The TestDummy subscribes this request in order to test the OpenEDOS core.
- */
 void handleRequest_Dummy_Request_2(void)
 {
-	/* USER CODE REQUEST DUMMY REQUEST 2 BEGIN */
+    /* USER CODE REQUEST DUMMY REQUEST 2 BEGIN */
 
-	/* USER CODE REQUEST DUMMY REQUEST 2 END */
+    /* USER CODE REQUEST DUMMY REQUEST 2 END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-/**
- * The TestDummy subscribes this request in order to test the OpenEDOS core.
- */
 void handleResponse_Dummy_Request_1(
 	OE_MessageHeader_t *Header,
 	struct responseArgs_Dummy_Request_1_s *Args)
 {
-	/* USER CODE RESPONSE DUMMY REQUEST 1 BEGIN */
+    /* USER CODE RESPONSE DUMMY REQUEST 1 BEGIN */
 	TestParam_3 = Args->Dummy_Response_Param_1;
-	/* USER CODE RESPONSE DUMMY REQUEST 1 END */
+    /* USER CODE RESPONSE DUMMY REQUEST 1 END */
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 

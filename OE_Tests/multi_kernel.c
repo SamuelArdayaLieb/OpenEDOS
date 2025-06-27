@@ -1,4 +1,5 @@
 #include "multi_kernel.h"
+#include "oe_test.h"
 
 /* OpenEDOS core */
 #include "oe_core_mod.h"
@@ -6,6 +7,8 @@
 
 /* Modules */
 #include "oe_core_intf.h"
+#include "dummy_0_mod.h"
+#include "dummy_0_intf.h"
 
 /* Stuff */
 #include <pthread.h>

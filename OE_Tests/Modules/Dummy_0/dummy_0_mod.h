@@ -3,14 +3,12 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file test_dummy_mod.h
- * @author Samu
+ * @file dummy_0_mod.h
+ * @author Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
- * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -18,65 +16,56 @@
 /* USER CODE COPYRIGHT NOTICE END */
 
 /* USER CODE FILE INTRODUCTION BEGIN */
-
 /* USER CODE FILE INTRODUCTION END */
 
-#ifndef TEST_DUMMY_MOD_H
-#define TEST_DUMMY_MOD_H
+#ifndef DUMMY_0_MOD_H
+#define DUMMY_0_MOD_H
 
 #include "oe_defines.h"
-#include "test_dummy_intf.h"
+#include "dummy_0_intf.h"
 #include "oe_core_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-
 /* USER CODE MODULE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module definition ~~~~~~~~~~~~~~~~~~~~~~~~//
 
-typedef struct module_TestDummy_s {
+typedef struct module_Dummy_0_s {
     /* The connection to the kernel. */
     OE_Kernel_t *Kernel;
 
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
-
+    uint8_t param;
     /* USER CODE MODULE DATA END */
 
-} module_TestDummy_t;
+} module_Dummy_0_t;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Init prototype ~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Initialize the module TestDummy.
+ * @brief Initialize the module Dummy_0.
  * 
  * This function registers the request handlers of the module
  * and connects the module to the kernel. It then calls 
  * the specific init function of the module.
  * 
- * @param TestDummy A pointer to the module to be initialized.
+ * @param Dummy_0 A pointer to the module to be initialized.
  * @param Args A pointer to the init params for the module.
  * @param Kernel A pointer to the kernel to be connected.
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t initModule_TestDummy(
-    module_TestDummy_t *TestDummy,
+OE_Error_t initModule_Dummy_0(
+    module_Dummy_0_t *Dummy_0,
     void *Args,
     OE_Kernel_t *Kernel);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
-OE_Error_t subscribeRequest_1(void);
-void unsubscribeRequest_1(void);
-OE_Error_t sendRequest_1(void);
-
-OE_Error_t subscribeRequest_2(void);
-void unsubscribeRequest_2(void);
-OE_Error_t sendRequest_2(void);
 /* USER CODE MODULE PROTOTYPES END */
 
-#endif // TEST_DUMMY_MOD_H
+#endif // DUMMY_0_MOD_H

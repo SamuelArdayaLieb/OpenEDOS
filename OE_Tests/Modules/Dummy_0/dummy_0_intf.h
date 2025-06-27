@@ -3,14 +3,12 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file test_dummy_intf.h
- * @author Samu
+ * @file dummy_0_intf.h
+ * @author Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
- * 
  * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
@@ -18,29 +16,26 @@
 /* USER CODE COPYRIGHT NOTICE END */
 
 /* USER CODE FILE INTRODUCTION BEGIN */
-
 /* USER CODE FILE INTRODUCTION END */
 
-#ifndef TEST_DUMMY_INTF_H
-#define TEST_DUMMY_INTF_H
+#ifndef DUMMY_0_INTF_H
+#define DUMMY_0_INTF_H
 
 #include "oe_defines.h"
 
 /* Includes, defines, typedefs, etc. */
 /* USER CODE INTERFACE HEADER BEGIN */
-
 /* USER CODE INTERFACE HEADER END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Send a message to request: Dummy_Request_1.
+ * @brief Send a message to request: Dummy_0_Req.
  * 
- * This request is used to test the OpenEDOS core.
+ * Send one byte 'param' to Dummy 0.
  * Response: Yes
  * 
- * @param Dummy_Request_Param_1 A dummy parameter for testing.
- * @param Dummy_Request_Param_2 A dummy parameter for testing.
+ * @param param 
  * @param ResponseHandler A pointer to the function
  * that will handle the response to this request.
  * @param KernelID The ID of the kernel to which
@@ -49,47 +44,33 @@
  * - processing the message results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t req_Dummy_Request_1(
-	uint8_t Dummy_Request_Param_1,
-	uint8_t Dummy_Request_Param_2,
+OE_Error_t req_Dummy_0_Req(
+	uint8_t param,
 	OE_MessageHandler_t ResponseHandler,
 	OE_KernelID_t KernelID);
 
-struct requestArgs_Dummy_Request_1_s {
-	uint8_t Dummy_Request_Param_1;
-	uint8_t Dummy_Request_Param_2;
+struct requestArgs_Dummy_0_Req_s {
+	uint8_t param;
 };
 
 /**
- * @brief Send a response to the request: Dummy_Request_1.
+ * @brief Send a response to the request: Dummy_0_Req.
  * 
- * The response is used to test the OpenEDOS core.
+ * Return the received byte 'param'.
  * 
- * @param Dummy_Response_Param_1 A dummy parameter for testing.
+ * @param param 
  * @param RequestHeader A pointer to the header of
  * the request message to which this response is sent.
  * @return OE_Error_t An error is returned if
  * - processing the message results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t res_Dummy_Request_1(
-	uint8_t Dummy_Response_Param_1,
+OE_Error_t res_Dummy_0_Req(
+	uint8_t param,
 	OE_MessageHeader_t* RequestHeader);
 
-struct responseArgs_Dummy_Request_1_s {
-	uint8_t Dummy_Response_Param_1;
+struct responseArgs_Dummy_0_Req_s {
+	uint8_t param;
 };
 
-/**
- * @brief Send a message to request: Dummy_Request_2.
- * 
- * This request is used to test the OpenEDOS core.
- * Response: No
- * 
- * @return OE_Error_t An error is returned if
- * - processing the message results in an error.
- * Otherwise OE_ERROR_NONE is returned.
- */
-OE_Error_t req_Dummy_Request_2(void);
-
-#endif // TEST_DUMMY_INTF_H
+#endif // DUMMY_0_INTF_H

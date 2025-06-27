@@ -1,0 +1,11 @@
+name: 'Dummy_1'
+author: Samuel Ardaya-Lieb
+interface:
+  create: true
+  requests: []
+module:
+  create: true
+  kernel: 1
+  subscribed requests:
+  - name: Kernel_Start
+  used requests: []

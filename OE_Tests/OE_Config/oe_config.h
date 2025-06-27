@@ -15,7 +15,7 @@
 /**
  * This macro defines the maximum amount of request handlers (n_requests * n_request_handlers).
  */
-#define OE_REQUEST_HANDLER_LIMIT 1
+#define OE_REQUEST_HANDLER_LIMIT 4
 
 /**
  * This macro defines how many request messages the message queue of one kernel

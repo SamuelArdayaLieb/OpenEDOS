@@ -1,4 +1,5 @@
 #include "single_kernel.h"
+#include "oe_test.h"
 
 /* OpenEDOS core */
 #include "oe_core_mod.h"

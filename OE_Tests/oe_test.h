@@ -1,0 +1,20 @@
+#ifndef OE_TEST_H
+#define OE_TEST_H
+
+#include <stdint.h>
+
+#define TEST_VAL_TEST_BEGIN   0
+#define TEST_VAL_MODULE_INIT  1
+#define TEST_VAL_KERNEL_START 2
+
+enum TestValues_e {
+    TEST_VAL_1,
+    TEST_VAL_2,
+    TEST_VAL_3,
+};
+
+extern uint8_t TestParam_1;
+extern uint8_t TestParam_2;
+extern uint8_t TestParam_3;
+
+#endif // OE_TEST_H
