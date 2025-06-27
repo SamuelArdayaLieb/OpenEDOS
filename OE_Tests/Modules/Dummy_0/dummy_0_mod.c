@@ -137,9 +137,13 @@ OE_Error_t initModule_Dummy_0(
 OE_Error_t init_Dummy_0(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-    (void)Args;
+	/* Avoid unused warning. */
+	(void)Args;
 
     Dummy_0->param = TEST_VAL_MODULE_INIT;
+
+	/* Return no error if everything is fine. */
+	return OE_ERROR_NONE;
     /* USER CODE MODULE INIT END */
 }
 

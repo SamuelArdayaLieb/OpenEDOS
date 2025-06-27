@@ -4,7 +4,7 @@
  * when rerunning the code generation. Happy coding!
  * 
  * @file main.c
- * @author Samu, Samuel Ardaya-Lieb
+ * @author Samuel Ardaya-Lieb
  */
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */

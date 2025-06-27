@@ -117,6 +117,12 @@ OE_Error_t initModule_Dummy_1(
 OE_Error_t init_Dummy_1(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
+	/* Avoid unused warning. */
+	(void)Args;
+
+
+	/* Return no error if everything is fine. */
+	return OE_ERROR_NONE;
     /* USER CODE MODULE INIT END */
 }
 
