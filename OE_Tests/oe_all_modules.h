@@ -24,6 +24,10 @@
 #ifndef OE_ALL_MODULES_H
 #define OE_ALL_MODULES_H
 
+#include "dummy_1_mod.h"
+#include "dummy_2_mod.h"
+#include "dummy_0_mod.h"
 #include "test_dummy_mod.h"
+#include "oe_core_mod.h"
 
 #endif // OE_ALL_MODULES_H

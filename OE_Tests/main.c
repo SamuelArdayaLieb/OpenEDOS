@@ -37,13 +37,15 @@ uint8_t TestParam_3;
 /* USER CODE MAIN GLOBALS END */
 
 /* Kernel threads. */
+void Kernel_1_thread(void *Args);
+void Kernel_2_thread(void *Args);
 void Kernel_0_thread(void *Args);
 
 static OE_Core_t OE_Core;
 
 int main(void)
 {
-	/* USER CODE MAIN FUNCTION BEGIN */
+    /* USER CODE MAIN FUNCTION BEGIN */
     /* Avoid unused warning. */
     (void)OE_Core;
     
@@ -57,20 +59,34 @@ int main(void)
     CuSuiteSummary(suite, output);
     CuSuiteDetails(suite, output);
     printf("%s\n", output->buffer);
-	/* USER CODE MAIN FUNCTION END */
+    /* USER CODE MAIN FUNCTION END */
 
 	/* Never reached... */
 	return 0;
 }
 
+void Kernel_1_thread(void *Args)
+{
+    /* USER CODE KERNEL 1 INIT BEGIN */
+    /* USER CODE KERNEL 1 INIT END */
+    /* USER CODE KERNEL 1 RUN BEGIN */
+    /* USER CODE KERNEL 1 RUN END */
+}
+
+void Kernel_2_thread(void *Args)
+{
+    /* USER CODE KERNEL 2 INIT BEGIN */
+    /* USER CODE KERNEL 2 INIT END */
+    /* USER CODE KERNEL 2 RUN BEGIN */
+    /* USER CODE KERNEL 2 RUN END */
+}
+
 void Kernel_0_thread(void *Args)
 {
-	/* USER CODE KERNEL 0 INIT BEGIN */
-    
-	/* USER CODE KERNEL 0 INIT END */
-	/* USER CODE KERNEL 0 RUN BEGIN */
-
-	/* USER CODE KERNEL 0 RUN END */
+    /* USER CODE KERNEL 0 INIT BEGIN */
+    /* USER CODE KERNEL 0 INIT END */
+    /* USER CODE KERNEL 0 RUN BEGIN */
+    /* USER CODE KERNEL 0 RUN END */
 }
 
 /* USER CODE MAIN SOURCE BEGIN */

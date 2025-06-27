@@ -9,6 +9,10 @@
 #include "oe_core_intf.h"
 #include "dummy_0_mod.h"
 #include "dummy_0_intf.h"
+#include "dummy_1_mod.h"
+#include "dummy_1_intf.h"
+#include "dummy_2_mod.h"
+#include "dummy_2_intf.h"
 
 /* Stuff */
 #include <pthread.h>
@@ -99,37 +103,127 @@ static void test_multiKernel_initModule(CuTest *tc)
      */
 }
 
-static void *Kernel_0_thread(void *args)
+static void *Kernel_0_thread(void *Args)
 {
-    (void)args;
+    /* USER CODE KERNEL 0 INIT BEGIN */
+	OE_Error_t Error;
+	void *ModuleArgs;
+	OE_Kernel_t Kernel_0;
 
-    /**
-     * @TODO: Implement test!
-     */
+	module_Dummy_0_t Dummy_0;
+
+	/* Avoid unused warning. */
+	(void)Args;
+
+	/* Initialize kernel. */
+	Error = OE_Kernel_staticInit(&Kernel_0);
+	if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+	/* Initialize all modules. */
+	ModuleArgs = NULL;
+    Error = initModule_Dummy_0(
+        &Dummy_0,
+        ModuleArgs,
+        &Kernel_0);
+    if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+    /* USER CODE KERNEL 0 INIT END */
+    /* USER CODE KERNEL 0 RUN BEGIN */
+	/* Enter kernel main routine. */
+	OE_Kernel_run(&Kernel_0);
 
     return NULL;
+    /* USER CODE KERNEL 0 RUN END */
 }
 
-static void *Kernel_1_thread(void *args)
+static void *Kernel_1_thread(void *Args)
 {
-    (void)args;
+    /* USER CODE KERNEL 1 INIT BEGIN */
+	OE_Error_t Error;
+	void *ModuleArgs;
+	OE_Kernel_t Kernel_1;
 
-    /**
-     * @TODO: Implement test!
-     */
+	module_Dummy_1_t Dummy_1;
+
+	/* Avoid unused warning. */
+	(void)Args;
+
+	/* Initialize kernel. */
+	Error = OE_Kernel_staticInit(&Kernel_1);
+	if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+	/* Initialize all modules. */
+	ModuleArgs = NULL;
+    Error = initModule_Dummy_1(
+        &Dummy_1,
+        ModuleArgs,
+        &Kernel_1);
+    if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+    /* USER CODE KERNEL 1 INIT END */
+    /* USER CODE KERNEL 1 RUN BEGIN */
+	/* Enter kernel main routine. */
+	OE_Kernel_run(&Kernel_1);
 
     return NULL;
+    /* USER CODE KERNEL 1 RUN END */
 }
 
-static void *Kernel_2_thread(void *args)
+static void *Kernel_2_thread(void *Args)
 {
-    (void)args;
+    /* USER CODE KERNEL 2 INIT BEGIN */
+	OE_Error_t Error;
+	void *ModuleArgs;
+	OE_Kernel_t Kernel_2;
 
-    /**
-     * @TODO: Implement test!
-     */
+	module_Dummy_2_t Dummy_2;
+
+	/* Avoid unused warning. */
+	(void)Args;
+
+	/* Initialize kernel. */
+	Error = OE_Kernel_staticInit(&Kernel_2);
+	if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+	/* Initialize all modules. */
+	ModuleArgs = NULL;
+    Error = initModule_Dummy_2(
+        &Dummy_2,
+        ModuleArgs,
+        &Kernel_2);
+    if (Error != OE_ERROR_NONE)
+    {
+        /* Error handling or debugging... */
+        return NULL;
+    }
+
+    /* USER CODE KERNEL 2 INIT END */
+    /* USER CODE KERNEL 2 RUN BEGIN */
+	/* Enter kernel main routine. */
+	OE_Kernel_run(&Kernel_2);
 
     return NULL;
+    /* USER CODE KERNEL 2 RUN END */
 }
 
 static void test_multiKernel_run(CuTest *tc)

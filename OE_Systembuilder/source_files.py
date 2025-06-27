@@ -441,7 +441,7 @@ OE_Error_t initModule_{self.name}(
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         text += f"OE_Error_t init_{self.name}(void *Args)\n"
         text += "{\n"
-        if self.user_code_init.code == "\n":
+        if self.user_code_init.code == "":
             self.user_code_init.code = "\t/* Avoid unused warning. */\n"
             self.user_code_init.code += "\t(void)Args;\n"
             self.user_code_init.code += (

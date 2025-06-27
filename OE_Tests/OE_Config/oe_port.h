@@ -23,7 +23,7 @@ extern pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS];
 extern pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS];
 
 /* Mutex for critical sections. */
-static pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
+static __attribute__((__unused__)) pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* No operation. May be omitted or optimizable. */
 #define OE_NOP()
