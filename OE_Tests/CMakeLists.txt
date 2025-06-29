@@ -1,7 +1,7 @@
 # This is a basic CMakeLists.txt that may be adjusted as needed.
 
 cmake_minimum_required(VERSION 3.10)
-add_compile_options(-O3 -Wall -g)
+add_compile_options(-O0 -Wall -g)
 
 #------------------------------------------ set project name
 

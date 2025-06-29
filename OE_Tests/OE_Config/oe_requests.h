@@ -37,6 +37,9 @@ typedef enum OE_RequestID_e
 	RID_Dummy_1_Req,
 	RID_Dummy_1_toggleRegistration,
 
+	/* Dummy_2 */
+	RID_Dummy_2_Req,
+
 	/* Dummy_0 */
 	RID_Dummy_0_Req,
 

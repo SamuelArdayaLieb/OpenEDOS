@@ -174,12 +174,17 @@ void handleRequest_Dummy_0_Req(
 	struct requestArgs_Dummy_0_Req_s *Args)
 {
     /* USER CODE REQUEST DUMMY 0 REQ BEGIN */
+    OE_Error_t Error = OE_ERROR_MESSAGE_QUEUE_FULL;
+
     Dummy_0->param = Args->param;
 
-    res_Dummy_0_Req(
-        Dummy_0->param,
-        Args->tc,
-        Header);
+    while (Error == OE_ERROR_MESSAGE_QUEUE_FULL)
+    {
+        Error = res_Dummy_0_Req(
+            Dummy_0->param,
+            Args->tc,
+            Header);
+    }
     /* USER CODE REQUEST DUMMY 0 REQ END */
 }
 

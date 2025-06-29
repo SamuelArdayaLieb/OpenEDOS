@@ -2,11 +2,18 @@ name: 'Dummy_2'
 author: Samuel Ardaya-Lieb
 interface:
   create: true
-  requests: []
+  requests:
+  - name: Dummy_2_Req
+    request parameters:
+    - name: param
+      type: uint8_t
 module:
   create: true
   kernel: 2
   subscribed requests:
   - name: Kernel_Start
   - name: Test_End
-  used requests: []
+  - name: Dummy_2_Req
+  used requests:
+  - name: Dummy_0_Req
+  - name: Dummy_2_Req

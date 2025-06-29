@@ -27,7 +27,19 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-/* There are no requests associated with this interface. */
+OE_Error_t req_Dummy_2_Req(
+	uint8_t param)
+{
+	OE_MessageHeader_t MessageHeader = {
+		.RequestID = RID_Dummy_2_Req,
+	};
+
+	return OE_Core_sendRequest(
+		&MessageHeader,
+		&(struct requestArgs_Dummy_2_Req_s){
+			param,
+		});
+}
 
 /* Something else...? */
 /* USER CODE INTERFACE SOURCE BEGIN */

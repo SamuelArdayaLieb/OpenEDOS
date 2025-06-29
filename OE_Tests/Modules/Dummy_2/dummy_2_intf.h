@@ -29,6 +29,21 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-/* There are no requests associated with this module. */
+/**
+ * @brief Send a message to request: Dummy_2_Req.
+ * 
+ * Response: No
+ * 
+ * @param param 
+ * @return OE_Error_t An error is returned if
+ * - processing the message results in an error.
+ * Otherwise OE_ERROR_NONE is returned.
+ */
+OE_Error_t req_Dummy_2_Req(
+	uint8_t param);
+
+struct requestArgs_Dummy_2_Req_s {
+	uint8_t param;
+};
 
 #endif // DUMMY_2_INTF_H

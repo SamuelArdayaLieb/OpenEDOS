@@ -25,9 +25,11 @@
 #include "dummy_2_intf.h"
 #include "oe_core_intf.h"
 #include "test_intf.h"
+#include "dummy_0_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
+#include "../../CuTest.h"
 /* USER CODE MODULE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module definition ~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -38,6 +40,9 @@ typedef struct module_Dummy_2_s {
 
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
+    CuTest *tc;
+    uint8_t param;
+    bool requestSent;
     /* USER CODE MODULE DATA END */
 
 } module_Dummy_2_t;
