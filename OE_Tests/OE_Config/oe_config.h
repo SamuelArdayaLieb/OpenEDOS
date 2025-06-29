@@ -21,7 +21,7 @@
  * This macro defines how many request messages the message queue of one kernel
  * can store.
  */
-#define OE_MESSAGE_QUEUE_LENGTH 1000
+#define OE_MESSAGE_QUEUE_LENGTH 100
 
 /**
  * The message data size defines the number of bytes in the data field of a message.
@@ -34,7 +34,7 @@
  * of request messages in the message queue is controlled and limited by the kernel.
  * This is useful to prevent an overflow of requests.
  */
-#define OE_USE_REQUEST_LIMIT 0
+#define OE_USE_REQUEST_LIMIT 1
 
 /**
  * This macro defines how many requests of the same type (same ID) can be
