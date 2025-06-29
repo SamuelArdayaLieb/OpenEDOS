@@ -8,4 +8,5 @@ module:
   kernel: 2
   subscribed requests:
   - name: Kernel_Start
+  - name: Test_End
   used requests: []

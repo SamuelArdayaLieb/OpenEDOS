@@ -2,10 +2,23 @@ name: 'Dummy_1'
 author: Samuel Ardaya-Lieb
 interface:
   create: true
-  requests: []
+  requests:
+  - name: Dummy_1_Req
+    request parameters:
+    - name: tc
+      type: CuTest*
+  - name: Dummy_1_toggleRegistration
+    request parameters:
+    - name: tc
+      type: CuTest*
 module:
   create: true
   kernel: 1
   subscribed requests:
   - name: Kernel_Start
-  used requests: []
+  - name: Test_End
+  - name: Dummy_1_Req
+  - name: Dummy_1_toggleRegistration
+  used requests:
+  - name: Dummy_1_Req
+  - name: Dummy_1_toggleRegistration

@@ -24,6 +24,7 @@
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
 #include "../../oe_test.h"
+#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -62,6 +63,11 @@ static void handleRequest_Dummy_0_Req(
 	OE_MessageHeader_t *Header,
 	struct requestArgs_Dummy_0_Req_s *Args);
 
+/**
+ * @brief Handle the request: Test_End.
+ */
+static void handleRequest_Test_End(void);
+
 //~~~~~~~~~~~~~~~~~~~~~ Response handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
 /**
@@ -87,12 +93,14 @@ OE_Error_t initModule_Dummy_0(
     OE_RequestID_t RequestIDs[] = {
 		RID_Kernel_Start,
 		RID_Dummy_0_Req,
+		RID_Test_End,
 	};
 
     /* List the request handlers accordingly. */
     OE_MessageHandler_t RequestHandlers[] = {
 		(OE_MessageHandler_t)handleRequest_Kernel_Start,
 		(OE_MessageHandler_t)handleRequest_Dummy_0_Req,
+		(OE_MessageHandler_t)handleRequest_Test_End,
 	};
 
     /* Setup the module connections. */
@@ -170,8 +178,16 @@ void handleRequest_Dummy_0_Req(
 
     res_Dummy_0_Req(
         Dummy_0->param,
+        Args->tc,
         Header);
     /* USER CODE REQUEST DUMMY 0 REQ END */
+}
+
+void handleRequest_Test_End(void)
+{
+    /* USER CODE REQUEST TEST END BEGIN */
+    pthread_exit(NULL);
+    /* USER CODE REQUEST TEST END END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//

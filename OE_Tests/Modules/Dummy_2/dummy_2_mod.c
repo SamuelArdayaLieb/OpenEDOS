@@ -23,6 +23,7 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
+#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -51,6 +52,11 @@ static void handleRequest_Kernel_Start(
 	OE_MessageHeader_t *Header,
 	struct requestArgs_Kernel_Start_s *Args);
 
+/**
+ * @brief Handle the request: Test_End.
+ */
+static void handleRequest_Test_End(void);
+
 //~~~~~~~~~~~~~~~~~~~~~ Response handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
 /* This module does not implement any response handlers. */
@@ -68,11 +74,13 @@ OE_Error_t initModule_Dummy_2(
     /* List the requests this module will handle. */
     OE_RequestID_t RequestIDs[] = {
 		RID_Kernel_Start,
+		RID_Test_End,
 	};
 
     /* List the request handlers accordingly. */
     OE_MessageHandler_t RequestHandlers[] = {
 		(OE_MessageHandler_t)handleRequest_Kernel_Start,
+		(OE_MessageHandler_t)handleRequest_Test_End,
 	};
 
     /* Setup the module connections. */
@@ -134,6 +142,13 @@ void handleRequest_Kernel_Start(
 {
     /* USER CODE REQUEST KERNEL START BEGIN */
     /* USER CODE REQUEST KERNEL START END */
+}
+
+void handleRequest_Test_End(void)
+{
+    /* USER CODE REQUEST TEST END BEGIN */
+    pthread_exit(NULL);
+    /* USER CODE REQUEST TEST END END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//

@@ -24,6 +24,7 @@
 #include "oe_defines.h"
 #include "dummy_2_intf.h"
 #include "oe_core_intf.h"
+#include "test_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */

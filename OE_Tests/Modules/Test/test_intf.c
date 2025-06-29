@@ -3,7 +3,7 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file dummy_1_intf.c
+ * @file test_intf.c
  * @author Samuel Ardaya-Lieb
  */
 
@@ -18,7 +18,7 @@
 /* USER CODE FILE INTRODUCTION BEGIN */
 /* USER CODE FILE INTRODUCTION END */
 
-#include "dummy_1_intf.h"
+#include "test_intf.h"
 #include "oe_core_mod.h"
 
 /* Includes, typedefs, globals, etc. */
@@ -27,32 +27,15 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-OE_Error_t req_Dummy_1_Req(
-	CuTest* tc)
+OE_Error_t req_Test_End(void)
 {
 	OE_MessageHeader_t MessageHeader = {
-		.RequestID = RID_Dummy_1_Req,
+		.RequestID = RID_Test_End,
 	};
 
 	return OE_Core_sendRequest(
 		&MessageHeader,
-		&(struct requestArgs_Dummy_1_Req_s){
-			tc,
-		});
-}
-
-OE_Error_t req_Dummy_1_toggleRegistration(
-	CuTest* tc)
-{
-	OE_MessageHeader_t MessageHeader = {
-		.RequestID = RID_Dummy_1_toggleRegistration,
-	};
-
-	return OE_Core_sendRequest(
-		&MessageHeader,
-		&(struct requestArgs_Dummy_1_toggleRegistration_s){
-			tc,
-		});
+		NULL);
 }
 
 /* Something else...? */

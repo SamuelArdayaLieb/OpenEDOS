@@ -3,7 +3,7 @@
  * Sections inside USER CODE BEGIN and USER CODE END will be left untouched 
  * when rerunning the code generation. Happy coding!
  * 
- * @file dummy_1_intf.h
+ * @file test_intf.h
  * @author Samuel Ardaya-Lieb
  */
 
@@ -18,50 +18,26 @@
 /* USER CODE FILE INTRODUCTION BEGIN */
 /* USER CODE FILE INTRODUCTION END */
 
-#ifndef DUMMY_1_INTF_H
-#define DUMMY_1_INTF_H
+#ifndef TEST_INTF_H
+#define TEST_INTF_H
 
 #include "oe_defines.h"
 
 /* Includes, defines, typedefs, etc. */
 /* USER CODE INTERFACE HEADER BEGIN */
-#include "../../CuTest.h"
 /* USER CODE INTERFACE HEADER END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /**
- * @brief Send a message to request: Dummy_1_Req.
+ * @brief Send a message to request: Test_End.
  * 
  * Response: No
  * 
- * @param tc 
  * @return OE_Error_t An error is returned if
  * - processing the message results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t req_Dummy_1_Req(
-	CuTest* tc);
+OE_Error_t req_Test_End(void);
 
-struct requestArgs_Dummy_1_Req_s {
-	CuTest* tc;
-};
-
-/**
- * @brief Send a message to request: Dummy_1_toggleRegistration.
- * 
- * Response: No
- * 
- * @param tc 
- * @return OE_Error_t An error is returned if
- * - processing the message results in an error.
- * Otherwise OE_ERROR_NONE is returned.
- */
-OE_Error_t req_Dummy_1_toggleRegistration(
-	CuTest* tc);
-
-struct requestArgs_Dummy_1_toggleRegistration_s {
-	CuTest* tc;
-};
-
-#endif // DUMMY_1_INTF_H
+#endif // TEST_INTF_H

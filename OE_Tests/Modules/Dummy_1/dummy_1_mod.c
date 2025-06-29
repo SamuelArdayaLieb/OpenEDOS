@@ -23,6 +23,7 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
+#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -51,6 +52,29 @@ static void handleRequest_Kernel_Start(
 	OE_MessageHeader_t *Header,
 	struct requestArgs_Kernel_Start_s *Args);
 
+/**
+ * @brief Handle the request: Test_End.
+ */
+static void handleRequest_Test_End(void);
+
+/**
+ * @brief Handle the request: Dummy_1_Req.
+ * 
+ * @param Args Pointer to the request parameters.
+ */
+static void handleRequest_Dummy_1_Req(
+	OE_MessageHeader_t *Header,
+	struct requestArgs_Dummy_1_Req_s *Args);
+
+/**
+ * @brief Handle the request: Dummy_1_toggleRegistration.
+ * 
+ * @param Args Pointer to the request parameters.
+ */
+static void handleRequest_Dummy_1_toggleRegistration(
+	OE_MessageHeader_t *Header,
+	struct requestArgs_Dummy_1_toggleRegistration_s *Args);
+
 //~~~~~~~~~~~~~~~~~~~~~ Response handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
 /* This module does not implement any response handlers. */
@@ -68,11 +92,17 @@ OE_Error_t initModule_Dummy_1(
     /* List the requests this module will handle. */
     OE_RequestID_t RequestIDs[] = {
 		RID_Kernel_Start,
+		RID_Test_End,
+		RID_Dummy_1_Req,
+		RID_Dummy_1_toggleRegistration,
 	};
 
     /* List the request handlers accordingly. */
     OE_MessageHandler_t RequestHandlers[] = {
 		(OE_MessageHandler_t)handleRequest_Kernel_Start,
+		(OE_MessageHandler_t)handleRequest_Test_End,
+		(OE_MessageHandler_t)handleRequest_Dummy_1_Req,
+		(OE_MessageHandler_t)handleRequest_Dummy_1_toggleRegistration,
 	};
 
     /* Setup the module connections. */
@@ -120,7 +150,7 @@ OE_Error_t init_Dummy_1(void *Args)
 	/* Avoid unused warning. */
 	(void)Args;
 
-
+    Dummy_1->handlerRegistered = true;
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
     /* USER CODE MODULE INIT END */
@@ -136,6 +166,44 @@ void handleRequest_Kernel_Start(
     /* USER CODE REQUEST KERNEL START END */
 }
 
+void handleRequest_Test_End(void)
+{
+    /* USER CODE REQUEST TEST END BEGIN */
+    pthread_exit(NULL);
+    /* USER CODE REQUEST TEST END END */
+}
+
+void handleRequest_Dummy_1_Req(
+	OE_MessageHeader_t *Header,
+	struct requestArgs_Dummy_1_Req_s *Args)
+{
+    /* USER CODE REQUEST DUMMY 1 REQ BEGIN */
+    (void)Header;
+
+    CuAssertTrue(Args->tc, Dummy_1->handlerRegistered);
+
+    //unregisterHandler();
+    /* USER CODE REQUEST DUMMY 1 REQ END */
+}
+
+void handleRequest_Dummy_1_toggleRegistration(
+	OE_MessageHeader_t *Header,
+	struct requestArgs_Dummy_1_toggleRegistration_s *Args)
+{
+    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION BEGIN */
+    (void)Header;
+    
+    if (Dummy_1->handlerRegistered)
+    {
+        unregisterHandler();
+    }
+    else
+    {
+        registerHandler(Args->tc);
+    }
+    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION END */
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* This module does not implement any response handlers. */
@@ -143,5 +211,32 @@ void handleRequest_Kernel_Start(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE FUNCTIONS BEGIN */
+void registerHandler(CuTest *tc)
+{
+    OE_Error_t Error;
+    OE_RequestID_t RID = RID_Dummy_1_Req;
+    OE_MessageHandler_t Handler = (OE_MessageHandler_t)handleRequest_Dummy_1_Req;
+
+    Error = OE_Kernel_registerHandlers(
+        Dummy_1->Kernel,
+        &RID,
+        &Handler,
+        1);
+    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    Dummy_1->handlerRegistered = true;
+}
+
+void unregisterHandler(void)
+{
+    OE_RequestID_t RID = RID_Dummy_1_Req;
+    OE_MessageHandler_t Handler = (OE_MessageHandler_t)handleRequest_Dummy_1_Req;
+
+    OE_Kernel_unregisterHandlers(
+        Dummy_1->Kernel,
+        &RID,
+        &Handler,
+        1);
+    Dummy_1->handlerRegistered = false;
+}
 /* USER CODE MODULE FUNCTIONS END */
 

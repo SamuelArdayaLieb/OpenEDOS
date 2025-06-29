@@ -24,6 +24,7 @@
 #include "oe_defines.h"
 #include "dummy_1_intf.h"
 #include "oe_core_intf.h"
+#include "test_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
@@ -37,6 +38,7 @@ typedef struct module_Dummy_1_s {
 
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
+    volatile bool handlerRegistered;
     /* USER CODE MODULE DATA END */
 
 } module_Dummy_1_t;
@@ -65,6 +67,8 @@ OE_Error_t initModule_Dummy_1(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
+void registerHandler(CuTest *tc);
+void unregisterHandler(void);
 /* USER CODE MODULE PROTOTYPES END */
 
 #endif // DUMMY_1_MOD_H

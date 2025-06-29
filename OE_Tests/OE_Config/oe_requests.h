@@ -33,8 +33,15 @@ typedef enum OE_RequestID_e
     RID_Kernel_Start,
 #endif
 
+	/* Dummy_1 */
+	RID_Dummy_1_Req,
+	RID_Dummy_1_toggleRegistration,
+
 	/* Dummy_0 */
 	RID_Dummy_0_Req,
+
+	/* Test */
+	RID_Test_End,
 
 	/* TestDummy */
 	RID_Dummy_Request_1,

@@ -52,13 +52,14 @@ int main(void)
     CuString *output = CuStringNew();
     CuSuite* suite = CuSuiteNew();
     
-    add_singleKernel(suite);
+    //add_singleKernel(suite);
     add_multiKernel(suite);
 
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);
     CuSuiteDetails(suite, output);
     printf("%s\n", output->buffer);
+    CuSuiteDelete(suite);
     /* USER CODE MAIN FUNCTION END */
 
 	/* Never reached... */

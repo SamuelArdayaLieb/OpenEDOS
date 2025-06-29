@@ -214,10 +214,8 @@ typedef enum OE_Error_e
     /*Errors related to memory management*/
     OE_ERROR_KERNEL_LIMIT_REACHED,
     OE_ERROR_HANDLER_LIMIT_REACHED,
-/*Errors related to request allocation*/
-#if OE_USE_REQUEST_LIMIT
+    /*Errors related to request allocation*/
     OE_ERROR_REQUEST_LIMIT_REACHED,
-#endif // OE_USE_REQUEST_LIMIT
     OE_ERROR_MESSAGE_QUEUE_FULL,
     /*Errors related to invalid IDs*/
     OE_ERROR_REQUEST_ID_INVALID,
