@@ -182,7 +182,7 @@ void handleRequest_Dummy_1_Req(
 
     CuAssertTrue(Args->tc, Dummy_1->handlerRegistered);
 
-    //unregisterHandler();
+    unregisterHandler();
     /* USER CODE REQUEST DUMMY 1 REQ END */
 }
 
