@@ -14,6 +14,7 @@
 #include "multi_kernel.h"
 #include <time.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /* Static core as usual */
 static OE_Core_t OE_Core;
@@ -23,8 +24,11 @@ static OE_Kernel_t Kernel_0, Kernel_1, Kernel_2, Kernel_3;
 /* OpenEDOS threads */
 static pthread_t kernel_threads[OE_NUMBER_OF_KERNELS];
 
+pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS] = { PTHREAD_MUTEX_INITIALIZER };
 pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZER };
+
+atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
 #define NUM_TOGGLE_SUBSCRIPTION_THREADS 10
@@ -37,12 +41,12 @@ static pthread_t sendDummy_1_Req_threads[NUM_DUMMY_1_REQ_THREADS];
 static pthread_t sendDummy_2_Req_threads[NUM_DUMMY_2_REQ_THREADS];
 
 /* Test flags */
-static volatile bool sendDummy_0_Request_flag;
-static volatile bool sendDummy_1_Request_flag;
-static volatile bool sendDummy_2_Request_flag;
-static volatile bool toggleSubscription_flag;
-static volatile bool handlerRegistered_flags[NUM_TOGGLE_SUBSCRIPTION_THREADS];
-static volatile bool responseReceived_flags[NUM_DUMMY_0_REQ_THREADS];
+static volatile atomic_bool sendDummy_0_Request_flag;
+static volatile atomic_bool sendDummy_1_Request_flag;
+static volatile atomic_bool sendDummy_2_Request_flag;
+static volatile atomic_bool toggleSubscription_flag;
+static volatile atomic_bool handlerRegistered_flags[NUM_TOGGLE_SUBSCRIPTION_THREADS];
+static volatile atomic_bool responseReceived_flags[NUM_DUMMY_0_REQ_THREADS];
 static volatile uint8_t dummy_0_TestParams[NUM_DUMMY_0_REQ_THREADS]; 
 
 struct dummy_0_threadArgs {
@@ -50,13 +54,18 @@ struct dummy_0_threadArgs {
     uint8_t id;
 };
 
+struct timespec ts;
+
 #define TEST_DELAY_S  1
-#define TEST_DELAY_US 1
+#define TEST_DELAY_NS 100000 // 100 us
 
 static void init(CuTest *tc)
 {
     OE_Error_t Error;
     
+    ts.tv_sec = 0;
+    ts.tv_nsec = TEST_DELAY_NS;
+
     TestParam_1 = TEST_VAL_TEST_BEGIN;
     TestParam_2 = TEST_VAL_TEST_BEGIN;
     TestParam_3 = TEST_VAL_TEST_BEGIN;
@@ -122,15 +131,6 @@ static __attribute__ ((__unused__)) void test_multiKernel_staticInit(CuTest *tc)
     /* Check again. */
     Error = OE_Kernel_staticInit(&Kernel_3);
     CuAssertIntEquals(tc, OE_ERROR_KERNEL_LIMIT_REACHED, Error);
-}
-
-static void __attribute__ ((__unused__)) test_multiKernel_initModule(CuTest *tc)
-{
-    (void)tc;
-    
-    /**
-     * @TODO: Implement test!
-     */
 }
 
 static __attribute__ ((__unused__)) void *Kernel_0_thread(void *Args)
@@ -208,12 +208,13 @@ static void *toggleSubscription(void *Args)
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
 
-    while (toggleSubscription_flag)
+    while (atomic_load(&toggleSubscription_flag))
     {
         Error = OE_ERROR_MESSAGE_QUEUE_FULL;
         while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
         {
             Error = req_Dummy_1_toggleRegistration(tc);
+            nanosleep(&ts, NULL);
         }
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
@@ -226,7 +227,7 @@ static void dummy_0_response(
 	struct responseArgs_Dummy_0_Req_s *Args)
 {
     CuAssertIntEquals(Args->tc, Kernel_0.KernelID, Header->KernelID);
-    responseReceived_flags[Args->param] = true;
+    atomic_store(&responseReceived_flags[Args->param], true);
 }
 
 static void *sendDummy_0_Request(void *Args)
@@ -236,15 +237,16 @@ static void *sendDummy_0_Request(void *Args)
     CuTest *tc = threadArgs->tc;
     uint8_t id = threadArgs->id; 
     
-    while (sendDummy_0_Request_flag)
+    while (atomic_load(&sendDummy_0_Request_flag))
     {
         Error = OE_ERROR_MESSAGE_QUEUE_FULL;
         while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
         || (Error == OE_ERROR_REQUEST_LIMIT_REACHED)
-        || (!responseReceived_flags[id]))
+        || (!atomic_load(&responseReceived_flags[id])))
         {
-            responseReceived_flags[id] = false;
-            Error = req_Dummy_0_Req(id, tc, (OE_MessageHandler_t)dummy_0_response, Kernel_0.KernelID);
+            atomic_store(&responseReceived_flags[id], false);
+            Error = req_Dummy_0_Req(id, tc, (OE_MessageHandler_t)dummy_0_response, 0);
+            nanosleep(&ts, NULL);
         }
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
@@ -257,12 +259,14 @@ static void *sendDummy_1_Request(void *Args)
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
     
-    while (sendDummy_1_Request_flag)
+    while (atomic_load(&sendDummy_1_Request_flag))
     {
         Error = OE_ERROR_MESSAGE_QUEUE_FULL;
-        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
+        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
         {
             Error = req_Dummy_1_Req(tc);
+            nanosleep(&ts, NULL);
         }
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
@@ -275,13 +279,14 @@ static void *sendDummy_2_Request(void *Args)
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
     
-    while (sendDummy_2_Request_flag)
+    while (atomic_load(&sendDummy_2_Request_flag))
     {
         Error = OE_ERROR_MESSAGE_QUEUE_FULL;
         while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
         || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
         {
             Error = req_Dummy_2_Req(TEST_VAL_2);
+            nanosleep(&ts, NULL);
         }
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
@@ -298,33 +303,46 @@ void handleResponse_Dummy_0_Req(
     
     CuAssertIntEquals(Args->tc, TestParam_1, Args->param);
 
-    responseReceived_flags[0] = true;
+    atomic_store(&responseReceived_flags[0],true);
     /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
 
 static void startKernelThreads(CuTest *tc)
 {
+    struct sched_param param;
+    pthread_attr_t attr;
     int Ret;
-    const struct sched_param param1 = {.sched_priority = 1};
-    const struct sched_param param2 = {.sched_priority = 1};
-    const struct sched_param param3 = {.sched_priority = 1};
-
     printf("Starting kernels\n");
+    param.sched_priority = 2;
+    // Initialize the attribute object
+    Ret = pthread_attr_init(&attr);
+    CuAssertIntEquals(tc, 0, Ret);
 
-    Ret = pthread_create(&kernel_threads[0], NULL, Kernel_0_thread, tc);
+    // Set the scheduling policy to SCHED_RR
+    Ret = pthread_attr_setschedpolicy(&attr, SCHED_RR);
     CuAssertIntEquals(tc, 0, Ret);
-    Ret = pthread_setschedparam(kernel_threads[0], SCHED_RR, &param1);
-    CuAssertIntEquals(tc, 0, Ret);  
-    
-    Ret = pthread_create(&kernel_threads[1], NULL, Kernel_1_thread, tc);
+
+    // Set the scheduling priority
+    Ret = pthread_attr_setschedparam(&attr, &param);
     CuAssertIntEquals(tc, 0, Ret);
-    Ret = pthread_setschedparam(kernel_threads[1], SCHED_RR, &param2);
+
+    // Set the attribute to explicitly use the scheduling parameters
+    Ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    CuAssertIntEquals(tc, 0, Ret);
+
+    // Create the thread with the configured attributes
+    Ret = pthread_create(&kernel_threads[0], &attr, Kernel_0_thread, tc);
+    CuAssertIntEquals(tc, 0, Ret);
+    Ret = pthread_create(&kernel_threads[1], &attr, Kernel_1_thread, tc);
+    CuAssertIntEquals(tc, 0, Ret);
+    Ret = pthread_create(&kernel_threads[2], &attr, Kernel_2_thread, tc);
+    CuAssertIntEquals(tc, 0, Ret);
+
+    // Destroy the attribute object
+    Ret = pthread_attr_destroy(&attr);
     CuAssertIntEquals(tc, 0, Ret); 
     
-    Ret = pthread_create(&kernel_threads[2], NULL, Kernel_2_thread, tc);
-    CuAssertIntEquals(tc, 0, Ret);
-    Ret = pthread_setschedparam(kernel_threads[2], SCHED_RR, &param3);
-    CuAssertIntEquals(tc, 0, Ret);      
+    nanosleep(&ts, NULL);
 }
 
 static void stopKernelThreads(CuTest *tc)
@@ -332,9 +350,9 @@ static void stopKernelThreads(CuTest *tc)
     int Ret;
     printf("Stopping kernels\n");
 
-    OE_Error_t Error = req_Test_End();
+    nanosleep(&ts, NULL);
     
-    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    CuAssertIntEquals(tc, OE_ERROR_NONE, req_Test_End());
     
     Ret = pthread_join(kernel_threads[0], NULL);
     CuAssertIntEquals(tc, 0, Ret);
@@ -352,8 +370,6 @@ static void __attribute__ ((__unused__)) test_multiKernel_run(CuTest *tc)
 
     startKernelThreads(tc);
 
-    usleep(TEST_DELAY_US);
-
     stopKernelThreads(tc);
 }
 
@@ -363,14 +379,12 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
     
     printf("Starting single response test\n");
 
-    responseReceived_flags[0] = false;
+    atomic_store(&responseReceived_flags[0],false);
     TestParam_1 = TEST_VAL_1;
     
     init(tc);
 
     startKernelThreads(tc);
-
-    usleep(TEST_DELAY_US);
 
     Error = req_Dummy_0_Req(
         TestParam_1, tc, 
@@ -378,9 +392,9 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
         Kernel_0.KernelID);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
-    usleep(TEST_DELAY_US);
+    nanosleep(&ts, NULL);
 
-    CuAssertTrue(tc, responseReceived_flags[0]);
+    CuAssertTrue(tc, atomic_load(&responseReceived_flags[0]));
 
     stopKernelThreads(tc);    
 }
@@ -388,22 +402,19 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
 static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 1};
+    const struct sched_param param = {.sched_priority = 2};
     
     printf("Starting interact test\n");
 
-    sendDummy_2_Request_flag = true;
-    toggleSubscription_flag = true;
-
+    atomic_store(&sendDummy_2_Request_flag, true);
+    atomic_store(&toggleSubscription_flag, true);
     init(tc);
 
     startKernelThreads(tc);
 
-    usleep(TEST_DELAY_US);
-
     for (i=0; i < NUM_TOGGLE_SUBSCRIPTION_THREADS; i++)
     {
-        handlerRegistered_flags[i] = true;
+        atomic_store(&handlerRegistered_flags[i], true);
 
         Ret = pthread_create(&toggleSubscription_threads[i], NULL, toggleSubscription, tc);
         CuAssertIntEquals(tc, 0, Ret);
@@ -420,9 +431,9 @@ static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
     }
 
     sleep(TEST_DELAY_S);
-
-    toggleSubscription_flag = false;
-    sendDummy_2_Request_flag = false;
+    
+    atomic_store(&toggleSubscription_flag, false);
+    atomic_store(&sendDummy_2_Request_flag, false);
 
     for (i=0; i < NUM_TOGGLE_SUBSCRIPTION_THREADS; i++)
     {
@@ -434,30 +445,26 @@ static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
         pthread_join(sendDummy_2_Req_threads[i], NULL);
     }
 
-    usleep(TEST_DELAY_US);
-
     stopKernelThreads(tc);
 }
 
 static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 1};
+    const struct sched_param param = {.sched_priority = 2};
     
     printf("Starting handler registration test\n");
 
-    sendDummy_1_Request_flag = true;
-    toggleSubscription_flag = true;
+    atomic_store(&sendDummy_1_Request_flag, true);
+    atomic_store(&toggleSubscription_flag, true);
 
     init(tc);
 
     startKernelThreads(tc);
 
-    usleep(TEST_DELAY_US);
-
     for (i=0; i < NUM_TOGGLE_SUBSCRIPTION_THREADS; i++)
     {
-        handlerRegistered_flags[i] = true;
+        atomic_store(&handlerRegistered_flags[i], true);
 
         Ret = pthread_create(&toggleSubscription_threads[i], NULL, toggleSubscription, tc);
         CuAssertIntEquals(tc, 0, Ret);
@@ -475,8 +482,8 @@ static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(Cu
 
     sleep(TEST_DELAY_S);
 
-    toggleSubscription_flag = false;
-    sendDummy_1_Request_flag = false;
+    atomic_store(&toggleSubscription_flag, false);
+    atomic_store(&sendDummy_1_Request_flag, false);
 
     for (i=0; i < NUM_TOGGLE_SUBSCRIPTION_THREADS; i++)
     {
@@ -488,31 +495,27 @@ static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(Cu
         pthread_join(sendDummy_1_Req_threads[i], NULL);
     }
 
-    usleep(TEST_DELAY_US);
-
     stopKernelThreads(tc);
 }
 
 static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 1};
+    const struct sched_param param = {.sched_priority = 2};
     struct dummy_0_threadArgs args;
     args.tc = tc;
 
     printf("Starting response test\n");
 
-    sendDummy_0_Request_flag = true;
+    atomic_store(&sendDummy_0_Request_flag, true);
 
     init(tc);
 
     startKernelThreads(tc);
 
-    usleep(TEST_DELAY_US);
-
     for (i=0; i < NUM_DUMMY_0_REQ_THREADS; i++)
     {
-        responseReceived_flags[i] = true;
+        atomic_store(&responseReceived_flags[i], true);
         args.id = i;
         Ret = pthread_create(&sendDummy_0_Req_threads[i], NULL, sendDummy_0_Request, &args);
         CuAssertIntEquals(tc, 0, Ret);
@@ -522,25 +525,22 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 
     sleep(TEST_DELAY_S);
 
-    sendDummy_0_Request_flag = false;
+    atomic_store(&sendDummy_0_Request_flag, false);
    
     for (i=0; i < NUM_DUMMY_0_REQ_THREADS; i++)
     {
         pthread_join(sendDummy_0_Req_threads[i], NULL);
     }
-
-    usleep(TEST_DELAY_US);
     
     stopKernelThreads(tc);
 }
 
 void add_multiKernel(CuSuite *suite)
 {
-    // SUITE_ADD_TEST(suite, test_multiKernel_initModule);
-    // SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
-    // SUITE_ADD_TEST(suite, test_multiKernel_run);
+    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
+    SUITE_ADD_TEST(suite, test_multiKernel_run);
     SUITE_ADD_TEST(suite, test_multiKernel_interact);
-    // SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
-    // SUITE_ADD_TEST(suite, test_multiKernel_response);
-    // SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
+    SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
+    SUITE_ADD_TEST(suite, test_multiKernel_response);
+    SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
 }

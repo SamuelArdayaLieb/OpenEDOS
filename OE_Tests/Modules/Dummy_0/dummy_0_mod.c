@@ -197,7 +197,7 @@ void handleRequest_Test_End(void)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-void handleResponse_Dummy_0_Req(
+void __attribute__((__unused__)) handleResponse_Dummy_0_Req(
 	OE_MessageHeader_t *Header,
 	struct responseArgs_Dummy_0_Req_s *Args)
 {
