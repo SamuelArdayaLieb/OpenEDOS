@@ -221,6 +221,7 @@ typedef enum OE_Error_e
     OE_ERROR_REQUEST_ID_INVALID,
     OE_ERROR_KERNEL_ID_INVALID,
     /*General purpose errors*/
+    OE_ERROR_UNSPECIFIED,
     OE_ERROR_PARAMETER_INVALID,
     
     /**
