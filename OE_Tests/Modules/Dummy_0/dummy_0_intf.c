@@ -29,7 +29,6 @@
 
 OE_Error_t req_Dummy_0_Req(
 	uint8_t param,
-	CuTest* tc,
 	OE_MessageHandler_t ResponseHandler,
 	OE_KernelID_t KernelID)
 {
@@ -43,20 +42,17 @@ OE_Error_t req_Dummy_0_Req(
 		&MessageHeader,
 		&(struct requestArgs_Dummy_0_Req_s){
 			param,
-			tc,
 		});
 }
 
 OE_Error_t res_Dummy_0_Req(
 	uint8_t param,
-	CuTest* tc,
 	OE_MessageHeader_t* RequestHeader)
 {
 	return OE_Core_sendResponse(
 		RequestHeader,
 		&(struct responseArgs_Dummy_0_Req_s){
 			param,
-			tc,
 		});
 }
 

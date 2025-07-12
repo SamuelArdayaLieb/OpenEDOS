@@ -35,33 +35,21 @@
  * 
  * Response: No
  * 
- * @param tc 
  * @return OE_Error_t An error is returned if
  * - processing the message results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t req_Dummy_1_Req(
-	CuTest* tc);
-
-struct requestArgs_Dummy_1_Req_s {
-	CuTest* tc;
-};
+OE_Error_t req_Dummy_1_Req(void);
 
 /**
  * @brief Send a message to request: Dummy_1_toggleRegistration.
  * 
  * Response: No
  * 
- * @param tc 
  * @return OE_Error_t An error is returned if
  * - processing the message results in an error.
  * Otherwise OE_ERROR_NONE is returned.
  */
-OE_Error_t req_Dummy_1_toggleRegistration(
-	CuTest* tc);
-
-struct requestArgs_Dummy_1_toggleRegistration_s {
-	CuTest* tc;
-};
+OE_Error_t req_Dummy_1_toggleRegistration(void);
 
 #endif // DUMMY_1_INTF_H

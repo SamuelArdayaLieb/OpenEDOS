@@ -29,7 +29,7 @@
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include "../../CuTest.h"
+#include "../../oe_test.h"
 /* USER CODE MODULE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module definition ~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -40,9 +40,11 @@ typedef struct module_Dummy_2_s {
 
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
-    CuTest *tc;
     uint8_t param;
     bool requestSent;
+
+    CuSuite *suite;
+    CuTest *tc;
     /* USER CODE MODULE DATA END */
 
 } module_Dummy_2_t;

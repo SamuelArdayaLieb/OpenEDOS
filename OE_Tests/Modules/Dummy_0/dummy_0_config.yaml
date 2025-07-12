@@ -8,15 +8,11 @@ interface:
     request parameters:
     - name: param
       type: uint8_t
-    - name: tc
-      type: CuTest*
     response: true
     response description: Return the received byte 'param'.
     response parameters:
     - name: param
       type: uint8_t
-    - name: tc
-      type: CuTest*
 module:
   create: true
   kernel: 0

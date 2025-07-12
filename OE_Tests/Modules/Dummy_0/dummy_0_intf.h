@@ -37,7 +37,6 @@
  * Response: Yes
  * 
  * @param param 
- * @param tc 
  * @param ResponseHandler A pointer to the function
  * that will handle the response to this request.
  * @param KernelID The ID of the kernel to which
@@ -48,13 +47,11 @@
  */
 OE_Error_t req_Dummy_0_Req(
 	uint8_t param,
-	CuTest* tc,
 	OE_MessageHandler_t ResponseHandler,
 	OE_KernelID_t KernelID);
 
 struct requestArgs_Dummy_0_Req_s {
 	uint8_t param;
-	CuTest* tc;
 };
 
 /**
@@ -63,7 +60,6 @@ struct requestArgs_Dummy_0_Req_s {
  * Return the received byte 'param'.
  * 
  * @param param 
- * @param tc 
  * @param RequestHeader A pointer to the header of
  * the request message to which this response is sent.
  * @return OE_Error_t An error is returned if
@@ -72,12 +68,10 @@ struct requestArgs_Dummy_0_Req_s {
  */
 OE_Error_t res_Dummy_0_Req(
 	uint8_t param,
-	CuTest* tc,
 	OE_MessageHeader_t* RequestHeader);
 
 struct responseArgs_Dummy_0_Req_s {
 	uint8_t param;
-	CuTest* tc;
 };
 
 #endif // DUMMY_0_INTF_H

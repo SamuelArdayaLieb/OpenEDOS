@@ -52,4 +52,3 @@ Modules
 # Link against the pthread library
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-#target_link_libraries(${PROJECT_NAME} PRIVATE rt)

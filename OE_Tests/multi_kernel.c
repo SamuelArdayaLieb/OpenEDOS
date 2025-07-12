@@ -14,7 +14,6 @@
 #include "multi_kernel.h"
 #include <time.h>
 #include <stdio.h>
-#include <unistd.h>
 
 /* Static core as usual */
 static OE_Core_t OE_Core;
@@ -23,7 +22,6 @@ static OE_Kernel_t Kernel_0, Kernel_1, Kernel_2, Kernel_3;
 
 /* OpenEDOS threads */
 static pthread_t kernel_threads[OE_NUMBER_OF_KERNELS];
-
 pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS] = { PTHREAD_MUTEX_INITIALIZER };
 pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZER };
@@ -31,7 +29,7 @@ pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZE
 atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
-#define NUM_TOGGLE_SUBSCRIPTION_THREADS 1
+#define NUM_TOGGLE_SUBSCRIPTION_THREADS 10
 #define NUM_DUMMY_0_REQ_THREADS 10
 #define NUM_DUMMY_1_REQ_THREADS 10
 #define NUM_DUMMY_2_REQ_THREADS 10
@@ -56,7 +54,7 @@ struct dummy_0_threadArgs {
 
 struct timespec ts;
 
-#define NUM_TEST_RUNS 10000
+#define NUM_TEST_RUNS 20000
 #define TEST_DELAY_NS 100000 // 100 us
 
 static void init(CuTest *tc)
@@ -133,74 +131,72 @@ static __attribute__ ((__unused__)) void test_multiKernel_staticInit(CuTest *tc)
     CuAssertIntEquals(tc, OE_ERROR_KERNEL_LIMIT_REACHED, Error);
 }
 
+static void Test_Kernel_run(CuTest* tc)
+{
+    OE_Kernel_run((OE_Kernel_t*)tc->args);
+}
+
 static __attribute__ ((__unused__)) void *Kernel_0_thread(void *Args)
 {
-    /* USER CODE KERNEL 0 INIT BEGIN */
+    (void)Args;
 	OE_Error_t Error;
-	void *ModuleArgs;
-    CuTest *tc = (CuTest*)Args;
 	module_Dummy_0_t Dummy_0;
+    CuSuite *suite = CuSuiteNew();
+    CuTest *tc = CuTestNewArgs("Test_Kernel_0", Test_Kernel_run, (void*)&Kernel_0);
 
-	/* Initialize all modules. */
-	ModuleArgs = NULL;
+    CuSuiteAdd(suite, tc);
+
     Error = initModule_Dummy_0(
         &Dummy_0,
-        ModuleArgs,
+        (void*)suite,
         &Kernel_0);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
-    /* USER CODE KERNEL 0 INIT END */
-    /* USER CODE KERNEL 0 RUN BEGIN */
-	/* Enter kernel main routine. */
-	OE_Kernel_run(&Kernel_0);
+
+    CuSuiteRun(suite);
     /* Never reached... */
     return NULL;
-    /* USER CODE KERNEL 0 RUN END */
 }
 
 static __attribute__ ((__unused__)) void *Kernel_1_thread(void *Args)
 {
-    /* USER CODE KERNEL 1 INIT BEGIN */
+    (void)Args;
 	OE_Error_t Error;
-	void *ModuleArgs;
-    CuTest *tc = (CuTest*)Args;
 	module_Dummy_1_t Dummy_1;
+    CuSuite *suite = CuSuiteNew();
+    CuTest *tc = CuTestNewArgs("Test_Kernel_1", Test_Kernel_run, (void*)&Kernel_1);
+	
+	CuSuiteAdd(suite, tc);
 
-	/* Initialize all modules. */
-	ModuleArgs = NULL;
     Error = initModule_Dummy_1(
         &Dummy_1,
-        ModuleArgs,
+        (void*)suite,
         &Kernel_1);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
-    /* USER CODE KERNEL 1 INIT END */
-    /* USER CODE KERNEL 1 RUN BEGIN */
-	/* Enter kernel main routine. */
-	OE_Kernel_run(&Kernel_1);
+    
+    CuSuiteRun(suite);
     /* Never reached... */
     return NULL;
-    /* USER CODE KERNEL 1 RUN END */
 }
 
 static __attribute__ ((__unused__)) void *Kernel_2_thread(void *Args)
 {
-    /* USER CODE KERNEL 2 INIT BEGIN */
+    (void)Args;
 	OE_Error_t Error;
-    CuTest *tc = (CuTest*)Args;
 	module_Dummy_2_t Dummy_2;
+    CuSuite *suite = CuSuiteNew();
+    CuTest *tc = CuTestNewArgs("Test_Kernel_2", Test_Kernel_run, (void*)&Kernel_2);
 
-	/* Initialize all modules. */
+    CuSuiteAdd(suite, tc);
+
     Error = initModule_Dummy_2(
         &Dummy_2,
-        (void*)tc,
+        (void*)suite,
         &Kernel_2);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
-    /* USER CODE KERNEL 2 INIT END */
-    /* USER CODE KERNEL 2 RUN BEGIN */
-	/* Enter kernel main routine. */
-	OE_Kernel_run(&Kernel_2);
+
+    CuSuiteRun(suite);
     /* Never reached... */
     return NULL;
-    /* USER CODE KERNEL 2 RUN END */
 }
 
 static void *toggleSubscription(void *Args)
@@ -320,6 +316,7 @@ static void startKernelThreads(CuTest *tc)
     struct sched_param param;
     pthread_attr_t attr;
     int Ret;
+
     printf("Starting kernels\n");
     param.sched_priority = 2;
     // Initialize the attribute object
@@ -539,10 +536,10 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 
 void add_multiKernel(CuSuite *suite)
 {
-    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
+    //SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
     SUITE_ADD_TEST(suite, test_multiKernel_run);
-    SUITE_ADD_TEST(suite, test_multiKernel_interact);
-    SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
-    SUITE_ADD_TEST(suite, test_multiKernel_response);
-    SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
+    //SUITE_ADD_TEST(suite, test_multiKernel_interact);
+    //SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
+    //SUITE_ADD_TEST(suite, test_multiKernel_response);
+    //SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
 }

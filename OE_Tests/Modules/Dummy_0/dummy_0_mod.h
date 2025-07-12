@@ -28,6 +28,7 @@
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
+#include "../../oe_test.h"
 /* USER CODE MODULE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module definition ~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -39,6 +40,9 @@ typedef struct module_Dummy_0_s {
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
     uint8_t param;
+
+    CuSuite *suite;
+    CuTest *tc;
     /* USER CODE MODULE DATA END */
 
 } module_Dummy_0_t;

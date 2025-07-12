@@ -64,9 +64,6 @@ OE_Error_t OE_RequestMap_registerHandlers(
     size_t Count;
     OE_RequestMapNode_t *Node;
     
-    /* The request map is a shared memory. */
-    //OE_ENTER_CRITICAL();
-
     /* Check if a handler is already registered and if the passed data ist valid. */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
@@ -78,8 +75,6 @@ OE_Error_t OE_RequestMap_registerHandlers(
 
         if (RequestIDs[Count] >= OE_NUMBER_OF_REQUESTS)
         {
-            //OE_EXIT_CRITICAL();
-
             return OE_ERROR_REQUEST_ID_INVALID;
         }
 
@@ -89,16 +84,12 @@ OE_Error_t OE_RequestMap_registerHandlers(
         if (Node->NumberOfHandlers >= OE_REQUEST_HANDLER_LIMIT)
         {
             /* There's no more space in the map */
-            //OE_EXIT_CRITICAL();
-            
             return OE_ERROR_HANDLER_LIMIT_REACHED;
         }
 
         /* is the handler valid? */
         if (RequestHandlers[Count] == NULL)
-        {
-            //OE_EXIT_CRITICAL();
-            
+        {   
             return OE_ERROR_PARAMETER_INVALID;
         }
     }
@@ -111,8 +102,6 @@ OE_Error_t OE_RequestMap_registerHandlers(
             Node,
             RequestHandlers[Count]);
     }
-
-    //OE_EXIT_CRITICAL();
 
     return OE_ERROR_NONE;
 }
@@ -134,8 +123,6 @@ void OE_RequestMap_unregisterHandlers(
         }
     }
 
-    //OE_ENTER_CRITICAL();
-
     /* Remove the handlers from the request map. */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
@@ -143,8 +130,6 @@ void OE_RequestMap_unregisterHandlers(
             &(RequestMap->MapNodes[RequestIDs[Count]]),
             RequestHandlers[Count]);
     }
-
-    //OE_EXIT_CRITICAL();
 }
 
 OE_RequestMapNode_t* OE_RequestMap_getHandlers(
@@ -170,12 +155,14 @@ void OE_RequestMap_placeHandler(
             return;
         }
     }
-
+    /* The core might check for registered handlers from a different context. */
+    OE_ENTER_CRITICAL();
     /* Append the handler to the map node. */
     Node->RequestHandlers[Node->NumberOfHandlers] = EventHandler;
 
     /* Increase the number of handlers. */
     Node->NumberOfHandlers++;
+    OE_EXIT_CRITICAL();
 }
 
 void OE_RequestMap_removeHandler(
@@ -190,6 +177,8 @@ void OE_RequestMap_removeHandler(
         /* Did we find the handler? */
         if (Node->RequestHandlers[Count] == EventHandler)
         {
+            /* The core might check for registered handlers from a different context. */
+            OE_ENTER_CRITICAL();
             /**
              * To remove the handler from the map node array, we simply move down the
              * rest of the array by one element so that the handler gets overwritten.
@@ -223,8 +212,9 @@ void OE_RequestMap_removeHandler(
 
             /* The last handler in the array is reset. */
             Node->RequestHandlers[Node->NumberOfHandlers] = OE_NO_HANDLER;
-
+            
             /* That's it. Easy, right? */
+            OE_EXIT_CRITICAL();
             return;
         }
     }

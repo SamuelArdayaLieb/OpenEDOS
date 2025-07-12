@@ -4,13 +4,7 @@ interface:
   create: true
   requests:
   - name: Dummy_1_Req
-    request parameters:
-    - name: tc
-      type: CuTest*
   - name: Dummy_1_toggleRegistration
-    request parameters:
-    - name: tc
-      type: CuTest*
 module:
   create: true
   kernel: 1

@@ -27,8 +27,7 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-OE_Error_t req_Dummy_1_Req(
-	CuTest* tc)
+OE_Error_t req_Dummy_1_Req(void)
 {
 	OE_MessageHeader_t MessageHeader = {
 		.RequestID = RID_Dummy_1_Req,
@@ -36,13 +35,10 @@ OE_Error_t req_Dummy_1_Req(
 
 	return OE_Core_sendRequest(
 		&MessageHeader,
-		&(struct requestArgs_Dummy_1_Req_s){
-			tc,
-		});
+		NULL);
 }
 
-OE_Error_t req_Dummy_1_toggleRegistration(
-	CuTest* tc)
+OE_Error_t req_Dummy_1_toggleRegistration(void)
 {
 	OE_MessageHeader_t MessageHeader = {
 		.RequestID = RID_Dummy_1_toggleRegistration,
@@ -50,9 +46,7 @@ OE_Error_t req_Dummy_1_toggleRegistration(
 
 	return OE_Core_sendRequest(
 		&MessageHeader,
-		&(struct requestArgs_Dummy_1_toggleRegistration_s){
-			tc,
-		});
+		NULL);
 }
 
 /* Something else...? */

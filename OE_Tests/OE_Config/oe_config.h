@@ -21,7 +21,7 @@
  * This macro defines how many request messages the message queue of one kernel
  * can store.
  */
-#define OE_MESSAGE_QUEUE_LENGTH 100
+#define OE_MESSAGE_QUEUE_LENGTH 10
 
 /**
  * The message data size defines the number of bytes in the data field of a message.
@@ -41,7 +41,7 @@
  * stored in the messages queue at a time. This macro only has an effect if
  * OE_USE_REQUEST_LIMIT is set to 1.
  */
-#define OE_REQUEST_LIMIT 50
+#define OE_REQUEST_LIMIT 5
 
 /**
  * If this macro is set to 1, the OpenEDOS Core will send requests

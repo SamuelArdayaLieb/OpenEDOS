@@ -276,9 +276,7 @@ OE_Error_t OE_Core_sendRequest(
 #if OE_USE_REQUEST_LIMIT
             if (OE_Core_registerFull(KernelID, Header->RequestID))
             {
-                //printf("Kernel %d, Request %d: Request limit reached!\n", KernelID, Header->RequestID);
                 OE_EXIT_CRITICAL();
-
                 return OE_ERROR_REQUEST_LIMIT_REACHED;
             }
 #endif // OE_USE_REQUEST_LIMIT
@@ -291,7 +289,6 @@ OE_Error_t OE_Core_sendRequest(
                 // }
 
                 OE_EXIT_CRITICAL();
-
                 return OE_ERROR_MESSAGE_QUEUE_FULL;
             }
         }
@@ -300,7 +297,6 @@ OE_Error_t OE_Core_sendRequest(
     if (!handlerRegistered)
     {
         OE_EXIT_CRITICAL();
-        
         return OE_ERROR_NONE;
     }
 
@@ -350,7 +346,6 @@ OE_Error_t OE_Core_sendRequest(
     }
 
     OE_EXIT_CRITICAL();
-
     return OE_ERROR_NONE;
 }
 
@@ -383,7 +378,6 @@ OE_Error_t OE_Core_sendResponse(
     if (Message == NULL)
     {
         OE_EXIT_CRITICAL();
-
         return OE_ERROR_MESSAGE_QUEUE_FULL;
     }
 
@@ -403,7 +397,6 @@ OE_Error_t OE_Core_sendResponse(
     OE_RESUME(Header->KernelID);
 
     OE_EXIT_CRITICAL();
-
     return OE_ERROR_NONE;
 }
 
@@ -437,7 +430,6 @@ OE_Message_t *OE_Core_getMessage(
 #endif // OE_USE_REQUEST_LIMIT
 
     OE_EXIT_CRITICAL();
-
     return Message;
 }
 

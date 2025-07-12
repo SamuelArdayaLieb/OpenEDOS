@@ -1,6 +1,7 @@
 #ifndef OE_TEST_H
 #define OE_TEST_H
 
+#include "CuTest.h"
 #include <stdint.h>
 
 #define TEST_VAL_TEST_BEGIN   0

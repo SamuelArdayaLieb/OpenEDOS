@@ -7,7 +7,6 @@
 #include "oe_kernel.h"
 #include "oe_core_mod.h"
 #include "oe_core_intf.h"
-#include <string.h>
 
 OE_Error_t OE_Kernel_staticInit(
     OE_Kernel_t *Kernel)

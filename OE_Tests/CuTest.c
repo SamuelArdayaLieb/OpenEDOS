@@ -109,7 +109,7 @@ void CuStringInsert(CuString* str, const char* text, int pos)
  * CuTest
  *-------------------------------------------------------------------------*/
 
-void CuTestInit(CuTest* t, const char* name, TestFunction function)
+void CuTestInit(CuTest* t, const char* name, TestFunction function, void *args)
 {
 	t->name = CuStrCopy(name);
 	t->failed = 0;
@@ -117,12 +117,20 @@ void CuTestInit(CuTest* t, const char* name, TestFunction function)
 	t->message = NULL;
 	t->function = function;
 	t->jumpBuf = NULL;
+	t->args = args;
 }
 
 CuTest* CuTestNew(const char* name, TestFunction function)
 {
 	CuTest* tc = CU_ALLOC(CuTest);
-	CuTestInit(tc, name, function);
+	CuTestInit(tc, name, function, NULL);
+	return tc;
+}
+
+CuTest* CuTestNewArgs(const char* name, TestFunction function, void *args)
+{
+	CuTest* tc = CU_ALLOC(CuTest);
+	CuTestInit(tc, name, function, args);
 	return tc;
 }
 

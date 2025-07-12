@@ -145,11 +145,12 @@ OE_Error_t initModule_Dummy_0(
 OE_Error_t init_Dummy_0(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-	/* Avoid unused warning. */
-	(void)Args;
-
     Dummy_0->param = TEST_VAL_MODULE_INIT;
 
+    Dummy_0->suite = (CuSuite*)Args;
+    Dummy_0->tc = Dummy_0->suite->list[0];
+
+    CuAssertTrue(Dummy_0->tc, true);
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
     /* USER CODE MODULE INIT END */
@@ -163,9 +164,12 @@ void handleRequest_Kernel_Start(
 {
     /* USER CODE REQUEST KERNEL START BEGIN */
     (void)Header;
-    (void)Args;
 
-    Dummy_0->param = TEST_VAL_KERNEL_START;
+    if (Args->KernelID == Dummy_0->Kernel->KernelID)
+    {
+        CuAssertIntEquals(Dummy_0->tc, 0, Dummy_0->Kernel->KernelID);   
+        Dummy_0->param = TEST_VAL_KERNEL_START;
+    }
     /* USER CODE REQUEST KERNEL START END */
 }
 
@@ -182,7 +186,8 @@ void handleRequest_Dummy_0_Req(
     {
         Error = res_Dummy_0_Req(
             Dummy_0->param,
-            Args->tc,
+            //Args->tc,
+            Dummy_0->suite->list[Dummy_0->suite->count],
             Header);
     }
     /* USER CODE REQUEST DUMMY 0 REQ END */
@@ -191,13 +196,19 @@ void handleRequest_Dummy_0_Req(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
+    CuString *output = CuStringNew();
+    CuSuiteSummary(Dummy_0->suite, output);
+    CuSuiteDetails(Dummy_0->suite, output);
+    printf("Kernel 0 suite: %s\n", output->buffer);
+    CuSuiteDelete(Dummy_0->suite);
+    CuStringDelete(output);
     pthread_exit(NULL);
     /* USER CODE REQUEST TEST END END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-void __attribute__((__unused__)) handleResponse_Dummy_0_Req(
+void handleResponse_Dummy_0_Req(
 	OE_MessageHeader_t *Header,
 	struct responseArgs_Dummy_0_Req_s *Args)
 {
