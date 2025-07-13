@@ -16,9 +16,9 @@ static void init(CuTest *tc, OE_Kernel_t *Kernel)
 {
     OE_Error_t Error;
     
+    TestParam_0 = TEST_VAL_TEST_BEGIN;
     TestParam_1 = TEST_VAL_TEST_BEGIN;
     TestParam_2 = TEST_VAL_TEST_BEGIN;
-    TestParam_3 = TEST_VAL_TEST_BEGIN;
 
     initModule_OE_Core(&Core, NULL, NULL);
 
@@ -96,9 +96,9 @@ static void test_singleKernel_kernelStart(CuTest *tc)
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
     /* Test values should have changed. */
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_0);
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2); 
 
     /* Send kernel start request. */
     Error = req_Kernel_Start(Kernel.KernelID);
@@ -108,9 +108,9 @@ static void test_singleKernel_kernelStart(CuTest *tc)
 
     OE_Kernel_runOnce(&Kernel);
 
+    CuAssertIntEquals(tc, TEST_VAL_KERNEL_START, TestParam_0);
     CuAssertIntEquals(tc, TEST_VAL_KERNEL_START, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_KERNEL_START, TestParam_2);
-    CuAssertIntEquals(tc, TEST_VAL_KERNEL_START, TestParam_3);  
+    CuAssertIntEquals(tc, TEST_VAL_KERNEL_START, TestParam_2);  
 
     /* There should be one message in the queue. */
     CuAssertIntEquals(tc, 0, Kernel.Core->MessageQueues[Kernel.KernelID].NumberOfMessages);
@@ -132,9 +132,9 @@ static void test_singleKernel_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
     /* Test values should have changed. */
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_0);
     CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3); 
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2); 
 
     /* Unsubscribe request to see if it's not handled. */
     unsubscribeRequest_1();
@@ -145,9 +145,9 @@ static void test_singleKernel_subscribeRequest(CuTest *tc)
     /* Process request. */
     OE_Kernel_runOnce(&Kernel);
 
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);     
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_0);
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_1);     
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
 
     /* Subscribe request to see if it's handled. */
     Error = subscribeRequest_1();
@@ -159,16 +159,16 @@ static void test_singleKernel_subscribeRequest(CuTest *tc)
     /* Process request. */
     OE_Kernel_runOnce(&Kernel);
 
-    CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2);     
-    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_3);
+    CuAssertIntEquals(tc, TEST_VAL_1, TestParam_0);
+    CuAssertIntEquals(tc, TEST_VAL_2, TestParam_1);     
+    CuAssertIntEquals(tc, TEST_VAL_MODULE_INIT, TestParam_2);
     CuAssertIntEquals(tc, 1, Kernel.Core->MessageQueues[Kernel.KernelID].NumberOfMessages);
 
     /* Process response. */
     OE_Kernel_runOnce(&Kernel);
-    CuAssertIntEquals(tc, TEST_VAL_1, TestParam_1);
-    CuAssertIntEquals(tc, TEST_VAL_2, TestParam_2); 
-    CuAssertIntEquals(tc, TEST_VAL_3, TestParam_3);
+    CuAssertIntEquals(tc, TEST_VAL_1, TestParam_0);
+    CuAssertIntEquals(tc, TEST_VAL_2, TestParam_1); 
+    CuAssertIntEquals(tc, TEST_VAL_3, TestParam_2);
     CuAssertIntEquals(tc, 0, Kernel.Core->MessageQueues[Kernel.KernelID].NumberOfMessages);
 }
 

@@ -23,8 +23,6 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include "../../oe_test.h"
-#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -70,14 +68,7 @@ static void handleRequest_Test_End(void);
 
 //~~~~~~~~~~~~~~~~~~~~~ Response handler prototypes ~~~~~~~~~~~~~~~~~~~~~//
 
-/**
- * @brief Handle a response to the request: Dummy_0_Req.
- * 
- * @param Args Pointer to the response parameters.
- */
-static void handleResponse_Dummy_0_Req(
-	OE_MessageHeader_t *Header,
-	struct responseArgs_Dummy_0_Req_s *Args);
+/* This module does not implement any response handlers. */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~ Module initialization ~~~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -145,7 +136,7 @@ OE_Error_t initModule_Dummy_0(
 OE_Error_t init_Dummy_0(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-    Dummy_0->param = TEST_VAL_MODULE_INIT;
+    TestParam_0 = TEST_VAL_MODULE_INIT;
 
     Dummy_0->suite = (CuSuite*)Args;
     Dummy_0->tc = Dummy_0->suite->list[0];
@@ -167,8 +158,9 @@ void handleRequest_Kernel_Start(
 
     if (Args->KernelID == Dummy_0->Kernel->KernelID)
     {
-        CuAssertIntEquals(Dummy_0->tc, 0, Dummy_0->Kernel->KernelID);   
-        Dummy_0->param = TEST_VAL_KERNEL_START;
+        CuAssertIntEquals(Dummy_0->tc, 0, Dummy_0->Kernel->KernelID); 
+        CuAssertIntEquals(Dummy_0->tc, TEST_VAL_MODULE_INIT, TestParam_0);  
+        TestParam_0 = TEST_VAL_KERNEL_START;
     }
     /* USER CODE REQUEST KERNEL START END */
 }
@@ -178,18 +170,18 @@ void handleRequest_Dummy_0_Req(
 	struct requestArgs_Dummy_0_Req_s *Args)
 {
     /* USER CODE REQUEST DUMMY 0 REQ BEGIN */
-    OE_Error_t Error = OE_ERROR_MESSAGE_QUEUE_FULL;
+    OE_Error_t Error;
 
     Dummy_0->param = Args->param;
 
-    while (Error == OE_ERROR_MESSAGE_QUEUE_FULL)
-    {
+    do {
         Error = res_Dummy_0_Req(
             Dummy_0->param,
-            //Args->tc,
-            Dummy_0->suite->list[Dummy_0->suite->count],
             Header);
-    }
+    } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+    || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+
+    CuAssertIntEquals(Dummy_0->tc, OE_ERROR_NONE, Error);
     /* USER CODE REQUEST DUMMY 0 REQ END */
 }
 
@@ -208,15 +200,7 @@ void handleRequest_Test_End(void)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-void handleResponse_Dummy_0_Req(
-	OE_MessageHeader_t *Header,
-	struct responseArgs_Dummy_0_Req_s *Args)
-{
-    /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
-    (void)Header;
-    (void)Args;
-    /* USER CODE RESPONSE DUMMY 0 REQ END */
-}
+/* This module does not implement any response handlers. */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 

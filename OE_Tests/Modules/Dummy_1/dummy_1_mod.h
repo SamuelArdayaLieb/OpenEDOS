@@ -39,7 +39,7 @@ typedef struct module_Dummy_1_s {
 
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
-    volatile bool handlerRegistered;
+    bool handlerRegistered;
 
     CuSuite *suite;
     CuTest *tc;    
@@ -71,7 +71,7 @@ OE_Error_t initModule_Dummy_1(
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ User prototypes ~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE PROTOTYPES BEGIN */
-void registerHandler(CuTest *tc);
+void registerHandler(void);
 void unregisterHandler(void);
 /* USER CODE MODULE PROTOTYPES END */
 

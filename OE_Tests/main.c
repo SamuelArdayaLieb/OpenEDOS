@@ -31,9 +31,9 @@
 #include "multi_kernel.h"
 #include <stdio.h>
 
+uint8_t TestParam_0;
 uint8_t TestParam_1;
 uint8_t TestParam_2;
-uint8_t TestParam_3;
 /* USER CODE MAIN GLOBALS END */
 
 /* Kernel threads. */

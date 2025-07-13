@@ -64,9 +64,9 @@ static void init(CuTest *tc)
     ts.tv_sec = 0;
     ts.tv_nsec = TEST_DELAY_NS;
 
+    TestParam_0 = TEST_VAL_TEST_BEGIN;
     TestParam_1 = TEST_VAL_TEST_BEGIN;
     TestParam_2 = TEST_VAL_TEST_BEGIN;
-    TestParam_3 = TEST_VAL_TEST_BEGIN;
 
     initModule_OE_Core(&OE_Core, NULL, NULL);
 
@@ -305,7 +305,7 @@ void handleResponse_Dummy_0_Req(
     /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
     
-    CuAssertIntEquals(Args->tc, TestParam_1, Args->param);
+    CuAssertIntEquals(Args->tc, TestParam_0, Args->param);
 
     atomic_store(&responseReceived_flags[0],true);
     /* USER CODE RESPONSE DUMMY 0 REQ END */
@@ -385,14 +385,14 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
     printf("Starting single response test\n");
 
     atomic_store(&responseReceived_flags[0],false);
-    TestParam_1 = TEST_VAL_1;
+    TestParam_0 = TEST_VAL_1;
     
     init(tc);
 
     startKernelThreads(tc);
 
     Error = req_Dummy_0_Req(
-        TestParam_1, tc, 
+        TestParam_0, tc, 
         (OE_MessageHandler_t)handleResponse_Dummy_0_Req, 
         Kernel_0.KernelID);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);

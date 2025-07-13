@@ -14,5 +14,3 @@ module:
   - name: Dummy_1_Req
   - name: Dummy_1_toggleRegistration
   used requests:
-  - name: Dummy_1_Req
-  - name: Dummy_1_toggleRegistration

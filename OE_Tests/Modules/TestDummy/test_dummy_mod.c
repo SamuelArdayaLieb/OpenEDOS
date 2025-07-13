@@ -153,9 +153,9 @@ OE_Error_t initModule_TestDummy(
 OE_Error_t init_TestDummy(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-	TestParam_1 = TEST_VAL_MODULE_INIT;
+	TestParam_0 = TEST_VAL_MODULE_INIT;
+    TestParam_1 = TEST_VAL_MODULE_INIT;
     TestParam_2 = TEST_VAL_MODULE_INIT;
-    TestParam_3 = TEST_VAL_MODULE_INIT;
 	
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
@@ -169,8 +169,8 @@ void handleRequest_Dummy_Request_1(
 	struct requestArgs_Dummy_Request_1_s *Args)
 {
     /* USER CODE REQUEST DUMMY REQUEST 1 BEGIN */
-	TestParam_1 = Args->Dummy_Request_Param_1;
-	TestParam_2 = Args->Dummy_Request_Param_2;
+	TestParam_0 = Args->Dummy_Request_Param_1;
+	TestParam_1 = Args->Dummy_Request_Param_2;
 
 	res_Dummy_Request_1(
 		TEST_VAL_3, 
@@ -183,9 +183,9 @@ void handleRequest_Kernel_Start(
 	struct requestArgs_Kernel_Start_s *Args)
 {
     /* USER CODE REQUEST KERNEL START BEGIN */
-	TestParam_1 = TEST_VAL_KERNEL_START;
+	TestParam_0 = TEST_VAL_KERNEL_START;
+    TestParam_1 = TEST_VAL_KERNEL_START;
     TestParam_2 = TEST_VAL_KERNEL_START;
-    TestParam_3 = TEST_VAL_KERNEL_START;
     /* USER CODE REQUEST KERNEL START END */
 }
 
@@ -203,7 +203,7 @@ void handleResponse_Dummy_Request_1(
 	struct responseArgs_Dummy_Request_1_s *Args)
 {
     /* USER CODE RESPONSE DUMMY REQUEST 1 BEGIN */
-	TestParam_3 = Args->Dummy_Response_Param_1;
+	TestParam_2 = Args->Dummy_Response_Param_1;
     /* USER CODE RESPONSE DUMMY REQUEST 1 END */
 }
 

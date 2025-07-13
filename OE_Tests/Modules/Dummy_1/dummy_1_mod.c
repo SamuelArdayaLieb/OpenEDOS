@@ -23,7 +23,6 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -139,6 +138,8 @@ OE_Error_t initModule_Dummy_1(
 OE_Error_t init_Dummy_1(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
+    TestParam_1 = TEST_VAL_MODULE_INIT;
+
     Dummy_1->handlerRegistered = true;
 
     Dummy_1->suite = (CuSuite*)Args;
@@ -160,7 +161,9 @@ void handleRequest_Kernel_Start(
     (void)Header;
     if (Args->KernelID == Dummy_1->Kernel->KernelID)
     {
-        CuAssertIntEquals(Dummy_1->tc, 1, Dummy_1->Kernel->KernelID);   
+        CuAssertIntEquals(Dummy_1->tc, 1, Dummy_1->Kernel->KernelID);
+        CuAssertIntEquals(Dummy_1->tc, TEST_VAL_MODULE_INIT, TestParam_1);
+        TestParam_1 = TEST_VAL_KERNEL_START;   
     }
     /* USER CODE REQUEST KERNEL START END */
 }
@@ -181,26 +184,22 @@ void handleRequest_Test_End(void)
 void handleRequest_Dummy_1_Req(void)
 {
     /* USER CODE REQUEST DUMMY 1 REQ BEGIN */
-    (void)Header;
+    CuAssertTrue(Dummy_1->tc, Dummy_1->handlerRegistered);
 
-    //CuAssertTrue(Args->tc, Dummy_1->handlerRegistered);
-
-    unregisterHandler();
+    //unregisterHandler();
     /* USER CODE REQUEST DUMMY 1 REQ END */
 }
 
 void handleRequest_Dummy_1_toggleRegistration(void)
 {
-    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION BEGIN */
-    (void)Header;
-    
+    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION BEGIN */    
     if (Dummy_1->handlerRegistered)
     {
         unregisterHandler();
     }
     else
     {
-        registerHandler(Args->tc);
+        registerHandler();
     }
     /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION END */
 }
@@ -212,7 +211,7 @@ void handleRequest_Dummy_1_toggleRegistration(void)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~ User functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 /* USER CODE MODULE FUNCTIONS BEGIN */
-void registerHandler(CuTest *tc)
+void registerHandler(void)
 {
     OE_Error_t Error;
     OE_RequestID_t RID = RID_Dummy_1_Req;
@@ -223,7 +222,8 @@ void registerHandler(CuTest *tc)
         &RID,
         &Handler,
         1);
-    //CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    CuAssertIntEquals(Dummy_1->tc, OE_ERROR_NONE, Error);
+    
     Dummy_1->handlerRegistered = true;
 }
 

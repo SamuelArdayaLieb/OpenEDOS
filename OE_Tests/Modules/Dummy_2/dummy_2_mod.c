@@ -23,7 +23,6 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
-#include <pthread.h>
 /* USER CODE MODULE GLOBALS END */
 
 /* Global pointer to the module. */
@@ -143,6 +142,8 @@ OE_Error_t initModule_Dummy_2(
 OE_Error_t init_Dummy_2(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
+    TestParam_2 = TEST_VAL_MODULE_INIT;
+
     Dummy_2->requestSent = false;
 
     Dummy_2->suite = (CuSuite*)Args;
@@ -165,7 +166,9 @@ void handleRequest_Kernel_Start(
     
     if (Args->KernelID == Dummy_2->Kernel->KernelID)
     {
-        CuAssertIntEquals(Dummy_2->tc, 2, Dummy_2->Kernel->KernelID);   
+        CuAssertIntEquals(Dummy_2->tc, 2, Dummy_2->Kernel->KernelID);
+        CuAssertIntEquals(Dummy_2->tc, TEST_VAL_MODULE_INIT, TestParam_2);
+        TestParam_2 = TEST_VAL_KERNEL_START;   
     }
     /* USER CODE REQUEST KERNEL START END */
 }
@@ -189,20 +192,20 @@ void handleRequest_Dummy_2_Req(
 {
     /* USER CODE REQUEST DUMMY 2 REQ BEGIN */
     (void)Header;
-    OE_Error_t Error = OE_ERROR_MESSAGE_QUEUE_FULL;
+    OE_Error_t Error;
 
     Dummy_2->param = Args->param;
 
-    while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-    || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
-    {
+    do {
         Error = req_Dummy_0_Req(
             Args->param,
-            Dummy_2->tc,
             handleResponse_Dummy_0_Req,
             Dummy_2->Kernel->KernelID);
-    }
-    //CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
+    } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+    || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+
+    CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
+
     Dummy_2->requestSent = true;
     /* USER CODE REQUEST DUMMY 2 REQ END */
 }
@@ -215,8 +218,8 @@ void handleResponse_Dummy_0_Req(
 {
     /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
-    //CuAssertIntEquals(Dummy_2->tc, Dummy_2->param, Args->param);
-    //CuAssertTrue(Dummy_2->tc, Dummy_2->requestSent);
+    CuAssertIntEquals(Dummy_2->tc, Dummy_2->param, Args->param);
+    CuAssertTrue(Dummy_2->tc, Dummy_2->requestSent);
     Dummy_2->requestSent = false;
     /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
