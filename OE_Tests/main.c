@@ -58,7 +58,7 @@ int main(void)
     CuSuiteRun(suite);
     CuSuiteSummary(suite, output);
     CuSuiteDetails(suite, output);
-    printf("%s\n", output->buffer);
+    printf("Main suite: %s\n", output->buffer);
     CuSuiteDelete(suite);
     CuStringDelete(output);
     /* USER CODE MAIN FUNCTION END */

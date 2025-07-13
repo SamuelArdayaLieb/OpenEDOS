@@ -138,14 +138,13 @@ OE_Error_t initModule_Dummy_1(
 OE_Error_t init_Dummy_1(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-    TestParam_1 = TEST_VAL_MODULE_INIT;
-
     Dummy_1->handlerRegistered = true;
 
     Dummy_1->suite = (CuSuite*)Args;
     Dummy_1->tc = Dummy_1->suite->list[0];   
     
-    CuAssertTrue(Dummy_1->tc, true);
+    CuAssertIntEquals(Dummy_1->tc, TEST_VAL_TEST_BEGIN, TestParam_1);
+    TestParam_1 = TEST_VAL_MODULE_INIT;
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
     /* USER CODE MODULE INIT END */

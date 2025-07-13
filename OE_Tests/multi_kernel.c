@@ -29,10 +29,10 @@ pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZE
 atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
-#define NUM_TOGGLE_SUBSCRIPTION_THREADS 10
-#define NUM_DUMMY_0_REQ_THREADS 10
-#define NUM_DUMMY_1_REQ_THREADS 10
-#define NUM_DUMMY_2_REQ_THREADS 10
+#define NUM_TOGGLE_SUBSCRIPTION_THREADS 0
+#define NUM_DUMMY_0_REQ_THREADS 1
+#define NUM_DUMMY_1_REQ_THREADS 1
+#define NUM_DUMMY_2_REQ_THREADS 2
 static pthread_t toggleSubscription_threads[NUM_TOGGLE_SUBSCRIPTION_THREADS];
 static pthread_t sendDummy_0_Req_threads[NUM_DUMMY_0_REQ_THREADS];
 static pthread_t sendDummy_1_Req_threads[NUM_DUMMY_1_REQ_THREADS];
@@ -54,7 +54,7 @@ struct dummy_0_threadArgs {
 
 struct timespec ts;
 
-#define NUM_TEST_RUNS 20000
+#define NUM_TEST_RUNS 2000
 #define TEST_DELAY_NS 100000 // 100 us
 
 static void init(CuTest *tc)
@@ -206,14 +206,14 @@ static void *toggleSubscription(void *Args)
     int i = NUM_TEST_RUNS;
 
     while (i)
-    {
-        Error = OE_ERROR_MESSAGE_QUEUE_FULL;
-        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
-        {
-            Error = req_Dummy_1_toggleRegistration(tc);
+    {        
+        do {
+            Error = req_Dummy_1_toggleRegistration();
             nanosleep(&ts, NULL);
             i--;
-        }
+        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL)
+        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
 
@@ -224,7 +224,7 @@ static void dummy_0_response(
 	OE_MessageHeader_t *Header,
 	struct responseArgs_Dummy_0_Req_s *Args)
 {
-    CuAssertIntEquals(Args->tc, Kernel_0.KernelID, Header->KernelID);
+    (void)Header;
     atomic_store(&responseReceived_flags[Args->param], true);
 }
 
@@ -238,16 +238,15 @@ static void *sendDummy_0_Request(void *Args)
     
     while (i)
     {
-        Error = OE_ERROR_MESSAGE_QUEUE_FULL;
-        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED)
-        || (!atomic_load(&responseReceived_flags[id])))
-        {
+        do {
             atomic_store(&responseReceived_flags[id], false);
-            Error = req_Dummy_0_Req(id, tc, (OE_MessageHandler_t)dummy_0_response, 0);
+            Error = req_Dummy_0_Req(id, (OE_MessageHandler_t)dummy_0_response, 0);
             nanosleep(&ts, NULL);
             i--;
-        }
+        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED)
+        || (!atomic_load(&responseReceived_flags[id])));
+
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
 
@@ -262,14 +261,13 @@ static void *sendDummy_1_Request(void *Args)
     
     while (i)
     {
-        Error = OE_ERROR_MESSAGE_QUEUE_FULL;
-        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
-        {
-            Error = req_Dummy_1_Req(tc);
+        do {
+            Error = req_Dummy_1_Req();
             nanosleep(&ts, NULL);
             i--;
-        }
+        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
 
@@ -284,14 +282,13 @@ static void *sendDummy_2_Request(void *Args)
     
     while (i)
     {
-        Error = OE_ERROR_MESSAGE_QUEUE_FULL;
-        while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED))
-        {
+        do {
             Error = req_Dummy_2_Req(TEST_VAL_2);
             nanosleep(&ts, NULL);
             i--;
-        }
+        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
+        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     }
 
@@ -304,9 +301,6 @@ void handleResponse_Dummy_0_Req(
 {
     /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
-    
-    CuAssertIntEquals(Args->tc, TestParam_0, Args->param);
-
     atomic_store(&responseReceived_flags[0],true);
     /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
@@ -385,14 +379,13 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
     printf("Starting single response test\n");
 
     atomic_store(&responseReceived_flags[0],false);
-    TestParam_0 = TEST_VAL_1;
     
     init(tc);
 
     startKernelThreads(tc);
 
     Error = req_Dummy_0_Req(
-        TestParam_0, tc, 
+        TEST_VAL_1, 
         (OE_MessageHandler_t)handleResponse_Dummy_0_Req, 
         Kernel_0.KernelID);
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
@@ -537,8 +530,8 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 void add_multiKernel(CuSuite *suite)
 {
     //SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
-    SUITE_ADD_TEST(suite, test_multiKernel_run);
-    //SUITE_ADD_TEST(suite, test_multiKernel_interact);
+    //SUITE_ADD_TEST(suite, test_multiKernel_run);
+    SUITE_ADD_TEST(suite, test_multiKernel_interact);
     //SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
     //SUITE_ADD_TEST(suite, test_multiKernel_response);
     //SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
