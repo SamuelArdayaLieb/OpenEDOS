@@ -173,12 +173,9 @@ void handleRequest_Dummy_0_Req(
 
     Dummy_0->param = Args->param;
 
-    do {
-        Error = res_Dummy_0_Req(
-            Dummy_0->param,
-            Header);
-    } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-    || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+    Error = res_Dummy_0_Req(
+        Dummy_0->param,
+        Header);
 
     CuAssertIntEquals(Dummy_0->tc, OE_ERROR_NONE, Error);
     /* USER CODE REQUEST DUMMY 0 REQ END */
@@ -187,12 +184,7 @@ void handleRequest_Dummy_0_Req(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
-    CuString *output = CuStringNew();
-    CuSuiteSummary(Dummy_0->suite, output);
-    CuSuiteDetails(Dummy_0->suite, output);
-    printf("Kernel 0 suite: %s\n", output->buffer);
-    CuSuiteDelete(Dummy_0->suite);
-    CuStringDelete(output);
+    summarizeKernelTests(Dummy_0->suite, Dummy_0->Kernel->KernelID);
     pthread_exit(NULL);
     /* USER CODE REQUEST TEST END END */
 }

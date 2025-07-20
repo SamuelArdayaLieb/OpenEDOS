@@ -282,7 +282,7 @@ OE_Error_t OE_Core_sendRequest(
 #endif // OE_USE_REQUEST_LIMIT
             if (OE_MessageQueue_isFull(&OE_Core->MessageQueues[KernelID]))
             {
-                // sleep(1);
+                //sleep(1);
                 // if (atomic_load(&kernel_running[KernelID]))
                 // {
                 //     printf("Message queue of Kernel %d is full and kernel is running!\n", KernelID);
@@ -393,7 +393,7 @@ OE_Error_t OE_Core_sendResponse(
 
         Message->Header.Information &= ~(OE_MESSAGE_DATA_EMPTY);
     }
-
+    //printf("New response for kernel %d with RID %d\n", Header->KernelID, Header->RequestID);
     OE_RESUME(Header->KernelID);
 
     OE_EXIT_CRITICAL();

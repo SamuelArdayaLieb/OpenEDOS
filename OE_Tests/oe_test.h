@@ -19,4 +19,6 @@ extern uint8_t TestParam_0;
 extern uint8_t TestParam_1;
 extern uint8_t TestParam_2;
 
+void summarizeKernelTests(CuSuite* suite, int Kernel_ID);
+
 #endif // OE_TEST_H

@@ -170,12 +170,7 @@ void handleRequest_Kernel_Start(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
-    CuString *output = CuStringNew();
-    CuSuiteSummary(Dummy_1->suite, output);
-    CuSuiteDetails(Dummy_1->suite, output);
-    printf("Kernel 1 suite: %s\n", output->buffer);
-    CuSuiteDelete(Dummy_1->suite);
-    CuStringDelete(output);
+    summarizeKernelTests(Dummy_1->suite, Dummy_1->Kernel->KernelID);
     pthread_exit(NULL);
     /* USER CODE REQUEST TEST END END */
 }

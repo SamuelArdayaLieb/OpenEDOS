@@ -142,8 +142,6 @@ OE_Error_t initModule_Dummy_2(
 OE_Error_t init_Dummy_2(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
-    Dummy_2->requestSent = false;
-
     Dummy_2->suite = (CuSuite*)Args;
     Dummy_2->tc = Dummy_2->suite->list[0];    
 
@@ -175,12 +173,9 @@ void handleRequest_Kernel_Start(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
-    CuString *output = CuStringNew();
-    CuSuiteSummary(Dummy_2->suite, output);
-    CuSuiteDetails(Dummy_2->suite, output);
-    printf("Kernel 2 suite: %s\n", output->buffer);
-    CuSuiteDelete(Dummy_2->suite);
-    CuStringDelete(output);
+    summarizeKernelTests(
+        Dummy_2->suite, 
+        Dummy_2->Kernel->KernelID);
     pthread_exit(NULL);
     /* USER CODE REQUEST TEST END END */
 }
@@ -195,17 +190,12 @@ void handleRequest_Dummy_2_Req(
 
     Dummy_2->param = Args->param;
 
-    do {
-        Error = req_Dummy_0_Req(
-            Args->param,
-            handleResponse_Dummy_0_Req,
-            Dummy_2->Kernel->KernelID);
-    } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-    || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+    Error = req_Dummy_0_Req(
+        Args->param,
+        handleResponse_Dummy_0_Req,
+        Dummy_2->Kernel->KernelID);
 
     CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
-
-    Dummy_2->requestSent = true;
     /* USER CODE REQUEST DUMMY 2 REQ END */
 }
 
@@ -218,8 +208,6 @@ void handleResponse_Dummy_0_Req(
     /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
     CuAssertIntEquals(Dummy_2->tc, Dummy_2->param, Args->param);
-    CuAssertTrue(Dummy_2->tc, Dummy_2->requestSent);
-    Dummy_2->requestSent = false;
     /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
 

@@ -92,5 +92,13 @@ void Kernel_0_thread(void *Args)
 }
 
 /* USER CODE MAIN SOURCE BEGIN */
-
+void summarizeKernelTests(CuSuite* suite, int Kernel_ID)
+{
+    CuString *output = CuStringNew();
+    CuSuiteSummary(suite, output);
+    CuSuiteDetails(suite, output);
+    printf("Kernel %d suite: %s\n", Kernel_ID, output->buffer);
+    CuSuiteDelete(suite);
+    CuStringDelete(output);
+}
 /* USER CODE MAIN SOURCE END */

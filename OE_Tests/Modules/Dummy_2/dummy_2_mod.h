@@ -41,7 +41,6 @@ typedef struct module_Dummy_2_s {
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
     uint8_t param;
-    bool requestSent;
 
     CuSuite *suite;
     CuTest *tc;

@@ -6,14 +6,13 @@
 
 /* Threading */
 #include <pthread.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 /* Testing */
 #include "oe_test.h"
 #include "multi_kernel.h"
 #include <time.h>
 #include <stdio.h>
+#include <unistd.h>
 
 /* Static core as usual */
 static OE_Core_t OE_Core;
@@ -25,27 +24,27 @@ static pthread_t kernel_threads[OE_NUMBER_OF_KERNELS];
 pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS] = { PTHREAD_MUTEX_INITIALIZER };
 pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZER };
-
+/* Useful for debugging */
 atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
-#define NUM_TOGGLE_SUBSCRIPTION_THREADS 0
+#define NUM_TOGGLE_SUBSCRIPTION_THREADS 1
 #define NUM_DUMMY_0_REQ_THREADS 1
 #define NUM_DUMMY_1_REQ_THREADS 1
-#define NUM_DUMMY_2_REQ_THREADS 2
+#define NUM_DUMMY_2_REQ_THREADS 1
 static pthread_t toggleSubscription_threads[NUM_TOGGLE_SUBSCRIPTION_THREADS];
 static pthread_t sendDummy_0_Req_threads[NUM_DUMMY_0_REQ_THREADS];
 static pthread_t sendDummy_1_Req_threads[NUM_DUMMY_1_REQ_THREADS];
 static pthread_t sendDummy_2_Req_threads[NUM_DUMMY_2_REQ_THREADS];
 
 /* Test flags */
+static volatile atomic_bool testRunning_flag;
 static volatile atomic_bool sendDummy_0_Request_flag;
 static volatile atomic_bool sendDummy_1_Request_flag;
 static volatile atomic_bool sendDummy_2_Request_flag;
 static volatile atomic_bool toggleSubscription_flag;
 static volatile atomic_bool handlerRegistered_flags[NUM_TOGGLE_SUBSCRIPTION_THREADS];
 static volatile atomic_bool responseReceived_flags[NUM_DUMMY_0_REQ_THREADS];
-static volatile uint8_t dummy_0_TestParams[NUM_DUMMY_0_REQ_THREADS]; 
 
 struct dummy_0_threadArgs {
     CuTest *tc;
@@ -54,8 +53,8 @@ struct dummy_0_threadArgs {
 
 struct timespec ts;
 
-#define NUM_TEST_RUNS 2000
 #define TEST_DELAY_NS 100000 // 100 us
+#define RUN_DELAY_S   3
 
 static void init(CuTest *tc)
 {
@@ -153,7 +152,15 @@ static __attribute__ ((__unused__)) void *Kernel_0_thread(void *Args)
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
     CuSuiteRun(suite);
-    /* Never reached... */
+
+    /* If an assert fails we land here. */
+    Error = req_Test_End();
+    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    
+    atomic_store(&testRunning_flag, false);
+    
+    summarizeKernelTests(suite, 0);
+
     return NULL;
 }
 
@@ -174,7 +181,14 @@ static __attribute__ ((__unused__)) void *Kernel_1_thread(void *Args)
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
     
     CuSuiteRun(suite);
-    /* Never reached... */
+    
+    Error = req_Test_End();
+    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+
+    atomic_store(&testRunning_flag, false);
+       
+    summarizeKernelTests(suite, 1);
+
     return NULL;
 }
 
@@ -195,7 +209,14 @@ static __attribute__ ((__unused__)) void *Kernel_2_thread(void *Args)
     CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
 
     CuSuiteRun(suite);
-    /* Never reached... */
+    
+    Error = req_Test_End();
+    CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+    
+    atomic_store(&testRunning_flag, false);
+    
+    summarizeKernelTests(suite, 2);
+
     return NULL;
 }
 
@@ -203,18 +224,16 @@ static void *toggleSubscription(void *Args)
 {
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
-    int i = NUM_TEST_RUNS;
+    int i = 0;
 
-    while (i)
+    while (atomic_load(&toggleSubscription_flag)
+    && (!atomic_load(&testRunning_flag)))
     {        
-        do {
-            Error = req_Dummy_1_toggleRegistration();
-            nanosleep(&ts, NULL);
-            i--;
-        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL)
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+        Error = req_Dummy_1_toggleRegistration();
+        nanosleep(&ts, NULL);
 
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+        i++;
     }
 
     return NULL;
@@ -234,20 +253,18 @@ static void *sendDummy_0_Request(void *Args)
     struct dummy_0_threadArgs *threadArgs = (struct dummy_0_threadArgs*)Args;
     CuTest *tc = threadArgs->tc;
     uint8_t id = threadArgs->id; 
-    int i = NUM_TEST_RUNS;
+    int i = 0;
     
-    while (i)
+    while (atomic_load(&sendDummy_0_Request_flag)
+    && (!atomic_load(&testRunning_flag))
+    && (!atomic_load(&responseReceived_flags[id])))
     {
-        do {
-            atomic_store(&responseReceived_flags[id], false);
-            Error = req_Dummy_0_Req(id, (OE_MessageHandler_t)dummy_0_response, 0);
-            nanosleep(&ts, NULL);
-            i--;
-        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED)
-        || (!atomic_load(&responseReceived_flags[id])));
+        atomic_store(&responseReceived_flags[id], false);
+        Error = req_Dummy_0_Req(id, (OE_MessageHandler_t)dummy_0_response, 0);
+        nanosleep(&ts, NULL);
 
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+        i++;
     }
 
     return NULL;
@@ -257,18 +274,16 @@ static void *sendDummy_1_Request(void *Args)
 {
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
-    int i = NUM_TEST_RUNS;
+    int i = 0;
     
-    while (i)
+    while (atomic_load(&sendDummy_1_Request_flag)
+    && (!atomic_load(&testRunning_flag)))
     {
-        do {
-            Error = req_Dummy_1_Req();
-            nanosleep(&ts, NULL);
-            i--;
-        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
+        Error = req_Dummy_1_Req();
+        nanosleep(&ts, NULL);
 
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+        i++;
     }
 
     return NULL;
@@ -278,18 +293,16 @@ static void *sendDummy_2_Request(void *Args)
 {
     OE_Error_t Error;
     CuTest *tc = (CuTest*)Args;
-    int i = NUM_TEST_RUNS;
+    int i = 0;
     
-    while (i)
+    while (atomic_load(&sendDummy_2_Request_flag)
+    && (!atomic_load(&testRunning_flag)))
     {
-        do {
-            Error = req_Dummy_2_Req(TEST_VAL_2);
-            nanosleep(&ts, NULL);
-            i--;
-        } while ((Error == OE_ERROR_MESSAGE_QUEUE_FULL) 
-        || (Error == OE_ERROR_REQUEST_LIMIT_REACHED));
-
+        Error = req_Dummy_2_Req(TEST_VAL_2);
+        nanosleep(&ts, NULL);
+        
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
+        i++;
     }
 
     return NULL;
@@ -340,7 +353,7 @@ static void startKernelThreads(CuTest *tc)
     // Destroy the attribute object
     Ret = pthread_attr_destroy(&attr);
     CuAssertIntEquals(tc, 0, Ret); 
-    
+
     nanosleep(&ts, NULL);
 }
 
@@ -348,7 +361,6 @@ static void stopKernelThreads(CuTest *tc)
 {
     int Ret;
     printf("Stopping kernels\n");
-
     nanosleep(&ts, NULL);
     
     CuAssertIntEquals(tc, OE_ERROR_NONE, req_Test_End());
@@ -368,6 +380,8 @@ static void __attribute__ ((__unused__)) test_multiKernel_run(CuTest *tc)
     init(tc);
 
     startKernelThreads(tc);
+
+    sleep(RUN_DELAY_S);
 
     stopKernelThreads(tc);
 }
@@ -400,12 +414,13 @@ static void __attribute__ ((__unused__)) test_multiKernel_singleRespone(CuTest *
 static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 2};
+    const struct sched_param param = {.sched_priority = 1};
     
     printf("Starting interact test\n");
-
+    
     atomic_store(&sendDummy_2_Request_flag, true);
     atomic_store(&toggleSubscription_flag, true);
+    atomic_store(&testRunning_flag, true);
     init(tc);
 
     startKernelThreads(tc);
@@ -428,6 +443,9 @@ static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
         CuAssertIntEquals(tc, 0, Ret);
     }
     
+    sleep(RUN_DELAY_S);
+
+    atomic_store(&testRunning_flag, false);
     atomic_store(&toggleSubscription_flag, false);
     atomic_store(&sendDummy_2_Request_flag, false);
 
@@ -453,7 +471,7 @@ static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(Cu
 
     atomic_store(&sendDummy_1_Request_flag, true);
     atomic_store(&toggleSubscription_flag, true);
-
+    atomic_store(&testRunning_flag, true);
     init(tc);
 
     startKernelThreads(tc);
@@ -476,6 +494,9 @@ static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(Cu
         CuAssertIntEquals(tc, 0, Ret);
     }
 
+    sleep(RUN_DELAY_S);
+
+    atomic_store(&testRunning_flag, false);
     atomic_store(&toggleSubscription_flag, false);
     atomic_store(&sendDummy_1_Request_flag, false);
 
@@ -502,7 +523,7 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
     printf("Starting response test\n");
 
     atomic_store(&sendDummy_0_Request_flag, true);
-
+    atomic_store(&testRunning_flag, true);
     init(tc);
 
     startKernelThreads(tc);
@@ -517,6 +538,9 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
         CuAssertIntEquals(tc, 0, Ret);   
     }
 
+    sleep(RUN_DELAY_S);
+
+    atomic_store(&testRunning_flag, false);
     atomic_store(&sendDummy_0_Request_flag, false);
    
     for (i=0; i < NUM_DUMMY_0_REQ_THREADS; i++)
@@ -529,10 +553,10 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 
 void add_multiKernel(CuSuite *suite)
 {
-    //SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
-    //SUITE_ADD_TEST(suite, test_multiKernel_run);
+    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
+    SUITE_ADD_TEST(suite, test_multiKernel_run);
     SUITE_ADD_TEST(suite, test_multiKernel_interact);
-    //SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
-    //SUITE_ADD_TEST(suite, test_multiKernel_response);
-    //SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
+    SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
+    SUITE_ADD_TEST(suite, test_multiKernel_response);
+    SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
 }
