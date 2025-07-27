@@ -19,6 +19,9 @@ extern uint8_t TestParam_0;
 extern uint8_t TestParam_1;
 extern uint8_t TestParam_2;
 
+void add_singleKernel(CuSuite *suite);
+void add_multiKernel(CuSuite *suite);
+
 void summarizeKernelTests(CuSuite* suite, int Kernel_ID);
 
 #endif // OE_TEST_H

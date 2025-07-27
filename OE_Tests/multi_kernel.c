@@ -9,7 +9,6 @@
 
 /* Testing */
 #include "oe_test.h"
-#include "multi_kernel.h"
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,7 +24,7 @@ pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS] = { PTHREAD_MUTEX_INITIALIZER };
 pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZER };
 /* Useful for debugging */
-atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
+// atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
 #define NUM_TOGGLE_SUBSCRIPTION_THREADS 1
@@ -227,7 +226,7 @@ static void *toggleSubscription(void *Args)
     int i = 0;
 
     while (atomic_load(&toggleSubscription_flag)
-    && (!atomic_load(&testRunning_flag)))
+    && (atomic_load(&testRunning_flag)))
     {        
         Error = req_Dummy_1_toggleRegistration();
         nanosleep(&ts, NULL);
@@ -235,7 +234,7 @@ static void *toggleSubscription(void *Args)
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
         i++;
     }
-
+    printf("Dummy_1_toggleRegistration sent %d times\n", i);
     return NULL;
 }
 
@@ -256,7 +255,7 @@ static void *sendDummy_0_Request(void *Args)
     int i = 0;
     
     while (atomic_load(&sendDummy_0_Request_flag)
-    && (!atomic_load(&testRunning_flag))
+    && (atomic_load(&testRunning_flag))
     && (!atomic_load(&responseReceived_flags[id])))
     {
         atomic_store(&responseReceived_flags[id], false);
@@ -266,7 +265,7 @@ static void *sendDummy_0_Request(void *Args)
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
         i++;
     }
-
+    printf("Dummy_0_Req sent %d times\n", i);
     return NULL;
 }
 
@@ -277,7 +276,7 @@ static void *sendDummy_1_Request(void *Args)
     int i = 0;
     
     while (atomic_load(&sendDummy_1_Request_flag)
-    && (!atomic_load(&testRunning_flag)))
+    && (atomic_load(&testRunning_flag)))
     {
         Error = req_Dummy_1_Req();
         nanosleep(&ts, NULL);
@@ -285,7 +284,7 @@ static void *sendDummy_1_Request(void *Args)
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
         i++;
     }
-
+    printf("Dummy_1_Req sent %d times\n", i);
     return NULL;
 }
 
@@ -296,7 +295,7 @@ static void *sendDummy_2_Request(void *Args)
     int i = 0;
     
     while (atomic_load(&sendDummy_2_Request_flag)
-    && (!atomic_load(&testRunning_flag)))
+    && (atomic_load(&testRunning_flag)))
     {
         Error = req_Dummy_2_Req(TEST_VAL_2);
         nanosleep(&ts, NULL);
@@ -304,7 +303,7 @@ static void *sendDummy_2_Request(void *Args)
         CuAssertIntEquals(tc, OE_ERROR_NONE, Error);
         i++;
     }
-
+    printf("Dummy_2_Req sent %d times\n", i);
     return NULL;
 }
 

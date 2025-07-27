@@ -27,8 +27,6 @@
 
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MAIN GLOBALS BEGIN */
-#include "single_kernel.h"
-#include "multi_kernel.h"
 #include <stdio.h>
 
 uint8_t TestParam_0;

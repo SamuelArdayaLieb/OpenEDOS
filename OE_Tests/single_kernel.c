@@ -1,4 +1,3 @@
-#include "single_kernel.h"
 #include "oe_test.h"
 
 /* OpenEDOS core */

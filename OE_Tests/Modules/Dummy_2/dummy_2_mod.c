@@ -194,7 +194,6 @@ void handleRequest_Dummy_2_Req(
         Args->param,
         handleResponse_Dummy_0_Req,
         Dummy_2->Kernel->KernelID);
-
     CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
     /* USER CODE REQUEST DUMMY 2 REQ END */
 }
