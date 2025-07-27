@@ -552,10 +552,10 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 
 void add_multiKernel(CuSuite *suite)
 {
-    // SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
-    // SUITE_ADD_TEST(suite, test_multiKernel_run);
+    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
+    SUITE_ADD_TEST(suite, test_multiKernel_run);
     SUITE_ADD_TEST(suite, test_multiKernel_interact);
-    // SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
-    // SUITE_ADD_TEST(suite, test_multiKernel_response);
-    // SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
+    SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
+    SUITE_ADD_TEST(suite, test_multiKernel_response);
+    SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
 }

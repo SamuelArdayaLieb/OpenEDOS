@@ -50,7 +50,7 @@ int main(void)
     CuString *output = CuStringNew();
     CuSuite* suite = CuSuiteNew();
     
-    //add_singleKernel(suite);
+    add_singleKernel(suite);
     add_multiKernel(suite);
 
     CuSuiteRun(suite);
