@@ -6,11 +6,11 @@
 
 /* Threading */
 #include <pthread.h>
+#include <stdatomic.h>
 
 /* Testing */
 #include "oe_test.h"
 #include <time.h>
-#include <stdio.h>
 #include <unistd.h>
 
 /* Static core as usual */

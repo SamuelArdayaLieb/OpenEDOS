@@ -17,11 +17,6 @@
 #include <stdint.h>
 #include <pthread.h>
 #include "oe_config.h"
-#include <stdio.h>
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <errno.h>
-#include <stdlib.h>
 
 /* Mutexes and conds for thread idling, declared in main.c. */
 extern pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS];
@@ -30,7 +25,7 @@ extern pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS];
 /* Mutex for critical sections. */
 extern pthread_mutex_t critical_section_mutex;
 
-extern atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
+// extern atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* No operation. May be omitted or optimizable. */
 #define OE_NOP()
@@ -38,17 +33,6 @@ extern atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 static inline void __IDLE(uint8_t KernelID)
 {        
     pthread_mutex_lock(&condition_mutexes[KernelID]);
-    // printf("Idle kernel %d\n", KernelID);
-    // if (atomic_load(&kernel_running[KernelID]) == false)
-    // {
-    //     printf("Kernel %d was idling!\n", KernelID);
-    //     fflush(stdout);
-    // }
-    // else
-    // {
-    //     atomic_store(&kernel_running[KernelID], false);
-    //     //pthread_cond_wait(&condition_conds[KernelID], &condition_mutexes[KernelID]);        
-    // }
     pthread_cond_wait(&condition_conds[KernelID], &condition_mutexes[KernelID]); 
     pthread_mutex_unlock(&condition_mutexes[KernelID]);
 }
@@ -66,17 +50,6 @@ static inline void __IDLE(uint8_t KernelID)
 static inline void __RESUME(uint8_t KernelID)
 {
     pthread_mutex_lock(&condition_mutexes[KernelID]);
-    // printf("Resume kernel %d\n", KernelID);
-    // if (atomic_load(&kernel_running[KernelID]) == true)
-    // {
-    //     printf("Kernel %d was running!\n", KernelID);
-    //     fflush(stdout);
-    // }
-    // else
-    // {
-    //     atomic_store(&kernel_running[KernelID], true);
-    //     //pthread_cond_signal(&condition_conds[KernelID]);
-    // }
     pthread_cond_signal(&condition_conds[KernelID]);
     pthread_mutex_unlock(&condition_mutexes[KernelID]);
 }
@@ -89,32 +62,6 @@ static inline void __RESUME(uint8_t KernelID)
  * Only needed when there are more than one kernels.
  */
 #define OE_RESUME(KernelID) __RESUME(KernelID)
-
-// static inline void __enter(void)
-// {
-//     // int Ret = pthread_mutex_trylock(&critical_section_mutex);
-//     // if (Ret != 0)
-//     // {
-//     //     if (Ret == EBUSY)                                                         
-//     //         printf("thread was denied access to the mutex\n");                            
-//     //     else {                                                                      
-//     //         printf("pthread_mutex_trylock() error %d\n", Ret);                                  
-//     //         exit(1);                                                                  
-//     //     } 
-    
-//     // // fflush(stdout);        
-//     // }
-//     int Ret = pthread_mutex_lock(&critical_section_mutex);
-//     //pthread_mutex_trylock(&critical_section_mutex);
-//     printf("Enter critical: %d\n", Ret);
-// }
-
-// static inline void __exit(void)
-// {
-//     printf("Exit critical\n");
-//     // fflush(stdout); 
-//     pthread_mutex_unlock(&critical_section_mutex);
-// }
 
 /* Enter a section of the programm that must not be interrupted. */
 #define OE_ENTER_CRITICAL() pthread_mutex_lock(&critical_section_mutex)

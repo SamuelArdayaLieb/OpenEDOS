@@ -171,7 +171,7 @@ static void test_singleKernel_subscribeRequest(CuTest *tc)
     CuAssertIntEquals(tc, 0, Kernel.Core->MessageQueues[Kernel.KernelID].NumberOfMessages);
 }
 
-static void test_singleKernel_messageQueueFull(CuTest *tc)
+static void __attribute__ ((__unused__)) test_singleKernel_messageQueueFull(CuTest *tc)
 {
     OE_Kernel_t Kernel;
     module_TestDummy_t TestDummy;

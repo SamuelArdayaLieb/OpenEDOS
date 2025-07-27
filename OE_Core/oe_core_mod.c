@@ -27,7 +27,6 @@
 /* Includes, prototypes, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
 #include <string.h>
-#include <stdio.h>
 #if OE_USE_REQUEST_LIMIT
 /**
  * @brief Check if the request register is full.
@@ -282,12 +281,6 @@ OE_Error_t OE_Core_sendRequest(
 #endif // OE_USE_REQUEST_LIMIT
             if (OE_MessageQueue_isFull(&OE_Core->MessageQueues[KernelID]))
             {
-                //sleep(1);
-                // if (atomic_load(&kernel_running[KernelID]))
-                // {
-                //     printf("Message queue of Kernel %d is full and kernel is running!\n", KernelID);
-                // }
-
                 OE_EXIT_CRITICAL();
                 return OE_ERROR_MESSAGE_QUEUE_FULL;
             }
@@ -335,11 +328,7 @@ OE_Error_t OE_Core_sendRequest(
 
                     Message->Header.Information &= ~(OE_MESSAGE_DATA_EMPTY);
                 }
-                // printf("New request for kernel %d with RID %d\n", KernelID, Header->RequestID);
-                // printf("Head: %d, Tail: %d, Num: %d\n", 
-                //     (int)OE_Core->MessageQueues[KernelID].Head,
-                //     (int)OE_Core->MessageQueues[KernelID].Tail,
-                //     (int)OE_Core->MessageQueues[KernelID].NumberOfMessages);
+
                 OE_RESUME(KernelID);
             }
         }
@@ -393,7 +382,7 @@ OE_Error_t OE_Core_sendResponse(
 
         Message->Header.Information &= ~(OE_MESSAGE_DATA_EMPTY);
     }
-    //printf("New response for kernel %d with RID %d\n", Header->KernelID, Header->RequestID);
+
     OE_RESUME(Header->KernelID);
 
     OE_EXIT_CRITICAL();
@@ -406,19 +395,16 @@ OE_Message_t *OE_Core_getMessage(
     OE_Message_t *Message;
     
     OE_ENTER_CRITICAL();
-    // printf("Kernel %d is polling next message ", KernelID);
-    // fflush(stdout);
     
     Message = OE_MessageQueue_getMessage(
         &OE_Core->MessageQueues[KernelID]);
 
     if (Message == NULL)
     {
-        //printf("but no new message is available\n");
         OE_EXIT_CRITICAL();
         return NULL;
     }
-    //printf("and receives RID %d\n",  Message->Header.RequestID);
+    
 #if OE_USE_REQUEST_LIMIT
     /* If the message contains a request, we need to clear the request entry. */
     if (Message->Header.Information & OE_MESSAGE_TYPE_REQUEST)
