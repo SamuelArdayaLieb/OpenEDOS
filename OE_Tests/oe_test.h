@@ -4,6 +4,7 @@
 #include "CuTest.h"
 #include <pthread.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define TEST_VAL_TEST_BEGIN   0
 #define TEST_VAL_MODULE_INIT  1

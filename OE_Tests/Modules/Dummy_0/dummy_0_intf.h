@@ -25,7 +25,6 @@
 
 /* Includes, defines, typedefs, etc. */
 /* USER CODE INTERFACE HEADER BEGIN */
-#include "../../CuTest.h"
 /* USER CODE INTERFACE HEADER END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//

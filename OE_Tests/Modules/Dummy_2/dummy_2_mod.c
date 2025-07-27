@@ -144,7 +144,7 @@ OE_Error_t init_Dummy_2(void *Args)
     /* USER CODE MODULE INIT BEGIN */
     Dummy_2->suite = (CuSuite*)Args;
     Dummy_2->tc = Dummy_2->suite->list[0];    
-
+    Dummy_2->responses = 0;
     CuAssertIntEquals(Dummy_2->tc, TEST_VAL_TEST_BEGIN, TestParam_2);
     TestParam_2 = TEST_VAL_MODULE_INIT;
 	/* Return no error if everything is fine. */
@@ -173,6 +173,7 @@ void handleRequest_Kernel_Start(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
+    printf("Dummy 2: received %d responses\n", Dummy_2->responses);
     summarizeKernelTests(
         Dummy_2->suite, 
         Dummy_2->Kernel->KernelID);
@@ -195,6 +196,9 @@ void handleRequest_Dummy_2_Req(
         handleResponse_Dummy_0_Req,
         Dummy_2->Kernel->KernelID);
     CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
+
+    Error = req_Dummy_1_Req();
+    CuAssertIntEquals(Dummy_2->tc, OE_ERROR_NONE, Error);
     /* USER CODE REQUEST DUMMY 2 REQ END */
 }
 
@@ -207,6 +211,7 @@ void handleResponse_Dummy_0_Req(
     /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
     CuAssertIntEquals(Dummy_2->tc, Dummy_2->param, Args->param);
+    Dummy_2->responses++;
     /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
 

@@ -26,6 +26,7 @@
 #include "oe_core_intf.h"
 #include "test_intf.h"
 #include "dummy_0_intf.h"
+#include "dummy_1_intf.h"
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE MODULE GLOBALS BEGIN */
@@ -41,7 +42,7 @@ typedef struct module_Dummy_2_s {
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
     uint8_t param;
-
+    int responses;
     CuSuite *suite;
     CuTest *tc;
     /* USER CODE MODULE DATA END */

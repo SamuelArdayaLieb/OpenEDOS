@@ -155,14 +155,11 @@ void OE_RequestMap_placeHandler(
             return;
         }
     }
-    /* The core might check for registered handlers from a different context. */
-    OE_ENTER_CRITICAL();
     /* Append the handler to the map node. */
     Node->RequestHandlers[Node->NumberOfHandlers] = EventHandler;
 
     /* Increase the number of handlers. */
     Node->NumberOfHandlers++;
-    OE_EXIT_CRITICAL();
 }
 
 void OE_RequestMap_removeHandler(
@@ -177,8 +174,6 @@ void OE_RequestMap_removeHandler(
         /* Did we find the handler? */
         if (Node->RequestHandlers[Count] == EventHandler)
         {
-            /* The core might check for registered handlers from a different context. */
-            OE_ENTER_CRITICAL();
             /**
              * To remove the handler from the map node array, we simply move down the
              * rest of the array by one element so that the handler gets overwritten.
@@ -214,7 +209,6 @@ void OE_RequestMap_removeHandler(
             Node->RequestHandlers[Node->NumberOfHandlers] = OE_NO_HANDLER;
             
             /* That's it. Easy, right? */
-            OE_EXIT_CRITICAL();
             return;
         }
     }

@@ -40,7 +40,7 @@ typedef struct module_Dummy_1_s {
     /* Module data. */
     /* USER CODE MODULE DATA BEGIN */
     bool handlerRegistered;
-
+    int requests;
     CuSuite *suite;
     CuTest *tc;    
     /* USER CODE MODULE DATA END */

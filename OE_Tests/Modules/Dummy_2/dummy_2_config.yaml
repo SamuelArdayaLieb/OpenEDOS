@@ -16,3 +16,4 @@ module:
   - name: Dummy_2_Req
   used requests:
   - name: Dummy_0_Req
+  - name: Dummy_1_Req

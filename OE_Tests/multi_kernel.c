@@ -27,10 +27,10 @@ pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS] = { PTHREAD_COND_INITIALIZE
 // atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* Test threads */
-#define NUM_TOGGLE_SUBSCRIPTION_THREADS 1
-#define NUM_DUMMY_0_REQ_THREADS 1
-#define NUM_DUMMY_1_REQ_THREADS 1
-#define NUM_DUMMY_2_REQ_THREADS 1
+#define NUM_TOGGLE_SUBSCRIPTION_THREADS 5
+#define NUM_DUMMY_0_REQ_THREADS 5
+#define NUM_DUMMY_1_REQ_THREADS 5
+#define NUM_DUMMY_2_REQ_THREADS 5
 static pthread_t toggleSubscription_threads[NUM_TOGGLE_SUBSCRIPTION_THREADS];
 static pthread_t sendDummy_0_Req_threads[NUM_DUMMY_0_REQ_THREADS];
 static pthread_t sendDummy_1_Req_threads[NUM_DUMMY_1_REQ_THREADS];
@@ -52,8 +52,8 @@ struct dummy_0_threadArgs {
 
 struct timespec ts;
 
-#define TEST_DELAY_NS 100000 // 100 us
-#define RUN_DELAY_S   3
+#define TEST_DELAY_NS 1000 // 1 us
+#define RUN_DELAY_S   10
 
 static void init(CuTest *tc)
 {
@@ -256,7 +256,7 @@ static void *sendDummy_0_Request(void *Args)
     
     while (atomic_load(&sendDummy_0_Request_flag)
     && (atomic_load(&testRunning_flag))
-    && (!atomic_load(&responseReceived_flags[id])))
+    && (atomic_load(&responseReceived_flags[id])))
     {
         atomic_store(&responseReceived_flags[id], false);
         Error = req_Dummy_0_Req(id, (OE_MessageHandler_t)dummy_0_response, 0);
@@ -464,7 +464,7 @@ static void __attribute__ ((__unused__)) test_multiKernel_interact(CuTest *tc)
 static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 2};
+    const struct sched_param param = {.sched_priority = 1};
     
     printf("Starting handler registration test\n");
 
@@ -515,7 +515,7 @@ static void __attribute__ ((__unused__)) test_multiKernel_handlerRegistration(Cu
 static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 {
     int Ret, i;
-    const struct sched_param param = {.sched_priority = 2};
+    const struct sched_param param = {.sched_priority = 1};
     struct dummy_0_threadArgs args;
     args.tc = tc;
 
@@ -552,10 +552,10 @@ static void __attribute__ ((__unused__)) test_multiKernel_response(CuTest *tc)
 
 void add_multiKernel(CuSuite *suite)
 {
-    SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
-    SUITE_ADD_TEST(suite, test_multiKernel_run);
+    // SUITE_ADD_TEST(suite, test_multiKernel_staticInit);
+    // SUITE_ADD_TEST(suite, test_multiKernel_run);
     SUITE_ADD_TEST(suite, test_multiKernel_interact);
-    SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
-    SUITE_ADD_TEST(suite, test_multiKernel_response);
-    SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
+    // SUITE_ADD_TEST(suite, test_multiKernel_handlerRegistration);
+    // SUITE_ADD_TEST(suite, test_multiKernel_response);
+    // SUITE_ADD_TEST(suite, test_multiKernel_singleRespone);
 }

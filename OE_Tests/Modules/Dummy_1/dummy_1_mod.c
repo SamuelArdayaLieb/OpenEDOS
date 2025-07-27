@@ -139,7 +139,7 @@ OE_Error_t init_Dummy_1(void *Args)
 {
     /* USER CODE MODULE INIT BEGIN */
     Dummy_1->handlerRegistered = true;
-
+    Dummy_1->requests = 0;
     Dummy_1->suite = (CuSuite*)Args;
     Dummy_1->tc = Dummy_1->suite->list[0];   
     
@@ -170,6 +170,7 @@ void handleRequest_Kernel_Start(
 void handleRequest_Test_End(void)
 {
     /* USER CODE REQUEST TEST END BEGIN */
+    printf("Dummy 1: received %d requests\n", Dummy_1->requests);
     summarizeKernelTests(Dummy_1->suite, Dummy_1->Kernel->KernelID);
     pthread_exit(NULL);
     /* USER CODE REQUEST TEST END END */
@@ -179,14 +180,14 @@ void handleRequest_Dummy_1_Req(void)
 {
     /* USER CODE REQUEST DUMMY 1 REQ BEGIN */
     CuAssertTrue(Dummy_1->tc, Dummy_1->handlerRegistered);
-
-    //unregisterHandler();
+    Dummy_1->requests++;
+    unregisterHandler();
     /* USER CODE REQUEST DUMMY 1 REQ END */
 }
 
 void handleRequest_Dummy_1_toggleRegistration(void)
 {
-    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION BEGIN */    
+    /* USER CODE REQUEST DUMMY 1 TOGGLE REGISTRATION BEGIN */
     if (Dummy_1->handlerRegistered)
     {
         unregisterHandler();
