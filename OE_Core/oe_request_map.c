@@ -89,7 +89,7 @@ OE_Error_t OE_RequestMap_registerHandlers(
 
         /* is the handler valid? */
         if (RequestHandlers[Count] == NULL)
-        {   
+        {
             return OE_ERROR_PARAMETER_INVALID;
         }
     }
@@ -155,6 +155,7 @@ void OE_RequestMap_placeHandler(
             return;
         }
     }
+
     /* Append the handler to the map node. */
     Node->RequestHandlers[Node->NumberOfHandlers] = EventHandler;
 
@@ -207,7 +208,6 @@ void OE_RequestMap_removeHandler(
 
             /* The last handler in the array is reset. */
             Node->RequestHandlers[Node->NumberOfHandlers] = OE_NO_HANDLER;
-            
             /* That's it. Easy, right? */
             return;
         }
