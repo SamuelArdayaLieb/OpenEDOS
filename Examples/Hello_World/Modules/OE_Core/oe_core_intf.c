@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
+ * @version 2.2
  * 
  * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
@@ -27,7 +27,6 @@
 
 /* Includes, typedefs, globals, etc. */
 /* USER CODE INTERFACE GLOBALS BEGIN */
-
 /* USER CODE INTERFACE GLOBALS END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -45,7 +44,6 @@ OE_Error_t req_Kernel_Start(
 			KernelID,
 		});
 }
-
 
 /* Something else...? */
 /* USER CODE INTERFACE SOURCE BEGIN */

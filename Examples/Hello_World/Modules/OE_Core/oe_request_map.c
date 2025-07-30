@@ -5,27 +5,19 @@
  */
 
 #include "oe_request_map.h"
+#include "oe_core_mod.h"
+#include "oe_kernel.h"
 #include <string.h>
-
-/**
- * @brief Place a handler in the request map.
- *
- * @param Node The pointer to the map node that will store the handler.
- *
- * @param RequestHandler The message handler to be placed.
- */
-static inline void OE_RequestMap_placeHandler(
-    OE_RequestMapNode_t *Node,
-    OE_MessageHandler_t RequestHandler);
 
 /**
  * @brief Remove a handler from the request map.
  *
  * @param Node The pointer to the map node that will delete the handler.
- *
  * @param RequestHandler The message handler to be removed.
+ * @return true If the handler was removed. 
+ * @return false If the handler was not in the map.
  */
-static inline void OE_RequestMap_removeHandler(
+static inline bool OE_RequestMap_removeHandler(
     OE_RequestMapNode_t *Node,
     OE_MessageHandler_t RequestHandler);
 
@@ -56,79 +48,91 @@ void OE_RequestMap_staticInit(
 }
 
 OE_Error_t OE_RequestMap_registerHandlers(
-    OE_RequestMap_t *RequestMap,
+    OE_Kernel_t *Kernel,
     OE_RequestID_t *RequestIDs,
     OE_MessageHandler_t *RequestHandlers,
     size_t NumberOfRequests)
 {
     size_t Count;
     OE_RequestMapNode_t *Node;
+    OE_RequestMap_t *RequestMap = &(Kernel->RequestMap);
 
-    /* Check if a handler is already registered and if the passed data ist valid. */
+    /* Control loop */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
-        Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
-        if (OE_RequestMap_handlerRegistered(Node, RequestHandlers[Count]))
-        {
-            continue;
-        }
-
         if (RequestIDs[Count] >= OE_NUMBER_OF_REQUESTS)
         {
             return OE_ERROR_REQUEST_ID_INVALID;
         }
 
-        /* Can the map store another handler? */
-        Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
-
-        if (Node->NumberOfHandlers >= OE_REQUEST_HANDLER_LIMIT)
-        {
-            /* There's no more space in the map */
-            return OE_ERROR_HANDLER_LIMIT_REACHED;
-        }
-
-        /* is the handler valid? */
         if (RequestHandlers[Count] == NULL)
         {
             return OE_ERROR_PARAMETER_INVALID;
         }
-    }
 
+        Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
+
+        /* Can the map store another handler? */
+        if ((Node->NumberOfHandlers >= OE_REQUEST_HANDLER_LIMIT)
+        && (!OE_RequestMap_handlerRegistered(Node, RequestHandlers[Count])))
+        {            
+            /* There's no more space in the map */
+            return OE_ERROR_HANDLER_LIMIT_REACHED;
+        }
+    }
+    /* Register loop */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
         Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
 
-        OE_RequestMap_placeHandler(
-            Node,
-            RequestHandlers[Count]);
+        if (Node->NumberOfHandlers == 0)
+        {
+            /* We now register the first handler. */
+            Node->RequestHandlers[0] = RequestHandlers[Count];
+            Node->NumberOfHandlers = 1;
+
+            OE_Core_subscribeRequest(
+                Kernel->KernelID, 
+                RequestIDs[Count]);
+        }
+        else if (!OE_RequestMap_handlerRegistered(Node, RequestHandlers[Count]))
+        {
+            Node->RequestHandlers[Node->NumberOfHandlers++] = RequestHandlers[Count];  
+        }
     }
 
     return OE_ERROR_NONE;
 }
 
 void OE_RequestMap_unregisterHandlers(
-    OE_RequestMap_t *RequestMap,
+    OE_Kernel_t *Kernel,
     OE_RequestID_t *RequestIDs,
     OE_MessageHandler_t *RequestHandlers,
     size_t NumberOfRequests)
 {
     size_t Count;
-
-    /* Check if the given request IDs are all valid. */
-    for (Count = 0; Count < NumberOfRequests; Count++)
-    {
-        if (RequestIDs[Count] >= OE_NUMBER_OF_REQUESTS)
-        {
-            return;
-        }
-    }
+    OE_RequestMapNode_t *Node;
+    OE_RequestMap_t *RequestMap = &(Kernel->RequestMap);
 
     /* Remove the handlers from the request map. */
     for (Count = 0; Count < NumberOfRequests; Count++)
     {
-        OE_RequestMap_removeHandler(
-            &(RequestMap->MapNodes[RequestIDs[Count]]),
-            RequestHandlers[Count]);
+        if (RequestIDs[Count] >= OE_NUMBER_OF_REQUESTS)
+        {
+            /* If a request ID is invalid we skip it. */
+            continue;
+        }        
+        
+        Node = &(RequestMap->MapNodes[RequestIDs[Count]]);
+
+        if (OE_RequestMap_removeHandler(Node, RequestHandlers[Count])
+        && (Node->NumberOfHandlers == 0))
+        {
+            /* We just removed the last handler. */
+            OE_Core_unsubscribeRequest(
+                Kernel->KernelID, 
+                RequestIDs[Count]);
+        }
     }
 }
 
@@ -140,30 +144,7 @@ OE_RequestMapNode_t* OE_RequestMap_getHandlers(
     return &(RequestMap->MapNodes[RequestID]);
 }
 
-void OE_RequestMap_placeHandler(
-    OE_RequestMapNode_t *Node,
-    OE_MessageHandler_t EventHandler)
-{
-    /* This function assumes that the passed data is valid! */
-
-    /* Check if the handler is already placed */
-    for (size_t Count = 0; Count < Node->NumberOfHandlers; Count++)
-    {
-        if (Node->RequestHandlers[Count] == EventHandler)
-        {
-            /* The handler is already registered. */
-            return;
-        }
-    }
-
-    /* Append the handler to the map node. */
-    Node->RequestHandlers[Node->NumberOfHandlers] = EventHandler;
-
-    /* Increase the number of handlers. */
-    Node->NumberOfHandlers++;
-}
-
-void OE_RequestMap_removeHandler(
+bool OE_RequestMap_removeHandler(
     OE_RequestMapNode_t *Node,
     OE_MessageHandler_t EventHandler)
 {
@@ -205,14 +186,14 @@ void OE_RequestMap_removeHandler(
 
             /* Decrease the handler count. */
             Node->NumberOfHandlers--;
-
             /* The last handler in the array is reset. */
             Node->RequestHandlers[Node->NumberOfHandlers] = OE_NO_HANDLER;
-
             /* That's it. Easy, right? */
-            return;
+            return true;
         }
     }
+    /* The handler wasn't in the map. */
+    return false;
 }
 
 bool OE_RequestMap_handlerRegistered(

@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
+ * @version 2.2
  * 
  * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
@@ -44,10 +44,13 @@ typedef struct module_OE_Core_s {
     OE_Kernel_t *Kernel;
 
     /* Module data. */
-	/* USER CODE MODULE DATA BEGIN */
+    /* USER CODE MODULE DATA BEGIN */
     /* Kernel connections */
     OE_Kernel_t *Kernels[OE_NUMBER_OF_KERNELS];
     size_t NumberOfKernels;
+    
+    /* Request subscriptions */
+    bool RequestSubscribed[OE_NUMBER_OF_KERNELS][OE_NUMBER_OF_REQUESTS];
 
 #if OE_USE_REQUEST_LIMIT
     /**
@@ -59,7 +62,7 @@ typedef struct module_OE_Core_s {
 
     /* Message queues */
     OE_MessageQueue_t MessageQueues[OE_NUMBER_OF_KERNELS];
-	/* USER CODE MODULE DATA END */
+    /* USER CODE MODULE DATA END */
 
 } module_OE_Core_t;
 
@@ -73,11 +76,8 @@ typedef struct module_OE_Core_s {
  * the specific init function of the module.
  * 
  * @param OE_Core A pointer to the module to be initialized.
- * 
  * @param Args A pointer to the init params for the module.
- * 
  * @param Kernel A pointer to the kernel to be connected.
- * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
@@ -94,7 +94,6 @@ OE_Error_t initModule_OE_Core(
  * @brief Connect a kernel to the core.
  *
  * @param Kernel Pointer to the kernel to be connected with the core.
- *
  * @return OE_Error_t An error is returned if
  * - the number of kernels has reached its limit.
  * Otherwise OE_ERROR_NONE is returned.
@@ -111,9 +110,7 @@ OE_Error_t OE_Core_connectKernel(
  * the given data. A valid message header has to be provided.
  *
  * @param Header Pointer to the message header.
- *
  * @param Parameters Pointer to the paramters transported in the message.
- *
  * @return OE_Error_t An error is returned if
  * - the kernel ID is invalid.
  * - the request ID is invalid.
@@ -134,9 +131,7 @@ OE_Error_t OE_Core_sendRequest(
  * header has to be provided.
  *
  * @param Header Pointer to the message header.
- *
  * @param Parameters Pointer to the paramters transported in the message.
- *
  * @return OE_Error_t An error is returned if
  * - the kernel ID is invalid.
  * - the request ID is invalid.
@@ -155,12 +150,39 @@ OE_Error_t OE_Core_sendResponse(
  * It is used to get the next message from the message queue.
  *
  * @param KernelID The ID of the kernel that calls the function.
- *
  * @return OE_Message_t* A pointer to the next message is returned.
  * If the message queue is empty, NULL is returned.
  */
 OE_Message_t* OE_Core_getMessage(
     OE_KernelID_t KernelID);
+
+/**
+ * @brief Enables the subscription of a request by a kernel.
+ * 
+ * @param KernelID The ID of the kernel that subscribes the request. 
+ * @param RequestID The ID of the request to be subscribed.
+ * @return OE_Error_t An error is returned if
+ * - the kernel ID is invalid.
+ * - the request ID is invalid.
+ * Otherwise OE_ERROR_NONE is returned.
+ */
+OE_Error_t OE_Core_subscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID);
+
+/**
+ * @brief Disables the subscription of a request by a kernel.
+ * 
+ * @param KernelID The ID of the kernel that unsubscribes the request. 
+ * @param RequestID The ID of the request to be unsubscribed.
+ * @return OE_Error_t An error is returned if
+ * - the kernel ID is invalid.
+ * - the request ID is invalid.
+ * Otherwise OE_ERROR_NONE is returned.
+ */
+OE_Error_t OE_Core_unsubscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID);
 /* USER CODE MODULE PROTOTYPES END */
 
 #endif // OE_CORE_MOD_H
