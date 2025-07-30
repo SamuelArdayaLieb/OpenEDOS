@@ -1,6 +1,7 @@
 project name: OE_Tests
-version: 2.1
 copyright notice: |
+  version: 2.2
+
   OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
   
   https://github.com/SamuelArdayaLieb/OpenEDOS
