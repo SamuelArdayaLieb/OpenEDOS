@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
+ * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */

@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """

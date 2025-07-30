@@ -11,7 +11,7 @@
 /**
  * @version 1.0
  * 
- * (c) 2024 Samuel Ardaya-Lieb, MIT license
+ * (c) 2025 Samuel Ardaya-Lieb, MIT license
  */
 /* USER CODE COPYRIGHT NOTICE END */
 
