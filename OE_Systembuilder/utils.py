@@ -8,7 +8,7 @@ import logging
 
 INDENT = "\t"
 
-OPENEDOS_VERSION = "2.1"
+OPENEDOS_VERSION = "2.2"
 
 
 class bcolors:
