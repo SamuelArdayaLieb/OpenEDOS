@@ -97,7 +97,6 @@ OE_Error_t initModule_OE_Core(
  * @brief Connect a kernel to the core.
  *
  * @param Kernel Pointer to the kernel to be connected with the core.
- *
  * @return OE_Error_t An error is returned if
  * - the number of kernels has reached its limit.
  * Otherwise OE_ERROR_NONE is returned.
@@ -114,9 +113,7 @@ OE_Error_t OE_Core_connectKernel(
  * the given data. A valid message header has to be provided.
  *
  * @param Header Pointer to the message header.
- *
  * @param Parameters Pointer to the paramters transported in the message.
- *
  * @return OE_Error_t An error is returned if
  * - the kernel ID is invalid.
  * - the request ID is invalid.
@@ -137,9 +134,7 @@ OE_Error_t OE_Core_sendRequest(
  * header has to be provided.
  *
  * @param Header Pointer to the message header.
- *
  * @param Parameters Pointer to the paramters transported in the message.
- *
  * @return OE_Error_t An error is returned if
  * - the kernel ID is invalid.
  * - the request ID is invalid.
@@ -158,7 +153,6 @@ OE_Error_t OE_Core_sendResponse(
  * It is used to get the next message from the message queue.
  *
  * @param KernelID The ID of the kernel that calls the function.
- *
  * @return OE_Message_t* A pointer to the next message is returned.
  * If the message queue is empty, NULL is returned.
  */

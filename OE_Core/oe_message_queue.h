@@ -44,7 +44,6 @@ void OE_MessageQueue_staticInit(
  * @brief Checks if the message queue is full.
  *
  * @param MessageQueue The message queue to be checked.
- *
  * @return true The message queue is full.
  * @return false The message queue is not full.
  */
@@ -55,7 +54,6 @@ bool OE_MessageQueue_isFull(
  * @brief Allocate the next free message in the message queue.
  *
  * @param MessageQueue The pointer to the message queue.
- *
  * @return OE_Message_t* The pointer to the next free message is returned.
  * Returns NULL if the queue is full.
  */
@@ -66,7 +64,6 @@ OE_Message_t* OE_MessageQueue_allocateMessage(
  * @brief Get the oldest message in the message queue.
  *
  * @param MessageQueue The pointer to the message queue.
- *
  * @return OE_Message_t* The pointer to the oldest message is returned.
  * Returns NULL if the queue is empty.
  */

@@ -74,13 +74,9 @@ void OE_RequestMap_staticInit(
  * a handler that is already registered does not have any effect.
  *
  * @param Kernel Pointer to the kernel whose request map will store the handlers.
- *
  * @param RequestIDs Pointer to the array of request IDs.
- *
  * @param RequestHandlers Pointer to the array of message handlers to be registered.
- *
  * @param NumberOfHandlers The number of request IDs and handlers.
- *
  * @return OE_Error_t An error is returned if
  * - one of the request IDs is invalid.
  * - one of the message handlers is invalid.
@@ -103,11 +99,8 @@ OE_Error_t OE_RequestMap_registerHandlers(
  * a handler that is not registered does not have any effect.
  *
  * @param Kernel Pointer to the kernel whose request map will remove the handlers.
- *
  * @param RequestIDs Pointer to the array of request IDs.
- *
  * @param RequestHandlers Pointer to the array of message handlers to be unregistered.
- *
  * @param NumberOfHandlers The number of request IDs and handlers.
  */
 void OE_RequestMap_unregisterHandlers(
@@ -120,9 +113,7 @@ void OE_RequestMap_unregisterHandlers(
  * @brief Get the map node associated to a given request ID.
  *
  * @param RequestMap Pointer to the request map.
- *
  * @param RequestID The request ID of the handlers to be read from the map.
- *
  * @return OE_RequestMapNode_t* A pointer to the map node is returned.
  * If the given request ID is invalid, NULL is returned.
  */

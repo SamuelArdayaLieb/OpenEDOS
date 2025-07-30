@@ -14,7 +14,8 @@
  *
  * @param Node The pointer to the map node that will delete the handler.
  * @param RequestHandler The message handler to be removed.
- * @return True if the handler was removed. False if it wasn't placed.
+ * @return true If the handler was removed. 
+ * @return false If the handler was not in the map.
  */
 static inline bool OE_RequestMap_removeHandler(
     OE_RequestMapNode_t *Node,

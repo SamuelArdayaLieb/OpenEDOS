@@ -35,9 +35,7 @@
  * is reached in the request register of a given kernel.
  *
  * @param KernelID The kernel ID.
- *
  * @param RequestID The request ID.
- *
  * @return true Returns true if the request register is full.
  * @return false Returns false if the request register is not full.
  */
@@ -54,9 +52,7 @@ static inline bool OE_Core_registerFull(
  * register is not full.
  *
  * @param KernelID The ID of the kernel whose request register is used.
- *
  * @param RequestID The ID of the new request that has to be registered.
- *
  * @return OE_Error_t An error is returned if
  * - the kernel ID is invalid.
  * - the request ID is invalid.
@@ -74,7 +70,6 @@ static inline OE_Error_t OE_Core_setRequestEntry(
  * a request message leaves the message queue.
  *
  * @param KernelID The ID of the kernel whose request register is used.
- *
  * @param RequestID ID of the request.
  */
 static inline void OE_Core_clearRequestEntry(
@@ -92,7 +87,6 @@ static module_OE_Core_t *OE_Core;
  * @brief Custom initializer for the module: OE_Core.
  * 
  * @param Args A pointer to the init params for the module.
- * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.
