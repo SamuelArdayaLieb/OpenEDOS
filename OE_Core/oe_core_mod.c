@@ -180,14 +180,15 @@ OE_Error_t init_OE_Core(void *Args)
 
     for (OE_KernelID_t KernelID = 0; KernelID < OE_NUMBER_OF_KERNELS; KernelID++)
     {
-#if OE_USE_REQUEST_LIMIT
-        /* Init the request registers. */
         for (size_t Count = 0; Count < OE_NUMBER_OF_REQUESTS; Count++)
         {
-			OE_Core->RequestRegisters[KernelID][Count].NumberOfRequests = 0;
+            OE_Core->RequestSubscribed[KernelID][Count] = false;
+#if OE_USE_REQUEST_LIMIT
+			/* Init the request registers. */
+            OE_Core->RequestRegisters[KernelID][Count].NumberOfRequests = 0;
             OE_Core->RequestRegisters[KernelID][Count].RequestLimit = OE_REQUEST_LIMIT;
+#endif // OE_USE_REQUEST_LIMIT            
         }
-#endif // OE_USE_REQUEST_LIMIT
 
         /* Init message queue. */
         OE_MessageQueue_staticInit(
@@ -268,8 +269,7 @@ OE_Error_t OE_Core_sendRequest(
     /* Control loop. */
     for (KernelID = 0; KernelID < OE_Core->NumberOfKernels; KernelID++)
     {
-        /* Check which Kernels receive the request. */
-        if (OE_Kernel_handlerRegistered(OE_Core->Kernels[KernelID], Header->RequestID))
+        if (OE_Core->RequestSubscribed[KernelID][Header->RequestID])
         {
             handlerRegistered = true;
 #if OE_USE_REQUEST_LIMIT
@@ -296,8 +296,7 @@ OE_Error_t OE_Core_sendRequest(
     /* Send loop. */
     for (KernelID = 0; KernelID < OE_Core->NumberOfKernels; KernelID++)
     {
-        /* Check which Kernels receive the request. */
-        if (OE_Kernel_handlerRegistered(OE_Core->Kernels[KernelID], Header->RequestID))
+        if (OE_Core->RequestSubscribed[KernelID][Header->RequestID])
         {
 #if OE_USE_REQUEST_LIMIT
             if (OE_Core_setRequestEntry(KernelID, Header->RequestID) == OE_ERROR_NONE)
@@ -417,6 +416,48 @@ OE_Message_t *OE_Core_getMessage(
 
     OE_EXIT_CRITICAL();
     return Message;
+}
+
+OE_Error_t OE_Core_subscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID)
+{
+    if (KernelID >= OE_NUMBER_OF_KERNELS)
+    {
+        return OE_ERROR_KERNEL_ID_INVALID;
+    }
+
+    if (RequestID >= OE_NUMBER_OF_REQUESTS)
+    {
+        return OE_ERROR_REQUEST_ID_INVALID;
+    }
+
+    OE_ENTER_CRITICAL();
+    OE_Core->RequestSubscribed[KernelID][RequestID] = true;
+    OE_EXIT_CRITICAL();
+
+    return OE_ERROR_NONE;
+}
+
+OE_Error_t OE_Core_unsubscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID)
+{
+    if (KernelID >= OE_NUMBER_OF_KERNELS)
+    {
+        return OE_ERROR_KERNEL_ID_INVALID;
+    }
+
+    if (RequestID >= OE_NUMBER_OF_REQUESTS)
+    {
+        return OE_ERROR_REQUEST_ID_INVALID;
+    }
+
+    OE_ENTER_CRITICAL();
+    OE_Core->RequestSubscribed[KernelID][RequestID] = false;
+    OE_EXIT_CRITICAL();
+
+    return OE_ERROR_NONE;
 }
 
 #if OE_USE_REQUEST_LIMIT

@@ -48,6 +48,9 @@ typedef struct module_OE_Core_s {
     /* Kernel connections */
     OE_Kernel_t *Kernels[OE_NUMBER_OF_KERNELS];
     size_t NumberOfKernels;
+    
+    /* Request subscriptions */
+    bool RequestSubscribed[OE_NUMBER_OF_KERNELS][OE_NUMBER_OF_REQUESTS];
 
 #if OE_USE_REQUEST_LIMIT
     /**
@@ -161,6 +164,34 @@ OE_Error_t OE_Core_sendResponse(
  */
 OE_Message_t* OE_Core_getMessage(
     OE_KernelID_t KernelID);
+
+/**
+ * @brief Enables the subscription of a request by a kernel.
+ * 
+ * @param KernelID The ID of the kernel that subscribes the request. 
+ * @param RequestID The ID of the request to be subscribed.
+ * @return OE_Error_t An error is returned if
+ * - the kernel ID is invalid.
+ * - the request ID is invalid.
+ * Otherwise OE_ERROR_NONE is returned.
+ */
+OE_Error_t OE_Core_subscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID);
+
+/**
+ * @brief Disables the subscription of a request by a kernel.
+ * 
+ * @param KernelID The ID of the kernel that unsubscribes the request. 
+ * @param RequestID The ID of the request to be unsubscribed.
+ * @return OE_Error_t An error is returned if
+ * - the kernel ID is invalid.
+ * - the request ID is invalid.
+ * Otherwise OE_ERROR_NONE is returned.
+ */
+OE_Error_t OE_Core_unsubscribeRequest(
+    OE_KernelID_t KernelID,
+    OE_RequestID_t RequestID);
 /* USER CODE MODULE PROTOTYPES END */
 
 #endif // OE_CORE_MOD_H
