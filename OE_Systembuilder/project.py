@@ -154,7 +154,8 @@ def create_main(
     with open(path_to_file, "w") as file:
         file.write(main.get_text())
 
-def populate_core(path_to_core:str) -> None:
+
+def populate_core(path_to_core: str) -> None:
     logging.debug("Populating OE Core...")
 
     for filename in [
@@ -170,10 +171,10 @@ def populate_core(path_to_core:str) -> None:
         "oe_message_queue.c",
         "oe_message_queue.h",
         "oe_request_map.c",
-        "oe_request_map.h"]: 
-        shutil.copy(
-            pkg_resources.resource_filename("OE_Core", filename), path_to_core
-        )
+        "oe_request_map.h",
+    ]:
+        shutil.copy(pkg_resources.resource_filename("OE_Core", filename), path_to_core)
+
 
 def create_project(path_to_folder: str, project_name: str) -> None:
     logging.debug("Checking path to new project...")

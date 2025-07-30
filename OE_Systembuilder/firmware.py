@@ -38,8 +38,8 @@ class Firmware:
                 if "project name" not in self.project_config:
                     error_count += 1
                     logging.error(
-                            f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Missing key in project config: 'project name'!"
-                        )
+                        f"{utils.bcolors.FAIL}{error_count}{utils.bcolors.ENDC}: Missing key in project config: 'project name'!"
+                    )
                     self.project_config["project name"] = "default"
                 if "version" not in self.project_config:
                     self.project_config["version"] = ""

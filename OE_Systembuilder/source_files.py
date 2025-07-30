@@ -29,15 +29,15 @@ class File:
             self.version = ""
 
         if type(copyright_notice) is str and len(copyright_notice) > 0:
-            self.copyright_notice = copyright_notice 
+            self.copyright_notice = copyright_notice
             # add newline if not there already
             if self.copyright_notice[-1] != "\n":
                 self.copyright_notice += "\n"
             if self.version != "":
-                self.copyright_notice = "\n"+self.copyright_notice
+                self.copyright_notice = "\n" + self.copyright_notice
         else:
             self.copyright_notice = ""
-        
+
         # search for user codes
         id = "COPYRIGHT NOTICE"
         if id in user_codes:

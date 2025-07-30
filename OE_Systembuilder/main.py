@@ -553,12 +553,13 @@ def update_project(path: str, force: bool, debug: bool) -> None:
 
     fw.system_info()
 
+
 @openedos.command(no_args_is_help=True)
 @click.argument("path", type=click.Path(resolve_path=True, file_okay=False))
 @click.option(
     "-d", "--debug", is_flag=True, default=False, help="Print debug information."
 )
-def update_core(path:str, debug:bool) -> None:
+def update_core(path: str, debug: bool) -> None:
     """
     Updates the OpenEDOS Core for a project located in PATH.
     """
@@ -580,8 +581,5 @@ def update_core(path:str, debug:bool) -> None:
     else:
         logging.error("Cannot find 'OE_Core' folder inside given path!")
         return
-    
+
     project.populate_core(path_to_core=path_to_core)
-
-
-
