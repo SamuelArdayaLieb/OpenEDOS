@@ -26,7 +26,7 @@ OE_Error_t OE_Kernel_registerHandlers(
     size_t NumberOfRequests)
 {
     return OE_RequestMap_registerHandlers(
-        &(Kernel->RequestMap),
+        Kernel,
         RequestIDs,
         RequestHandlers,
         NumberOfRequests);
@@ -39,7 +39,7 @@ void OE_Kernel_unregisterHandlers(
     size_t NumberOfRequests)
 {
     OE_RequestMap_unregisterHandlers(
-        &(Kernel->RequestMap),
+        Kernel,
         RequestIDs,
         RequestHandlers,
         NumberOfRequests);

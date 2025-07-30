@@ -73,7 +73,7 @@ void OE_RequestMap_staticInit(
  * request ID, the second handler for the second ID and so on. Trying to register
  * a handler that is already registered does not have any effect.
  *
- * @param RequestMap Pointer to the request map that will store the handlers.
+ * @param Kernel Pointer to the kernel whose request map will store the handlers.
  *
  * @param RequestIDs Pointer to the array of request IDs.
  *
@@ -88,7 +88,7 @@ void OE_RequestMap_staticInit(
  * Otherwise OE_ERROR_NONE is returned.
  */
 OE_Error_t OE_RequestMap_registerHandlers(
-    OE_RequestMap_t *RequestMap,
+    OE_Kernel_t *Kernel,
     OE_RequestID_t *RequestIDs,
     OE_MessageHandler_t *RequestHandlers,
     size_t NumberOfHandlers);
@@ -102,7 +102,7 @@ OE_Error_t OE_RequestMap_registerHandlers(
  * request ID, the second handler for the second ID and so on. Trying to unregister
  * a handler that is not registered does not have any effect.
  *
- * @param RequestMap Pointer to the request map that will remove the handlers.
+ * @param Kernel Pointer to the kernel whose request map will remove the handlers.
  *
  * @param RequestIDs Pointer to the array of request IDs.
  *
@@ -111,7 +111,7 @@ OE_Error_t OE_RequestMap_registerHandlers(
  * @param NumberOfHandlers The number of request IDs and handlers.
  */
 void OE_RequestMap_unregisterHandlers(
-    OE_RequestMap_t *RequestMap,
+    OE_Kernel_t *Kernel,
     OE_RequestID_t *RequestIDs,
     OE_MessageHandler_t *RequestHandlers,
     size_t NumberOfHandlers);
