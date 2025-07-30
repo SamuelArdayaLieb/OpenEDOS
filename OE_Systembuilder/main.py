@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
@@ -15,7 +15,7 @@ from . import firmware
 from . import project
 
 __version__ = utils.OPENEDOS_VERSION
-version_message = "%(prog)s v%(version)s\n(c) 2022-2024 Samuel Ardaya-Lieb\nMIT license"
+version_message = "%(prog)s v%(version)s\n(c) 2022-2025 Samuel Ardaya-Lieb\nMIT license"
 
 
 @click.group(no_args_is_help=True)
@@ -552,3 +552,34 @@ def update_project(path: str, force: bool, debug: bool) -> None:
     )
 
     fw.system_info()
+
+
+@openedos.command(no_args_is_help=True)
+@click.argument("path", type=click.Path(resolve_path=True, file_okay=False))
+@click.option(
+    "-d", "--debug", is_flag=True, default=False, help="Print debug information."
+)
+def update_core(path: str, debug: bool) -> None:
+    """
+    Updates the OpenEDOS Core for a project located in PATH.
+    """
+    utils.set_logging(debug)
+
+    path_to_modules_folder = None
+    path_to_core = None
+
+    # Look for Modules folder
+    path_to_modules_folder = os.path.join(path, "Modules")
+    if os.path.isdir(path_to_modules_folder):
+        logging.debug(f"Found 'Modules' folder @\n{path_to_modules_folder}")
+    else:
+        path_to_modules_folder = path
+    # Look for OE Core folder
+    path_to_core = os.path.join(path_to_modules_folder, "OE_Core")
+    if os.path.isdir(path_to_core):
+        logging.debug(f"Found 'OE_Core' folder @\n{path_to_core}")
+    else:
+        logging.error("Cannot find 'OE_Core' folder inside given path!")
+        return
+
+    project.populate_core(path_to_core=path_to_core)

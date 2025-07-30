@@ -1,5 +1,5 @@
 /**
- * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
+ * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */
@@ -23,7 +23,9 @@ extern pthread_mutex_t condition_mutexes[OE_NUMBER_OF_KERNELS];
 extern pthread_cond_t condition_conds[OE_NUMBER_OF_KERNELS];
 
 /* Mutex for critical sections. */
-static pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
+extern pthread_mutex_t critical_section_mutex;
+
+// extern atomic_bool kernel_running[OE_NUMBER_OF_KERNELS];
 
 /* No operation. May be omitted or optimizable. */
 #define OE_NOP()
@@ -31,7 +33,7 @@ static pthread_mutex_t critical_section_mutex = PTHREAD_MUTEX_INITIALIZER;
 static inline void __IDLE(uint8_t KernelID)
 {        
     pthread_mutex_lock(&condition_mutexes[KernelID]);
-    pthread_cond_wait(&condition_conds[KernelID], &condition_mutexes[KernelID]);
+    pthread_cond_wait(&condition_conds[KernelID], &condition_mutexes[KernelID]); 
     pthread_mutex_unlock(&condition_mutexes[KernelID]);
 }
 

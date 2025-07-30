@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
@@ -114,28 +114,29 @@ class RequestSender(Sender):
         args: Dict[str, Parameter] = {},
     ) -> None:
         self.response = response
-
         type = "request"
         func_name = f"req_{name}"
         parameters = args.copy()
+        if description != "":
+            description += "\n"
         if response:
-            description += "\nResponse: Yes\n"
+            description += "Response: Yes\n"
             response_handler = Parameter(
                 name="ResponseHandler",
                 type="OE_MessageHandler_t",
                 description="A pointer to the function\n"
-                "that will handle the response to this request.\n",
+                "that will handle the response to this request.",
             )
             kernel_id = Parameter(
                 name="KernelID",
                 type="OE_KernelID_t",
                 description="The ID of the kernel to which\n"
-                "the requesting module belongs.\n",
+                "the requesting module belongs.",
             )
             parameters["ResponseHandler"] = response_handler
             parameters["KernelID"] = kernel_id
         else:
-            description += "\nResponse: No\n"
+            description += "Response: No\n"
 
         brief = f"@brief Send a message to request: {name}.\n"
 
@@ -158,7 +159,7 @@ class RequestSender(Sender):
         text += "\n\treturn OE_Core_sendRequest(\n"
         text += "\t\t&MessageHeader,\n"
         if len(self.args) == 0:
-            text += "\t\tNULL);\n}\n"
+            text += "\t\tNULL);\n}\n\n"
         else:
             text += f"\t\t&(struct requestArgs_{self.name}_s){'{'}\n"
             for arg in self.args.values():
@@ -196,7 +197,7 @@ class ResponseSender(Sender):
         text += "\n\treturn OE_Core_sendResponse(\n"
         text += "\t\tRequestHeader,\n"
         if len(self.args) == 0:
-            text += "\t\tNULL);\n}\n"
+            text += "\t\tNULL);\n}\n\n"
         else:
             text += f"\t\t&(struct responseArgs_{self.name}_s){'{'}\n"
             for arg in self.args.values():
@@ -238,8 +239,7 @@ class Request:
         self.interface = None
 
     def get_header_text(self):
-        text = self.request_sender.get_name_as_comment()
-        text += self.request_sender.get_header_text()
+        text = self.request_sender.get_header_text()
         if self.has_response:
             text += self.response_sender.get_header_text()
         return text
@@ -247,7 +247,6 @@ class Request:
     def get_source_text(self):
         text = self.request_sender.get_source_text()
         if self.has_response:
-            text += "\n"
             text += self.response_sender.get_source_text()
         return text
 
@@ -271,11 +270,8 @@ class Handler:
         self.type = type
         self.has_args = has_args
         self.has_header = has_message_header
-        try:
-            if description[-1] != "\n":
-                description += "\n"
-        except:
-            description = "\n"
+        if (len(description) > 1) and (description[-1] != "\n"):
+            description += "\n"
         self.description = description
         id = f"{type.upper()} {utils.name_to_filename(name=name).replace('_', ' ').upper()}"
         self.user_code = user_codes[id] if id in user_codes else UserCode(identifier=id)
@@ -291,7 +287,9 @@ class Handler:
                 f"\n@param Header Pointer to the header of the {self.type} message.\n"
             )
         if self.has_args:
-            text += f"\n@param Args Pointer to the {self.type} parameters.\n"
+            if not self.has_header:
+                text += "\n"
+            text += f"@param Args Pointer to the {self.type} parameters.\n"
         return utils.text_to_comment(text)
 
     def get_prototype(self):
@@ -310,8 +308,7 @@ class Handler:
         return text
 
     def get_body(self):
-        text = utils.text_to_comment(self.description)
-        text += f"void {self.func_name}("
+        text = f"void {self.func_name}("
         if self.has_args and self.has_header:
             text += "\n\tOE_MessageHeader_t *Header,"
             text += f"\n\tstruct {self.type}Args_{self.name}_s *Args)\n"

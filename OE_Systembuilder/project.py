@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
@@ -27,7 +27,6 @@ def create_project_config(path_to_folder: str, project_name: str) -> None:
         return
     config = {
         "project name": project_name,
-        "version": "0.1",
         "copyright notice": "",
         "generate main": False,
     }
@@ -138,10 +137,10 @@ def create_main(
         author_string = ", ".join(authors)
 
     for kernel_id, kernel in fw.kernels.items():
-        if "OE_Core" in kernel.modules.keys():
-            modules[kernel_id] = list(kernel.modules.keys()).remove("OE_Core")
-        else:
-            modules[kernel_id] = list(kernel.modules.keys())
+        module_list = list(kernel.modules.keys())
+        if "OE_Core" in module_list:
+            module_list.remove("OE_Core")
+        modules[kernel_id] = module_list
 
     main = MainFile(
         author=author_string,
@@ -154,6 +153,27 @@ def create_main(
     logging.debug("Generating source file 'main.c'...")
     with open(path_to_file, "w") as file:
         file.write(main.get_text())
+
+
+def populate_core(path_to_core: str) -> None:
+    logging.debug("Populating OE Core...")
+
+    for filename in [
+        "CMakeLists.txt",
+        "oe_core_config.yaml",
+        "oe_core_intf.c",
+        "oe_core_intf.h",
+        "oe_core_mod.c",
+        "oe_core_mod.h",
+        "oe_defines.h",
+        "oe_kernel.c",
+        "oe_kernel.h",
+        "oe_message_queue.c",
+        "oe_message_queue.h",
+        "oe_request_map.c",
+        "oe_request_map.h",
+    ]:
+        shutil.copy(pkg_resources.resource_filename("OE_Core", filename), path_to_core)
 
 
 def create_project(path_to_folder: str, project_name: str) -> None:
@@ -189,9 +209,6 @@ def create_project(path_to_folder: str, project_name: str) -> None:
         pkg_resources.resource_filename("OE_Scripts", "CMake_Modules/CMakeLists.txt"),
         path_to_module_folder,
     )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "CMakeLists.txt"), path_to_core
-    )
 
     logging.debug("Populating OE Config...")
     shutil.copy(
@@ -206,39 +223,7 @@ def create_project(path_to_folder: str, project_name: str) -> None:
         path_to_config_folder,
     )
 
-    logging.debug("Populating OE Core...")
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_core_config.yaml"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_core_intf.c"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_core_intf.h"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_core_mod.c"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_core_mod.h"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_defines.h"), path_to_core
-    )
-    shutil.copy(pkg_resources.resource_filename("OE_Core", "oe_kernel.c"), path_to_core)
-    shutil.copy(pkg_resources.resource_filename("OE_Core", "oe_kernel.h"), path_to_core)
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_message_queue.c"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_message_queue.h"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_request_map.c"), path_to_core
-    )
-    shutil.copy(
-        pkg_resources.resource_filename("OE_Core", "oe_request_map.h"), path_to_core
-    )
+    populate_core(path_to_core=path_to_core)
 
     fw, _ = firmware.parse_configs(
         path_to_modules=path_to_module_folder,

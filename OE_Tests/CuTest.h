@@ -45,6 +45,10 @@ typedef struct CuTest CuTest;
 
 typedef void (*TestFunction)(CuTest *);
 
+/************************************************************************/
+/*** Added void* args to struct CuTest to pass args to test function! ***/
+/************************************************************************/
+
 struct CuTest
 {
 	char* name;
@@ -53,10 +57,12 @@ struct CuTest
 	int ran;
 	const char* message;
 	jmp_buf *jumpBuf;
+	void *args;
 };
 
-void CuTestInit(CuTest* t, const char* name, TestFunction function);
+void CuTestInit(CuTest* t, const char* name, TestFunction function, void *args);
 CuTest* CuTestNew(const char* name, TestFunction function);
+CuTest* CuTestNewArgs(const char* name, TestFunction function, void *args);
 void CuTestRun(CuTest* tc);
 void CuTestDelete(CuTest *t);
 

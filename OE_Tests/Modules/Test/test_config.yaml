@@ -1,0 +1,11 @@
+name: Test
+author: Samuel Ardaya-Lieb
+interface:
+  create: true
+  requests:
+  - name: Test_End
+module:
+  create: false
+  kernel: 0
+  subscribed requests: []
+  used requests: []

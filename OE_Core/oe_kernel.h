@@ -1,5 +1,5 @@
 /**
- * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
+ * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */
@@ -63,13 +63,9 @@ OE_Error_t OE_Kernel_staticInit(
  *
  * @param Kernel The pointer to the kernel that will register the handlers
  * in its request map.
- *
  * @param RequestIDs Pointer to the array of request IDs.
- *
  * @param RequestHandlers Pointer to the array of message handlers to be registered.
- *
  * @param NumberOfHandlers The number of request IDs and handlers.
- *
  * @return OE_Error_t An error is returned if
  * - registering the handlers results in an error.
  * Otherwise OE_ERROR_NONE is returned.
@@ -90,11 +86,8 @@ OE_Error_t OE_Kernel_registerHandlers(
  *
  * @param Kernel The pointer to the kernel that will unregister the handlers
  * in its request map.
- *
  * @param RequestIDs Pointer to the array of request IDs.
- *
  * @param RequestHandlers Pointer to the array of message handlers to be unregistered.
- *
  * @param NumberOfHandlers The number of request IDs and handlers.
  */
 void OE_Kernel_unregisterHandlers(
@@ -107,9 +100,7 @@ void OE_Kernel_unregisterHandlers(
  * @brief Checks if at least one handler is registered for a given request ID.
  *
  * @param Kernel The pointer to the kernel whose request map is checked.
- *
  * @param RequestID The request ID to be checked.
- *
  * @return true At least one handler is registered.
  * @return false No handler is registered.
  */
@@ -149,7 +140,6 @@ void OE_Kernel_run(
  * message queue. The behaviour of the system can then be observed step by step.
  *
  * @param Kernel The pointer to the kernel that runs once.
- * 
  * @return true A message was handled.
  * @return false No message was handled.
  */
@@ -164,7 +154,6 @@ bool OE_Kernel_runOnce(
  * a response.
  *
  * @param Kernel The pointer to the kernel that handles the message.
- *
  * @param Message Pointer to the received message.
  */
 void OE_Kernel_handleMessage(

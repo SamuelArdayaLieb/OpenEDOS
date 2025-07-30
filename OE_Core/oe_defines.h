@@ -1,5 +1,5 @@
 /**
- * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
+ * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */
@@ -159,6 +159,12 @@ typedef struct OE_MessageHeader_s
     OE_KernelID_t KernelID;
 } OE_MessageHeader_t;
 
+#define OE_EMPTY_HEADER (OE_MessageHeader_t){ \
+    .Information=OE_MESSAGE_TYPE_REQUEST|OE_MESSAGE_DATA_EMPTY, \
+    .KernelID=OE_NO_KERNEL, \
+    .RequestID=OE_NUMBER_OF_REQUESTS, \
+    .ResponseHandler=OE_NO_HANDLER}
+
 /**
  * A struct is used to store the data of a message. It consists of the
  * message header and the data field.
@@ -208,15 +214,14 @@ typedef enum OE_Error_e
     /*Errors related to memory management*/
     OE_ERROR_KERNEL_LIMIT_REACHED,
     OE_ERROR_HANDLER_LIMIT_REACHED,
-/*Errors related to request allocation*/
-#if OE_USE_REQUEST_LIMIT
+    /*Errors related to request allocation*/
     OE_ERROR_REQUEST_LIMIT_REACHED,
-#endif // OE_USE_REQUEST_LIMIT
     OE_ERROR_MESSAGE_QUEUE_FULL,
     /*Errors related to invalid IDs*/
     OE_ERROR_REQUEST_ID_INVALID,
     OE_ERROR_KERNEL_ID_INVALID,
     /*General purpose errors*/
+    OE_ERROR_UNSPECIFIED,
     OE_ERROR_PARAMETER_INVALID,
     
     /**

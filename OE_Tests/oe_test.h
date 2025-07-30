@@ -1,8 +1,10 @@
-#ifndef SINGEL_KERNEL_H
-#define SINGLE_KERNEL_H
+#ifndef OE_TEST_H
+#define OE_TEST_H
 
 #include "CuTest.h"
+#include <pthread.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define TEST_VAL_TEST_BEGIN   0
 #define TEST_VAL_MODULE_INIT  1
@@ -14,11 +16,13 @@ enum TestValues_e {
     TEST_VAL_3,
 };
 
-
+extern uint8_t TestParam_0;
 extern uint8_t TestParam_1;
 extern uint8_t TestParam_2;
-extern uint8_t TestParam_3;
 
 void add_singleKernel(CuSuite *suite);
+void add_multiKernel(CuSuite *suite);
 
-#endif//SINGEL_KERNEL_H
+void summarizeKernelTests(CuSuite* suite, int Kernel_ID);
+
+#endif // OE_TEST_H

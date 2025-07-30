@@ -1,5 +1,5 @@
 /**
- * OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT License
+ * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
  * https://github.com/SamuelArdayaLieb/OpenEDOS
  */
@@ -7,7 +7,6 @@
 #include "oe_kernel.h"
 #include "oe_core_mod.h"
 #include "oe_core_intf.h"
-#include <string.h>
 
 OE_Error_t OE_Kernel_staticInit(
     OE_Kernel_t *Kernel)
@@ -27,7 +26,7 @@ OE_Error_t OE_Kernel_registerHandlers(
     size_t NumberOfRequests)
 {
     return OE_RequestMap_registerHandlers(
-        &(Kernel->RequestMap),
+        Kernel,
         RequestIDs,
         RequestHandlers,
         NumberOfRequests);
@@ -40,7 +39,7 @@ void OE_Kernel_unregisterHandlers(
     size_t NumberOfRequests)
 {
     OE_RequestMap_unregisterHandlers(
-        &(Kernel->RequestMap),
+        Kernel,
         RequestIDs,
         RequestHandlers,
         NumberOfRequests);

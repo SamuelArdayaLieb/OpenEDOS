@@ -1,5 +1,5 @@
 name: TestDummy
-author: Samu
+author: Samuel Ardaya-Lieb
 interface:
   create: true
   requests:

@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
@@ -22,24 +22,28 @@ class File:
     ) -> None:
         self.filename = filename
         self.author = author
-        self.version = version
-        try:
-            if copyright_notice[-1] != "\n":
-                copyright_notice += "\n"
-        except:
-            copyright_notice = "\n"
-        finally:
-            self.copyright_notice = copyright_notice
 
+        if type(version) is str and len(version) > 0:
+            self.version = f"@version {version}\n"
+        else:
+            self.version = ""
+
+        if type(copyright_notice) is str and len(copyright_notice) > 0:
+            self.copyright_notice = copyright_notice
+            # add newline if not there already
+            if self.copyright_notice[-1] != "\n":
+                self.copyright_notice += "\n"
+            if self.version != "":
+                self.copyright_notice = "\n" + self.copyright_notice
+        else:
+            self.copyright_notice = ""
+
+        # search for user codes
         id = "COPYRIGHT NOTICE"
         if id in user_codes:
             self.intro = user_codes[id]
         else:
-            code = f"@version {self.version}\n"
-            if self.copyright_notice != "\n":
-                code += "\n"
-                code += self.copyright_notice
-
+            code = self.version + self.copyright_notice
             self.intro = UserCode(identifier=id, code=utils.text_to_comment(code))
 
         id = "FILE INTRODUCTION"
@@ -178,14 +182,13 @@ class InterfaceSource(File):
                 text += request.get_source_text()
         else:
             text += "/* There are no requests associated with this interface. */\n\n"
-
         return text
 
     def get_text(self) -> str:
         self.sections.append(self._includes())
         self.sections.append(self._user_includes())
         self.sections.append(self._requests())
-        self.sections.append("\n/* Something else...? */\n")
+        self.sections.append("/* Something else...? */\n")
         self.sections.append(self.user_code.get_text())
         return super().get_text()
 
@@ -262,11 +265,8 @@ and connects the module to the kernel. It then calls
 the specific init function of the module.
 
 @param {self.name} A pointer to the module to be initialized.
-
 @param Args A pointer to the init params for the module.
-
 @param Kernel A pointer to the kernel to be connected.
-
 @return OE_Error_t An error is returned if
 - initializing the module results in an error.
 Otherwise OE_ERROR_NONE is returned.\n"""
@@ -348,9 +348,7 @@ class ModuleSource(File):
     def _init_prototype(self) -> str:
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~ Custom init prototype ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         comment = f"@brief Custom initializer for the module: {self.name}.\n\n"
-        if self.user_code_init.description != "\n":
-            comment += self.user_code_init.description + "\n"
-        comment += "@param Args A pointer to the init params for the module.\n\n"
+        comment += "@param Args A pointer to the init params for the module.\n"
         comment += "@return OE_Error_t An error is returned if\n"
         comment += "- initializing the module results in an error.\n"
         comment += "Otherwise OE_ERROR_NONE is returned.\n"
@@ -405,24 +403,18 @@ OE_Error_t initModule_{self.name}(
     {self.name} = p{self.name};
     {self.name}->Kernel = Kernel;
 
-    /* Initialize the module. */
-    Error = init_{self.name}(Args);
-
-    /* Check for errors. */
-    if (Error != OE_ERROR_NONE)
-    {'{'}
-        {self.name}->Kernel = NULL;
-        {self.name} = NULL;
-        
-        return Error;
-    {'}'}
-
     /* Register the request handlers. */
     Error = OE_Kernel_registerHandlers(
         Kernel,
         RequestIDs,
         RequestHandlers,
         sizeof(RequestIDs)/sizeof(OE_RequestID_t));
+
+    if (Error == OE_ERROR_NONE)
+    {'{'}
+        /* Initialize the module. */
+        Error = init_{self.name}(Args);
+    {'}'}
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -449,7 +441,7 @@ OE_Error_t initModule_{self.name}(
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~ Custom init function ~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         text += f"OE_Error_t init_{self.name}(void *Args)\n"
         text += "{\n"
-        if self.user_code_init.code == "\n":
+        if self.user_code_init.code == "":
             self.user_code_init.code = "\t/* Avoid unused warning. */\n"
             self.user_code_init.code += "\t(void)Args;\n"
             self.user_code_init.code += (
@@ -473,7 +465,7 @@ OE_Error_t initModule_{self.name}(
         text = "//~~~~~~~~~~~~~~~~~~~~~~~~~~ Response handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~//\n\n"
         if len(self.response_handlers) > 0:
             for handler in self.response_handlers.values():
-                text += f"{handler.get_body()}\n"
+                text += f"{handler.get_body()}"
         else:
             text += "/* This module does not implement any response handlers. */\n\n"
         return text

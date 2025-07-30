@@ -1,5 +1,5 @@
 """
-OpenEDOS, (c) 2022-2024 Samuel Ardaya-Lieb, MIT license
+OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT license
 
 https://github.com/SamuelArdayaLieb/OpenEDOS
 """
@@ -8,7 +8,7 @@ import logging
 
 INDENT = "\t"
 
-OPENEDOS_VERSION = "2.1"
+OPENEDOS_VERSION = "2.2"
 
 
 class bcolors:
@@ -24,6 +24,8 @@ class bcolors:
 
 
 def text_to_comment(text: str) -> str:
+    if text == "":
+        return ""
     comment = "/**\n"
     lines = text.split("\n")[:-1]
     for line in lines:

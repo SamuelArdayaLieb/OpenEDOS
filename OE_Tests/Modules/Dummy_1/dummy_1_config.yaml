@@ -1,0 +1,16 @@
+name: 'Dummy_1'
+author: Samuel Ardaya-Lieb
+interface:
+  create: true
+  requests:
+  - name: Dummy_1_Req
+  - name: Dummy_1_toggleRegistration
+module:
+  create: true
+  kernel: 1
+  subscribed requests:
+  - name: Kernel_Start
+  - name: Test_End
+  - name: Dummy_1_Req
+  - name: Dummy_1_toggleRegistration
+  used requests:

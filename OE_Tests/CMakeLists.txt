@@ -1,7 +1,7 @@
 # This is a basic CMakeLists.txt that may be adjusted as needed.
 
 cmake_minimum_required(VERSION 3.10)
-add_compile_options(-O3 -Wall)
+add_compile_options(-O0 -Wall -g)
 
 #------------------------------------------ set project name
 
@@ -52,4 +52,3 @@ Modules
 # Link against the pthread library
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-#target_link_libraries(${PROJECT_NAME} PRIVATE rt)
