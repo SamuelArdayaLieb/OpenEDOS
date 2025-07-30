@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
+ * @version 2.2
  * 
  * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
@@ -18,7 +18,6 @@
 /* USER CODE COPYRIGHT NOTICE END */
 
 /* USER CODE FILE INTRODUCTION BEGIN */
-
 /* USER CODE FILE INTRODUCTION END */
 
 #include "oe_core_mod.h"
@@ -123,24 +122,18 @@ OE_Error_t initModule_OE_Core(
     OE_Core = pOE_Core;
     OE_Core->Kernel = Kernel;
 
-    /* Initialize the module. */
-    Error = init_OE_Core(Args);
-
-    /* Check for errors. */
-    if (Error != OE_ERROR_NONE)
-    {
-        OE_Core->Kernel = NULL;
-        OE_Core = NULL;
-        
-        return Error;
-    }
-
     /* Register the request handlers. */
     Error = OE_Kernel_registerHandlers(
         Kernel,
         RequestIDs,
         RequestHandlers,
         sizeof(RequestIDs)/sizeof(OE_RequestID_t));
+
+    if (Error == OE_ERROR_NONE)
+    {
+        /* Initialize the module. */
+        Error = init_OE_Core(Args);
+    }
 
     /* Check for errors. */
     if (Error != OE_ERROR_NONE)
@@ -166,7 +159,7 @@ OE_Error_t initModule_OE_Core(
 
 OE_Error_t init_OE_Core(void *Args)
 {
-	/* USER CODE MODULE INIT BEGIN */
+    /* USER CODE MODULE INIT BEGIN */
     /* Avoid unused warning. */
     (void)Args;
 
@@ -193,7 +186,7 @@ OE_Error_t init_OE_Core(void *Args)
 
 	/* Return no error if everything is fine. */
 	return OE_ERROR_NONE;
-	/* USER CODE MODULE INIT END */
+    /* USER CODE MODULE INIT END */
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~ Request handlers ~~~~~~~~~~~~~~~~~~~~~~~~~~~//

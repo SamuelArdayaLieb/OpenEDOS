@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
+ * @version 2.2
  * 
  * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
@@ -44,7 +44,7 @@ typedef struct module_OE_Core_s {
     OE_Kernel_t *Kernel;
 
     /* Module data. */
-	/* USER CODE MODULE DATA BEGIN */
+    /* USER CODE MODULE DATA BEGIN */
     /* Kernel connections */
     OE_Kernel_t *Kernels[OE_NUMBER_OF_KERNELS];
     size_t NumberOfKernels;
@@ -62,7 +62,7 @@ typedef struct module_OE_Core_s {
 
     /* Message queues */
     OE_MessageQueue_t MessageQueues[OE_NUMBER_OF_KERNELS];
-	/* USER CODE MODULE DATA END */
+    /* USER CODE MODULE DATA END */
 
 } module_OE_Core_t;
 
@@ -76,11 +76,8 @@ typedef struct module_OE_Core_s {
  * the specific init function of the module.
  * 
  * @param OE_Core A pointer to the module to be initialized.
- * 
  * @param Args A pointer to the init params for the module.
- * 
  * @param Kernel A pointer to the kernel to be connected.
- * 
  * @return OE_Error_t An error is returned if
  * - initializing the module results in an error.
  * Otherwise OE_ERROR_NONE is returned.

@@ -9,7 +9,7 @@
 
 /* USER CODE COPYRIGHT NOTICE BEGIN */
 /**
- * @version 2.1
+ * @version 2.2
  * 
  * OpenEDOS, (c) 2022-2025 Samuel Ardaya-Lieb, MIT License
  * 
@@ -18,7 +18,6 @@
 /* USER CODE COPYRIGHT NOTICE END */
 
 /* USER CODE FILE INTRODUCTION BEGIN */
-
 /* USER CODE FILE INTRODUCTION END */
 
 #ifndef OE_CORE_INTF_H
@@ -28,12 +27,9 @@
 
 /* Includes, defines, typedefs, etc. */
 /* USER CODE INTERFACE HEADER BEGIN */
-
 /* USER CODE INTERFACE HEADER END */
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Requests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-
-/* Kernel_Start */
 
 /**
  * @brief Send a message to request: Kernel_Start.
