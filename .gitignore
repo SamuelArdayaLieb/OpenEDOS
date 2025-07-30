@@ -1,9 +1,7 @@
 build/
-/Modules/
 .vscode/
 *.egg-info
 venv/
-notes.txt
-backlog.txt
-metrics.txt
-
+ignored/
+UnitTesting/
+Python/
