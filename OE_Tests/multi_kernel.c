@@ -311,10 +311,9 @@ void handleResponse_Dummy_0_Req(
 	OE_MessageHeader_t *Header,
 	struct responseArgs_Dummy_0_Req_s *Args)
 {
-    /* USER CODE RESPONSE DUMMY 0 REQ BEGIN */
     (void)Header;
+    (void)Args;
     atomic_store(&responseReceived_flags[0],true);
-    /* USER CODE RESPONSE DUMMY 0 REQ END */
 }
 
 static void startKernelThreads(CuTest *tc)
